@@ -1,0 +1,1573 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#1F5F6B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="업무허브">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon.svg">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>구로IL 업무허브</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --ground:#F3F5F2; --surface:#FFFFFF; --sunk:#E9EDE8; --line:#D5DCD5; --line-strong:#B9C3BA;
+  --ink:#1B2420; --ink-2:#4F5C55; --ink-3:#7A867F;
+  --accent:#1F5F6B; --accent-ink:#FFFFFF; --accent-soft:#DCEBEC;
+  --stamp:#B23A2E; --stamp-soft:#F6E1DD;
+  --warn:#9A6A12; --warn-soft:#F5EACF;
+  --ok:#2E6B3F; --ok-soft:#DDEEDF;
+  --cat-tax:#7A4E9E; --cat-pay:#1F5F6B; --cat-ins:#2E6B3F; --cat-acc:#9A6A12; --cat-don:#B4527A; --cat-etc:#5E6A64; --cat-leave:#3E7CB1; --cat-bday:#C0673A;
+  --paper:#FFFFFF; --paper-ink:#111;
+  --shadow:0 1px 2px rgba(20,35,30,.06),0 4px 14px rgba(20,35,30,.06);
+  --radius:10px;
+  --f-display:"Hahmlet","Noto Serif KR",serif;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#121716; --surface:#1A211F; --sunk:#222B28; --line:#2E3935; --line-strong:#43504B;
+    --ink:#E4EBE7; --ink-2:#A9B6AF; --ink-3:#7F8C86;
+    --accent:#72B6C2; --accent-ink:#0E1A1C; --accent-soft:#1E3538;
+    --stamp:#E57A6C; --stamp-soft:#3A2220;
+    --warn:#D9AE55; --warn-soft:#352C18;
+    --ok:#7CC08E; --ok-soft:#1C3222;
+    --cat-tax:#B794D6; --cat-pay:#72B6C2; --cat-ins:#7CC08E; --cat-acc:#D9AE55; --cat-don:#E08DB0; --cat-etc:#9AA7A1; --cat-leave:#86B6E0; --cat-bday:#E59A6E;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#121716; --surface:#1A211F; --sunk:#222B28; --line:#2E3935; --line-strong:#43504B;
+  --ink:#E4EBE7; --ink-2:#A9B6AF; --ink-3:#7F8C86;
+  --accent:#72B6C2; --accent-ink:#0E1A1C; --accent-soft:#1E3538;
+  --stamp:#E57A6C; --stamp-soft:#3A2220;
+  --warn:#D9AE55; --warn-soft:#352C18;
+  --ok:#7CC08E; --ok-soft:#1C3222;
+  --cat-tax:#B794D6; --cat-pay:#72B6C2; --cat-ins:#7CC08E; --cat-acc:#D9AE55; --cat-don:#E08DB0; --cat-etc:#9AA7A1; --cat-leave:#86B6E0; --cat-bday:#E59A6E;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--ground);color:var(--ink);font:14px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* ---------- shell ---------- */
+.shell{display:grid;grid-template-columns:232px 1fr;min-height:100%}
+.side{position:sticky;top:0;height:100vh;border-right:1px solid var(--line);background:var(--surface);display:flex;flex-direction:column;padding:20px 14px;gap:18px}
+.brand{padding:0 8px}
+.brand b{display:block;font:700 19px/1.2 var(--f-display);letter-spacing:-.01em}
+.brand span{font-size:12px;color:var(--ink-3)}
+.nav{display:flex;flex-direction:column;gap:2px}
+.nav a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--ink-2);text-decoration:none;font-weight:500}
+.nav a:hover{background:var(--sunk);color:var(--ink)}
+.nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.nav svg{width:18px;height:18px;flex:none}
+.nav .badge{margin-left:auto}
+.side-foot{margin-top:auto;font-size:12px;color:var(--ink-3);padding:0 8px}
+.main{min-width:0;padding-block:24px 48px;padding-inline:clamp(16px,3vw,40px)}
+.page{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.page-head h1{margin:0;font:700 clamp(22px,3vw,28px)/1.2 var(--f-display);letter-spacing:-.015em;text-wrap:balance}
+.page-head p{margin:4px 0 0;color:var(--ink-2)}
+.tabbar{display:none}
+
+@media (max-width: 860px){
+  .shell{grid-template-columns:1fr}
+  .side{display:none}
+  .main{padding-block:16px 96px}
+  .tabbar{display:grid;grid-template-columns:repeat(6,1fr);position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--ink-3);text-decoration:none;padding:4px 0;position:relative}
+  .tabbar a[aria-current="page"]{color:var(--accent);font-weight:600}
+  .tabbar svg{width:22px;height:22px}
+  .tabbar .dot{position:absolute;top:2px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:var(--stamp)}
+}
+
+/* ---------- primitives ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius)}
+.panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.panel-h h2,.panel-h h3{margin:0;font:600 15px/1.3 var(--f-body)}
+.panel-b{padding:16px}
+.eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+.muted{color:var(--ink-2)} .faint{color:var(--ink-3)} .small{font-size:12px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.grid-2>*,.grid-3>*,.doc-layout>*{min-width:0}
+@media (max-width: 980px){.grid-3{grid-template-columns:1fr 1fr}}
+@media (max-width: 700px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:36px;padding:0 14px;border-radius:8px;border:1px solid var(--line-strong);background:var(--surface);cursor:pointer;font-weight:500;white-space:nowrap;text-decoration:none;color:var(--ink)}
+.btn:hover{background:var(--sunk)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--sunk)}
+.btn.danger{color:var(--stamp);border-color:var(--stamp)}
+.btn.sm{height:30px;padding:0 10px;font-size:13px}
+.btn svg{width:16px;height:16px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+.chip{display:inline-flex;align-items:center;gap:5px;height:22px;padding:0 8px;border-radius:999px;font-size:12px;font-weight:500;background:var(--sunk);color:var(--ink-2);white-space:nowrap}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.crit{background:var(--stamp-soft);color:var(--stamp)}
+.chip.acc{background:var(--accent-soft);color:var(--accent)}
+.badge{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--stamp);color:#fff;font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
+.dotcat{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+
+label.f{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--ink-2);font-weight:500}
+.inp,select.inp,textarea.inp{height:36px;padding:0 10px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);width:100%;min-width:0;font-size:14px;color:var(--ink)}
+textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
+.inp:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.form-grid .span2{grid-column:span 2}
+@media (max-width: 420px){.form-grid .span2{grid-column:auto}}
+
+.seg{display:inline-flex;background:var(--sunk);border-radius:9px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;cursor:pointer;color:var(--ink-2);font-weight:500;font-size:13px}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}
+table.tbl{border-collapse:collapse;width:100%;font-size:13px}
+.tbl th,.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;white-space:nowrap}
+.tbl th{background:var(--sunk);font-weight:600;color:var(--ink-2);font-size:12px;position:sticky;top:0}
+.tbl td.r,.tbl th.r{text-align:right;font-variant-numeric:tabular-nums}
+.tbl td.wrap{white-space:normal;min-width:160px}
+.tbl tr:last-child td{border-bottom:0}
+.tbl tfoot td{font-weight:600;background:var(--sunk)}
+
+.empty{padding:28px 16px;text-align:center;color:var(--ink-3)}
+.note{padding:10px 12px;border-radius:8px;background:var(--sunk);color:var(--ink-2);font-size:13px}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+.note b{color:var(--ink)}
+
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--ground);padding:10px 16px;border-radius:8px;font-size:13px;z-index:60;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+@media (max-width:860px){.toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}}
+
+.sheet-back{position:fixed;inset:0;background:rgba(10,20,16,.42);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.sheet{background:var(--surface);border-radius:12px;width:min(560px,100%);max-height:calc(100% - 32px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.sheet .panel-b{display:flex;flex-direction:column;gap:12px}
+.sheet-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+
+/* ---------- home ---------- */
+.today-strip{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center;padding:18px 20px}
+.datebox{text-align:center;border-right:1px solid var(--line);padding-right:20px}
+.datebox .d{font:700 44px/1 var(--f-display);color:var(--accent)}
+.datebox .m{font-size:12px;color:var(--ink-3);margin-top:4px}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi .v{font:600 24px/1.1 var(--f-body);font-variant-numeric:tabular-nums}
+.kpi .l{font-size:12px;color:var(--ink-3)}
+.kpi.crit .v{color:var(--stamp)} .kpi.warn .v{color:var(--warn)}
+@media (max-width:700px){.today-strip{grid-template-columns:1fr}.datebox{border-right:0;border-bottom:1px solid var(--line);padding:0 0 12px;display:flex;align-items:baseline;gap:10px;text-align:left}.kpis{grid-template-columns:repeat(2,1fr)}}
+
+.dl{list-style:none;margin:0;padding:0}
+.dl li{display:grid;grid-template-columns:62px 1fr auto;gap:12px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line)}
+.dl li:last-child{border-bottom:0}
+.dl .when{font-size:12px;line-height:1.25}
+.dl .when b{display:block;font:600 15px/1.2 var(--f-body);font-variant-numeric:tabular-nums}
+.dl .t{font-weight:500}
+.dl .s{font-size:12px;color:var(--ink-3)}
+.dl li.done .t{text-decoration:line-through;color:var(--ink-3)}
+.check{width:26px;height:26px;border-radius:7px;border:1.5px solid var(--line-strong);background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.check[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.check svg{width:15px;height:15px}
+
+.apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.app{display:flex;flex-direction:column;gap:6px;padding:14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);text-decoration:none;color:var(--ink);min-height:112px;position:relative}
+a.app:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+.app .ic{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);color:var(--accent);font:700 15px var(--f-display)}
+.app .n{font-weight:600}
+.app .dsc{font-size:12px;color:var(--ink-3);line-height:1.4}
+.app .st{margin-top:auto}
+.app .edit{position:absolute;top:8px;right:8px}
+
+.prog{height:6px;border-radius:99px;background:var(--sunk);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--accent);border-radius:99px}
+
+/* ---------- calendar ---------- */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.cal .dow{padding:6px 8px;font-size:12px;color:var(--ink-3);font-weight:600;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--sunk)}
+.cal .cell{min-height:104px;padding:6px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:3px;min-width:0;cursor:pointer;background:var(--surface)}
+.cal .cell:hover{background:var(--sunk)}
+.cal .cell.out{background:var(--ground);color:var(--ink-3)}
+.cal .cell .dn{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;display:flex;gap:4px;align-items:center}
+.cal .cell.hol .dn,.cal .cell.sun .dn{color:var(--stamp)}
+.cal .cell.sat .dn{color:var(--accent)}
+.cal .cell.today .dn span.n{background:var(--accent);color:var(--accent-ink);border-radius:99px;padding:0 6px}
+.cal .hn{font-size:10px;color:var(--stamp);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev{font-size:11.5px;line-height:1.3;padding:2px 5px;border-radius:4px;background:var(--sunk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:3px solid var(--cat-etc)}
+.ev.done{opacity:.5;text-decoration:line-through}
+.ev.x{background:transparent;border-left-style:dotted;color:var(--ink-2)}
+.cal-more{font-size:11px;color:var(--ink-3)}
+@media (max-width:700px){
+  .cal .cell{min-height:52px;padding:4px}
+  .cal .ev{display:none}
+  .cal .hn{display:none}
+  .cal .pips{display:flex;gap:2px;flex-wrap:wrap}
+}
+.pips{display:none}
+.pips i{width:6px;height:6px;border-radius:50%;display:block}
+
+/* ---------- routines ---------- */
+.steps{list-style:none;margin:0;padding:0}
+.steps li{display:flex;gap:10px;align-items:flex-start;padding:9px 16px;border-bottom:1px solid var(--line)}
+.steps li:last-child{border-bottom:0}
+.steps li .tx{padding-top:3px}
+.steps li.on .tx{color:var(--ink-3);text-decoration:line-through}
+.steps .lnk{margin-left:auto;font-size:12px;white-space:nowrap}
+
+/* ---------- bridge ---------- */
+.drop{border:1.5px dashed var(--line-strong);border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:10px;background:var(--ground)}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop .fn{font-weight:600;word-break:break-all}
+.map{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+.stat-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:700px){.stat-row{grid-template-columns:repeat(2,1fr)}}
+.stat{padding:12px;border-radius:8px;background:var(--sunk)}
+.stat .v{font:600 20px/1.1 var(--f-body);font-variant-numeric:tabular-nums}
+.stat .l{font-size:12px;color:var(--ink-3)}
+.stat.ok .v{color:var(--ok)} .stat.warn .v{color:var(--warn)} .stat.crit .v{color:var(--stamp)}
+tr.entered td{color:var(--ink-3)}
+tr.entered td.t{text-decoration:line-through}
+.copyc{cursor:pointer;border-bottom:1px dashed var(--line-strong)}
+.copyc:hover{color:var(--accent);border-color:var(--accent)}
+
+/* ---------- documents ---------- */
+.doc-layout{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:18px;align-items:start}
+@media (max-width:980px){.doc-layout{grid-template-columns:1fr}}
+.preview-wrap{background:var(--sunk);border-radius:var(--radius);padding:16px;overflow:auto;border:1px solid var(--line)}
+.a4{background:var(--paper);color:var(--paper-ink);width:210mm;min-height:297mm;padding:22mm 20mm;margin:0 auto;box-shadow:var(--shadow);font:14px/1.7 "Noto Serif KR","Hahmlet","Batang",serif;position:relative}
+.a4-scale{transform-origin:top left}
+.a4 h1{text-align:center;font:700 30px/1.3 "Hahmlet",serif;letter-spacing:.5em;margin:10mm 0 12mm;padding-left:.5em}
+.a4 .docno{font:12px var(--f-mono);color:#444}
+.a4 table.dt{width:100%;border-collapse:collapse;margin:6mm 0;font-size:14px}
+.a4 table.dt th,.a4 table.dt td{border:1px solid #333;padding:9px 10px;text-align:left;vertical-align:middle}
+.a4 table.dt th{background:#f1f1f1;width:24%;font-weight:600;text-align:center}
+.a4 .cert{text-align:center;margin:16mm 0 6mm;font-size:16px}
+.a4 .date{text-align:center;font-size:16px;margin:10mm 0}
+.a4 .issuer{text-align:center;font:700 20px/1.6 "Hahmlet",serif;margin-top:12mm;position:relative}
+.a4 .seal{display:inline-block;width:18mm;height:18mm;border:2px solid #c0392b;border-radius:3px;color:#c0392b;font:600 11px/1.15 "Hahmlet",serif;vertical-align:middle;margin-left:4mm;padding-top:3mm;text-align:center}
+.a4 .appr{float:right;border-collapse:collapse;margin-bottom:6mm}
+.a4 .appr td{border:1px solid #333;width:21mm;text-align:center;font-size:12px;padding:3px}
+.a4 .appr tr:last-child td{height:15mm}
+.a4 .appr td.lab{width:8mm;writing-mode:vertical-rl;letter-spacing:.3em;background:#f1f1f1}
+.a4 .body{white-space:pre-wrap}
+.a4 .clear{clear:both}
+.a4 .amount-big{font:700 18px/1.4 "Hahmlet",serif}
+
+@media print{
+  body{background:#fff}
+  .shell>.side,.tabbar,.no-print,.toast{display:none!important}
+  .main{padding:0!important}
+  .page>*:not(.print-host){display:none!important}
+  .print-host .doc-form{display:none!important}
+  .print-host,.print-host *{visibility:visible}
+  .doc-layout{display:block}
+  .preview-wrap{background:none;border:0;padding:0;overflow:visible}
+  .a4-scale{transform:none!important;height:auto!important}
+  .a4{box-shadow:none;margin:0;width:auto;min-height:auto;page-break-after:always}
+  .a4:last-child{page-break-after:auto}
+  @page{size:A4;margin:0}
+}
+</style>
+
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div class="brand"><b>구로IL 업무허브</b><span>사무행정팀 · 김휘원</span></div>
+    <nav class="nav" id="nav-side"></nav>
+    <div class="side-foot" id="side-foot"></div>
+  </aside>
+  <main class="main"><div class="page" id="view"></div></main>
+  <nav class="tabbar" id="nav-tab"></nav>
+</div>
+<div id="layer"></div>
+<script>window.HUB_ENV='web';</script>
+<script>
+/* ================= core ================= */
+const ENV = window.HUB_ENV || 'web';           // 'artifact' | 'web'
+const CAN_FILE = ENV !== 'artifact';            // print & download only outside the artifact frame
+const KEY = 'grcil-hub-v1';
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseYmd = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const today = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const won = n => (Math.round(Number(n)||0)).toLocaleString('ko-KR');
+const DOW = ['일','월','화','수','목','금','토'];
+const clone = o => JSON.parse(JSON.stringify(o));
+
+const ICON = {
+  home:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+  cal:'<rect x="3" y="4.5" width="18" height="16.5" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+  list:'<path d="M9 6h11M9 12h11M9 18h11"/><path d="m3.5 6 1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/>',
+  bridge:'<path d="M4 7h10l-3-3M20 17H10l3 3"/><rect x="2.5" y="10" width="7" height="4" rx="1"/><rect x="14.5" y="10" width="7" height="4" rx="1"/>',
+  doc:'<path d="M6 2.5h8l5 5V21a.5.5 0 0 1-.5.5h-12A.5.5 0 0 1 6 21z"/><path d="M14 2.5v5h5M9 12h7M9 16h7"/>',
+  apps:'<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+  left:'<path d="m15 5-7 7 7 7"/>', right:'<path d="m9 5 7 7-7 7"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+  down:'<path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/>',
+  print:'<path d="M7 9V3h10v6M7 17H4v-7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v7h-3"/><rect x="7" y="14" width="10" height="7"/>',
+  ext:'<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+};
+const icon = (k, cls='') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[k]}</svg>`;
+
+/* ---------- storage ---------- */
+let S;
+function load() {
+  let saved = null;
+  try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+  const def = defaults();
+  if (!saved) return def;
+  // merge shallowly so new default keys appear after updates
+  for (const k of Object.keys(def)) if (saved[k] === undefined) saved[k] = def[k];
+  saved.settings = Object.assign({}, def.settings, saved.settings);
+  saved.settings.org = Object.assign({}, def.settings.org, saved.settings.org);
+  if ((saved.v || 1) < 2) { // v2: 실제 저장소 목록으로 앱 교체, 직접 추가한 앱은 유지
+    const mine = (saved.apps || []).filter(a => !/^a\d$/.test(a.id));
+    saved.apps = [...def.apps, ...mine]; saved.v = 2;
+  }
+  return saved;
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+/* ---------- ui helpers ---------- */
+let toastT;
+function toast(msg) {
+  let t = $('#toast'); if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; t.setAttribute('role','status'); document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 2400);
+}
+async function copyText(txt, label = '복사했어요') {
+  try { await navigator.clipboard.writeText(txt); toast(label); return true; }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (_) {}
+    ta.remove(); toast(ok ? label : '복사가 막혀 있어요. 직접 선택해 복사해 주세요'); return ok;
+  }
+}
+function download(name, data, mime = 'application/octet-stream') {
+  if (!CAN_FILE) { toast('다운로드는 GitHub 배포본에서 돼요. 여기서는 복사 버튼을 써 주세요'); return; }
+  const blob = data instanceof Blob ? data : new Blob([data], {type: mime});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function sheet({title, body, foot, onMount, wide}) {
+  const L = $('#layer');
+  L.innerHTML = `<div class="sheet-back" data-close><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(title)}" ${wide?'style="width:min(820px,100%)"':''}>
+    <div class="panel-h"><h3>${esc(title)}</h3><button class="btn ghost sm" data-close aria-label="닫기">닫기</button></div>
+    <div class="panel-b">${body}</div>${foot ? `<div class="sheet-foot">${foot}</div>` : ''}</div></div>`;
+  const back = $('.sheet-back', L);
+  back.addEventListener('click', e => { if (e.target === back || e.target.closest('button[data-close]')) closeSheet(); });
+  onMount && onMount($('.sheet', L));
+  const first = $('.sheet input,.sheet select,.sheet textarea', L); first && first.focus();
+}
+function closeSheet() { $('#layer').innerHTML = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+/* ---------- router ---------- */
+const ROUTES = [
+  {id:'home', label:'오늘', icon:'home'},
+  {id:'calendar', label:'캘린더', icon:'cal'},
+  {id:'routine', label:'루틴', icon:'list'},
+  {id:'bridge', label:'진우 연결', icon:'bridge'},
+  {id:'docs', label:'문서', icon:'doc'},
+  {id:'apps', label:'앱', icon:'apps'},
+  {id:'settings', label:'설정·백업', icon:'gear', sideOnly:true},
+];
+const VIEWS = {};
+function go(id) { if (location.hash.slice(1) !== id) location.hash = id; else render(); }
+function current() { const h = location.hash.slice(1); return ROUTES.some(r => r.id === h) ? h : 'home'; }
+function renderNav() {
+  const cur = current(), od = overdueCount();
+  $('#nav-side').innerHTML = ROUTES.map(r => `<a href="#${r.id}" ${r.id===cur?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?`<span class="badge">${od}</span>`:''}</a>`).join('');
+  $('#nav-tab').innerHTML = ROUTES.filter(r=>!r.sideOnly).map(r => `<a href="#${r.id}" ${r.id===cur?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?'<i class="dot"></i>':''}</a>`).join('');
+  $('#side-foot').innerHTML = `${ENV==='artifact'?'Claude 아티팩트판':'웹 배포판'} · 데이터는 이 기기 브라우저에 저장<br><a href="#settings">백업하기</a>`;
+}
+function render() {
+  const cur = current();
+  renderNav();
+  const old = $('#view'), v = old.cloneNode(false); old.replaceWith(v); // fresh node → no stacked listeners
+  v.dataset.view = cur;
+  VIEWS[cur](v);
+  if (render.last !== cur) window.scrollTo(0, 0);
+  render.last = cur;
+}
+window.addEventListener('hashchange', render);
+
+/* ================= defaults & schedule engine ================= */
+const CATS = {
+  pay:{name:'급여·인사', color:'var(--cat-pay)'},
+  tax:{name:'세무', color:'var(--cat-tax)'},
+  ins:{name:'4대보험', color:'var(--cat-ins)'},
+  acc:{name:'회계·예결산', color:'var(--cat-acc)'},
+  don:{name:'후원', color:'var(--cat-don)'},
+  etc:{name:'기타', color:'var(--cat-etc)'},
+};
+
+// 공휴일 (대체공휴일 포함). 설정 화면에서 편집 가능.
+const HOLIDAYS_DEFAULT = {
+  '2026-01-01':'신정','2026-02-16':'설날 연휴','2026-02-17':'설날','2026-02-18':'설날 연휴','2026-03-01':'삼일절','2026-03-02':'대체공휴일',
+  '2026-05-05':'어린이날','2026-05-24':'부처님오신날','2026-05-25':'대체공휴일','2026-06-03':'지방선거','2026-06-06':'현충일',
+  '2026-08-15':'광복절','2026-08-17':'대체공휴일','2026-09-24':'추석 연휴','2026-09-25':'추석','2026-09-26':'추석 연휴',
+  '2026-10-03':'개천절','2026-10-05':'대체공휴일','2026-10-09':'한글날','2026-12-25':'성탄절',
+  '2027-01-01':'신정','2027-02-06':'설날 연휴','2027-02-07':'설날','2027-02-08':'설날 연휴','2027-02-09':'대체공휴일','2027-03-01':'삼일절',
+  '2027-05-05':'어린이날','2027-05-13':'부처님오신날','2027-06-06':'현충일','2027-08-15':'광복절','2027-08-16':'대체공휴일',
+  '2027-09-14':'추석 연휴','2027-09-15':'추석','2027-09-16':'추석 연휴','2027-10-03':'개천절','2027-10-04':'대체공휴일',
+  '2027-10-09':'한글날','2027-10-11':'대체공휴일','2027-12-25':'성탄절','2027-12-27':'대체공휴일',
+};
+
+function defaults() {
+  return {
+    v: 2,
+    settings: {
+      payday: 25,
+      since: ymd(today()),   // 이 날짜 이전 마감은 '지난 마감'으로 치지 않음
+      docPrefix: '구로IL',
+      org: {name:'구로장애인자립생활센터', rep:'', addr:'서울특별시 구로구', tel:''},
+      approvers: ['담당','팀장','사무국장','센터장'],
+    },
+    holidays: clone(HOLIDAYS_DEFAULT),
+    apps: [
+      {id:'a1', name:'업무분장·인수인계', repo:'eopmu-bunjang', url:'https://kittycong.github.io/eopmu-bunjang/', desc:'업무 담당 매핑, 인수인계 기록', st:'ok'},
+      {id:'a2', name:'휴가 대시보드', repo:'guro_huga', url:'https://kittycong.github.io/guro_huga/', desc:'연차·반차 현황, 휴가신청서 출력 · 허브에 휴가 연동', st:'chk'},
+      {id:'a3', name:'채용 캘린더', repo:'guro_recruitment-calendar-app', url:'https://kittycong.github.io/guro_recruitment-calendar-app/', desc:'채용 일정·칸반·HWPX 공고 생성', st:'ok'},
+      {id:'a4', name:'출장·기안 문서생성', repo:'chulchang-munseo', url:'https://kittycong.github.io/chulchang-munseo/', desc:'출장신청서, 기안, 구매, 인사, 공문', st:'chk'},
+      {id:'a5', name:'생일 관리', repo:'birth_guro1', url:'https://kittycong.github.io/birth_guro1/', desc:'직원 생일 알림 · 허브에 생일 연동', st:'chk'},
+      {id:'a6', name:'빵 수령 당번표', repo:'bread-duty-app', url:'', desc:'주차별 당번 자동 배정 (Next.js · Vercel 배포 주소 입력)', st:'url'},
+      {id:'a8', name:'진우정보시스템', url:'', desc:'총무·회계: 급여, 증명서, 전표, 장부, 예결산·추경', st:'pc'},
+      {id:'a9', name:'시놀로지 NAS 캘린더', url:'', desc:'센터 공유 일정. 이 허브의 .ics를 가져오기', st:'url'},
+    ],
+    rules: [
+      {id:'r1', title:'급여 지급', cat:'pay', type:'monthly', day:'payday', shift:'prev', note:'진우 급여 → 급여대장 결재 → 이체', routine:'rt2'},
+      {id:'r2', title:'급여 계산·급여대장 결재', cat:'pay', type:'monthly', day:20, shift:'prev', note:'근태·연차 반영 후 진우 급여 메뉴에서 계산', routine:'rt2'},
+      {id:'r3', title:'원천세 신고·납부 (지방소득세 포함)', cat:'tax', type:'monthly', day:10, shift:'next', note:'반기납부 승인 기관이면 1·7월만 해당. 홈택스·위택스'},
+      {id:'r4', title:'4대보험료 납부', cat:'ins', type:'monthly', day:10, shift:'next', note:'전월분 고지서 확인 (EDI)'},
+      {id:'r5', title:'4대보험 취득·상실 신고 확인', cat:'ins', type:'monthly', day:15, shift:'next', note:'사유 발생 다음 달 15일까지. 입·퇴사자 있을 때만'},
+      {id:'r6', title:'간이지급명세서 제출', cat:'tax', type:'monthly', day:'last', shift:'next', note:'근로소득(상용)·일용·사업소득 해당분. 센터 적용 대상 확인'},
+      {id:'r7', title:'월 회계마감 (진우 전표 정리)', cat:'acc', type:'monthly', day:'last', shift:'prev', note:'수기 엑셀과 대조 후 마감', routine:'rt3'},
+      {id:'r8', title:'CMS 후원금 입금 대사', cat:'don', type:'monthly', day:26, shift:'next', note:'CMS 출금일 기준으로 날짜 조정', routine:'rt3'},
+      {id:'r9', title:'월초 전월 정리', cat:'acc', type:'monthly', day:3, shift:'next', note:'전월 전표·재원별 요약', routine:'rt1'},
+      {id:'y1', title:'근로소득 지급명세서 제출 (연말정산)', cat:'tax', type:'yearly', month:3, day:10, shift:'next', note:'', routine:'rt4'},
+      {id:'y2', title:'건강보험 보수총액 신고', cat:'ins', type:'yearly', month:3, day:10, shift:'next', note:''},
+      {id:'y3', title:'고용·산재 보수총액 신고', cat:'ins', type:'yearly', month:3, day:15, shift:'next', note:''},
+      {id:'y4', title:'전년도 결산보고서 제출', cat:'acc', type:'yearly', month:3, day:31, shift:'next', note:'관할 구청. 사회복지법인 및 사회복지시설 재무·회계 규칙 기준', routine:'rt4'},
+      {id:'y5', title:'후원금 수입·사용결과 보고·공개', cat:'don', type:'yearly', month:3, day:31, shift:'next', note:'결산 제출과 함께', routine:'rt4'},
+      {id:'y6', title:'기부금영수증 발급명세서 제출', cat:'don', type:'yearly', month:6, day:30, shift:'next', note:'센터 해당 여부 확인'},
+      {id:'y7', title:'다음 연도 예산서 제출', cat:'acc', type:'yearly', month:12, day:26, shift:'prev', note:'회계연도 개시 5일 전까지', routine:'rt4'},
+      {id:'o1', title:'전임자 퇴사 · 인수 완료', cat:'etc', type:'once', date:'2026-09-29', shift:'none', note:'반복업무·마감 목록을 캘린더에 모두 등록했는지 확인'},
+    ],
+    done: {},
+    routines: [
+      {id:'rt1', name:'월초 정리', freq:'monthly', when:'매월 1~5일', steps:[
+        {t:'전월 전표 입력 누락 확인 (진우)'},
+        {t:'수기 엑셀 ↔ 진우 장부 대조', link:'bridge'},
+        {t:'재원×월 요약표 갱신', link:'bridge'},
+        {t:'4대보험 고지서 확인 (EDI)'},
+        {t:'원천세 신고 자료 준비'}]},
+      {id:'rt2', name:'급여', freq:'monthly', when:'매월 20~25일', steps:[
+        {t:'근태·연차·입퇴사 변동 반영'},
+        {t:'진우 급여 메뉴에서 급여 계산'},
+        {t:'급여대장 출력·결재'},
+        {t:'급여 이체'},
+        {t:'급여명세서 배포'},
+        {t:'원천세·4대보험 공제액 확인'}]},
+      {id:'rt3', name:'월말 마감', freq:'monthly', when:'매월 말일 전후', steps:[
+        {t:'CMS 후원금 입금 대사'},
+        {t:'지출결의서·증빙 누락 점검', link:'docs'},
+        {t:'진우 전표 입력 완료 체크', link:'bridge'},
+        {t:'월별 장부 출력 (진우)'},
+        {t:'간이지급명세서 제출 대상 확인'}]},
+      {id:'rt4', name:'연말·연초', freq:'yearly', when:'12월~3월', steps:[
+        {t:'다음 연도 예산안 작성·진우 입력'},
+        {t:'연말정산 자료 수집·진우 처리'},
+        {t:'근로소득 지급명세서 제출 (3/10)'},
+        {t:'보수총액 신고 (건강 3/10, 고용·산재 3/15)'},
+        {t:'결산서 작성·진우 연 장부 출력'},
+        {t:'결산보고·후원금 사용결과 보고 (3/31)'}]},
+      {id:'rt5', name:'추경예산', freq:'adhoc', when:'필요 시', steps:[
+        {t:'재원별 세입 변동 확인 (후원·보조금)'},
+        {t:'관·항·목별 증감안 작성 (엑셀)'},
+        {t:'결재 및 이사회/운영위 보고'},
+        {t:'진우 추경예산 입력·출력'},
+        {t:'재원×월 요약표 갱신', link:'bridge'}]},
+    ],
+    checks: {},
+    staff: [
+      {id:'s1', name:'김휘원', birth:'', dept:'사무행정팀', pos:'간사', hired:'2025-04-02', left:'', duty:'인사·급여, 후원자 관리, 문서 처리'},
+      {id:'s2', name:'홍길동 (예시)', birth:'1990-05-12', dept:'권익옹호팀', pos:'팀장', hired:'2021-03-02', left:'', duty:'권익옹호 사업 총괄'},
+      {id:'s3', name:'김예시 (예시)', birth:'1995-11-03', dept:'자립지원팀', pos:'활동가', hired:'2023-07-01', left:'2025-12-31', duty:'자립생활 기술훈련 운영'},
+    ],
+    docLog: [],
+    docSeq: {},
+    entered: {},
+    imports: {},
+  };
+}
+
+/* ---------- schedule expansion ---------- */
+const isHoliday = d => { const k = ymd(d); return !!S.holidays[k]; };
+const isOff = d => d.getDay() === 0 || d.getDay() === 6 || isHoliday(d);
+function shiftDay(d, how) {
+  if (how === 'none') return d;
+  let x = new Date(d), step = how === 'prev' ? -1 : 1, guard = 0;
+  while (isOff(x) && guard++ < 14) x = addDays(x, step);
+  return x;
+}
+function ruleDay(rule, y, m) { // m: 0-based
+  const last = new Date(y, m+1, 0).getDate();
+  let day = rule.day === 'payday' ? Number(S.settings.payday) : rule.day === 'last' ? last : Number(rule.day);
+  return new Date(y, m, Math.min(day, last));
+}
+// returns [{rule, date(Date), orig(Date), key}]
+function occurrences(from, to) {
+  const out = [];
+  for (const r of S.rules) {
+    if (r.off) continue;
+    if (r.type === 'once') {
+      const d = parseYmd(r.date);
+      if (d >= from && d <= to) out.push(mk(r, d, d));
+      continue;
+    }
+    let y = from.getFullYear(), m = from.getMonth() - 1; // start 1 month earlier to catch shifted dates
+    const endY = to.getFullYear(), endM = to.getMonth() + 1;
+    while (y < endY || (y === endY && m <= endM)) {
+      const yy = y + Math.floor(m / 12), mm = ((m % 12) + 12) % 12;
+      if (r.type === 'monthly' || (r.type === 'yearly' && Number(r.month) - 1 === mm)) {
+        const orig = ruleDay(r, yy, mm), d = shiftDay(orig, r.shift);
+        if (d >= from && d <= to) out.push(mk(r, d, orig));
+      }
+      m++; if (m >= 12) { m -= 12; y++; }
+    }
+  }
+  return out.sort((a, b) => a.date - b.date || a.rule.title.localeCompare(b.rule.title));
+  function mk(rule, date, orig) { const key = rule.id + '@' + ymd(orig); return {rule, date, orig, key, done: !!S.done[key]}; }
+}
+function overdueList() {
+  const t = today(), since = S.settings.since ? parseYmd(S.settings.since) : addDays(t, -45);
+  const from = since > addDays(t, -45) ? since : addDays(t, -45);
+  return occurrences(from, addDays(t, -1)).filter(o => !o.done);
+}
+function overdueCount() { try { return overdueList().length; } catch (e) { return 0; } }
+function dday(d) {
+  const n = Math.round((d - today()) / 864e5);
+  return n === 0 ? '오늘' : n > 0 ? `D-${n}` : `D+${-n}`;
+}
+function toggleDone(key) { if (S.done[key]) delete S.done[key]; else S.done[key] = Date.now(); save(); }
+
+/* ---------- routine periods ---------- */
+function periodKey(rt, d = today()) {
+  if (rt.freq === 'monthly') return `${d.getFullYear()}-${pad(d.getMonth()+1)}`;
+  if (rt.freq === 'yearly') { const s = d.getMonth() >= 9 ? d.getFullYear() : d.getFullYear() - 1; return `${s}년 말~${s+1}년 초`; } // 10월에 새 사이클 시작
+  return S.checks[rt.id + ':adhoc-cur'] || '1차';
+}
+function routineState(rt, period = periodKey(rt)) {
+  const arr = S.checks[rt.id + '@' + period] || [];
+  const done = rt.steps.filter((_, i) => arr[i]).length;
+  return {period, arr, done, total: rt.steps.length};
+}
+
+/* ================= 앱 데이터 연동 (읽기 전용) =================
+   같은 도메인(kittycong.github.io)에 올라간 앱끼리는 브라우저 저장소를 공유하므로,
+   허브를 kittycong.github.io/grcil-hub/ 에 배포하면 아래 데이터를 자동으로 읽는다.
+   토큰·비밀번호 키는 절대 읽지 않는다. 쓰기(수정)는 하지 않는다. */
+const GH = {owner:'kittycong', raw:'https://raw.githubusercontent.com/kittycong'};
+const CONN = {
+  huga:{name:'휴가 대시보드', repo:'guro_huga', status:'idle', data:null, src:''},
+  birth:{name:'생일 관리', repo:'birth_guro1', status:'idle', data:null, src:''},
+};
+function lsRead(k) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+async function getText(urls) {
+  for (const u of urls) { try { const r = await fetch(u, {cache:'no-store'}); if (r.ok) return {text: await r.text(), url: u}; } catch (e) {} }
+  return null;
+}
+async function loadConnectors() {
+  const sameOrigin = location.hostname === `${GH.owner}.github.io`;
+  // ---- 휴가 (guro_huga) ----
+  const H = CONN.huga; H.status = 'loading';
+  let hd = null;
+  const draft = lsRead('guro_huga_local_draft');
+  if (draft && Array.isArray(draft.records)) { hd = draft; H.src = '휴가 앱 (이 브라우저의 최신 작업본)'; }
+  if (!hd && ENV !== 'artifact') {
+    const t = await getText([...(sameOrigin ? ['/guro_huga/data/app-data.json'] : []), `${GH.raw}/guro_huga/main/data/app-data.json`]);
+    if (t) { try { hd = JSON.parse(t.text); H.src = t.url.startsWith('/') ? '휴가 앱 공유 데이터' : 'GitHub 공유 데이터 (data/app-data.json)'; } catch (e) {} }
+  }
+  if (!hd && S.imports?.huga) { hd = S.imports.huga; H.src = '가져온 파일'; }
+  H.data = hd; H.status = hd ? 'ok' : 'none';
+  // ---- 생일 (birth_guro1) ----
+  const Bd = CONN.birth; Bd.status = 'loading';
+  let bd = lsRead('guro_birthdays'); if (Array.isArray(bd) && bd.length) Bd.src = '생일 앱 (이 브라우저)'; else bd = null;
+  if (!bd && ENV !== 'artifact') {
+    const t = await getText([...(sameOrigin ? ['/birth_guro1/index.html'] : []), `${GH.raw}/birth_guro1/main/index.html`]);
+    const m = t && t.text.match(/INITIAL_DATA\s*=\s*(\[[\s\S]*?\]);/);
+    if (m) { try { bd = JSON.parse(m[1]); Bd.src = '생일 앱 기본 명단'; } catch (e) {} }
+  }
+  if (!bd && S.imports?.birth) { bd = S.imports.birth; Bd.src = '가져온 파일'; }
+  Bd.data = bd; Bd.status = bd ? 'ok' : 'none';
+}
+
+/* ---------- 휴가 계산 (guro_huga의 leaveDelta와 동일 규칙) ---------- */
+function leaveDelta(type) { if (type === '반차') return 0.5; if (type === '반반차') return 0.25; if (['교육','출장','개인일정'].includes(type)) return 0; return 1; }
+function hugaEmp(id) { return (CONN.huga.data?.employees || []).find(e => e.id === id); }
+function leaveEvents(from, to) {
+  const d = CONN.huga.data; if (!d) return [];
+  const a = ymd(from), b = ymd(to);
+  return (d.records || []).filter(r => r.date >= a && r.date <= b).map(r => ({kind:'leave', date: parseYmd(r.date), title: `${hugaEmp(r.empId)?.name || '직원'} ${r.type}`, rec: r}));
+}
+function leaveBalance() {
+  const d = CONN.huga.data; if (!d) return [];
+  const y = today().getFullYear();
+  return (d.employees || []).filter(e => !e.resignationDate).map(e => {
+    const used = (d.records || []).filter(r => r.empId === e.id && r.date.startsWith(String(y))).reduce((s, r) => s + leaveDelta(r.type), 0);
+    const grant = (d.subLeaves || []).filter(s => s.empId === e.id && s.type === 'grant' && s.date.startsWith(String(y))).reduce((s, x) => s + Number(x.days || 0), 0);
+    const total = d.totals?.[`${e.id}_${y}`];
+    return {name: e.name, dept: e.dept, used: Math.round(used * 100) / 100, total: total == null || total === '' ? null : Number(total) + grant, left: total == null || total === '' ? null : Math.round((Number(total) + grant - used) * 100) / 100};
+  });
+}
+/* ---------- 생일 ---------- */
+function birthdayEvents(from, to) {
+  const list = CONN.birth.data; if (!list) return [];
+  const out = [];
+  for (let y = from.getFullYear(); y <= to.getFullYear(); y++)
+    list.forEach(p => { const d = new Date(y, Number(p.m) - 1, Number(p.d)); if (d >= from && d <= to) out.push({kind:'bday', date:d, title:`${p.name} 생일`, p}); });
+  return out.sort((a, b) => a.date - b.date);
+}
+function extraEvents(from, to) { return [...leaveEvents(from, to), ...birthdayEvents(from, to)]; }
+const XCAT = {leave:{name:'휴가', color:'var(--cat-leave)'}, bday:{name:'생일', color:'var(--cat-bday)'}};
+
+/* ---------- 연동 상태 패널 (앱 화면) ---------- */
+function connPanel() {
+  const row = (k, c, extra) => `<div class="row" style="padding:12px 16px;border-bottom:1px solid var(--line)">
+    <div class="grow" style="min-width:200px"><b>${esc(c.name)}</b> <span class="faint small">github.com/${GH.owner}/${c.repo}</span><div class="small muted">${c.status==='ok'?`${esc(c.src)} · ${extra}`:ENV==='artifact'?'이 화면에서는 다른 앱 데이터에 접근할 수 없어요. GitHub 배포판에서 자동으로 이어지고, 여기서는 내보낸 JSON 파일을 가져올 수 있어요.':'데이터를 찾지 못했어요. 앱에서 JSON을 내보내 가져오세요.'}</div></div>
+    <span class="chip ${c.status==='ok'?'ok':'warn'}">${c.status==='ok'?'연동됨':c.status==='loading'?'읽는 중':'연동 안 됨'}</span>
+    <label class="btn sm">파일 가져오기<input type="file" accept=".json,application/json" data-imp="${k}" hidden></label></div>`;
+  const hd = CONN.huga.data, bd = CONN.birth.data;
+  return `<section class="panel" id="conn"><div class="panel-h"><h2>데이터 연동</h2><button class="btn ghost sm" id="conn-re">다시 읽기</button></div>
+    ${row('huga', CONN.huga, hd ? `직원 ${(hd.employees||[]).length}명 · 휴가 기록 ${(hd.records||[]).length}건${hd.updatedAt?` · 기준 ${esc(hd.updatedAt)}`:''}` : '')}
+    ${row('birth', CONN.birth, bd ? `${bd.length}명` : '')}
+    <div class="panel-b faint small">읽기 전용이에요. 각 앱의 데이터를 바꾸지 않고, 토큰·비밀번호는 읽지 않습니다. 허브를 <b>kittycong.github.io/grcil-hub/</b>에 올려야 같은 브라우저의 앱 데이터가 자동으로 이어져요.</div></section>`;
+}
+function bindConn(v) {
+  const re = $('#conn-re', v); if (re) re.onclick = async () => { await loadConnectors(); render(); toast('연동 데이터를 다시 읽었어요'); };
+  $$('[data-imp]', v).forEach(inp => inp.onchange = () => {
+    const f = inp.files[0]; if (!f) return; const r = new FileReader();
+    r.onload = async () => {
+      try {
+        const d = JSON.parse(r.result), k = inp.dataset.imp;
+        if (k === 'huga' && !Array.isArray(d.records)) throw 0;
+        if (k === 'birth' && !Array.isArray(d)) throw 0;
+        S.imports = S.imports || {}; S.imports[k] = d; save(); await loadConnectors(); render(); toast(`${CONN[k].name} 데이터를 가져왔어요`);
+      } catch (e) { toast('형식이 맞지 않아요. 휴가 앱은 app-data.json, 생일 앱은 guro_birthdays.json을 넣어 주세요'); }
+    };
+    r.readAsText(f);
+  });
+}
+
+/* ================= home ================= */
+function deadlineItem(o, showNote = true) {
+  const c = CATS[o.rule.cat] || CATS.etc;
+  const shifted = ymd(o.date) !== ymd(o.orig) ? ` · 원래 ${o.orig.getMonth()+1}/${o.orig.getDate()} → 휴일 순연` : '';
+  const dd = dday(o.date), late = !o.done && o.date < today();
+  return `<li class="${o.done?'done':''}">
+    <div class="when"><b>${o.date.getMonth()+1}/${o.date.getDate()}</b><span class="${late?'chip crit':o.done?'faint':dd==='오늘'?'chip warn':'faint'}" style="${late||dd==='오늘'?'height:18px;padding:0 6px;font-size:11px':''}">${DOW[o.date.getDay()]} · ${dd}</span></div>
+    <div style="min-width:0"><div class="t"><span class="dotcat" style="background:${c.color};margin-right:6px"></span>${esc(o.rule.title)}</div>
+      ${showNote ? `<div class="s">${esc(c.name)}${o.rule.note?' · '+esc(o.rule.note):''}${shifted}</div>` : ''}</div>
+    <button class="check" aria-pressed="${o.done}" aria-label="${esc(o.rule.title)} 완료 표시" data-done="${o.key}">${o.done?icon('check'):''}</button>
+  </li>`;
+}
+function bindDone(root, rerender) {
+  root.addEventListener('click', e => {
+    const b = e.target.closest('[data-done]'); if (!b) return;
+    toggleDone(b.dataset.done); toast(S.done[b.dataset.done] ? '완료로 표시했어요' : '완료를 취소했어요'); rerender();
+  });
+}
+
+VIEWS.home = v => {
+  const t = today(), od = overdueList();
+  const upcoming = occurrences(t, addDays(t, 20));
+  const todayList = upcoming.filter(o => ymd(o.date) === ymd(t));
+  const week = upcoming.filter(o => o.date <= addDays(t, 6) && !o.done);
+  const monthly = S.routines.filter(r => r.freq !== 'adhoc');
+  const rtDone = monthly.reduce((a, r) => a + routineState(r).done, 0), rtTot = monthly.reduce((a, r) => a + r.steps.length, 0);
+  const hol = S.holidays[ymd(t)];
+
+  v.innerHTML = `
+  <div class="page-head">
+    <div><div class="eyebrow">${t.getFullYear()}년 ${t.getMonth()+1}월 ${t.getDate()}일 ${DOW[t.getDay()]}요일${hol?' · '+esc(hol):''}</div><h1>오늘 챙길 일</h1></div>
+    <div class="row"><a class="btn sm" href="#calendar">${icon('cal')}캘린더</a><a class="btn sm" href="#settings">${icon('gear')}설정·백업</a></div>
+  </div>
+
+  <section class="panel today-strip">
+    <div class="datebox"><div class="d num">${t.getDate()}</div><div class="m">${t.getMonth()+1}월 · ${DOW[t.getDay()]}요일</div></div>
+    <div class="kpis">
+      <div class="kpi ${od.length?'crit':''}"><div class="v">${od.length}</div><div class="l">지난 마감 · 미완료</div></div>
+      <div class="kpi ${todayList.filter(o=>!o.done).length?'warn':''}"><div class="v">${todayList.filter(o=>!o.done).length}</div><div class="l">오늘 마감</div></div>
+      <div class="kpi"><div class="v">${week.length}</div><div class="l">7일 안 마감</div></div>
+      <div class="kpi"><div class="v">${rtTot?Math.round(rtDone/rtTot*100):0}<span style="font-size:14px">%</span></div><div class="l">이번 주기 루틴 진행</div></div>
+    </div>
+  </section>
+
+  <div class="grid-2">
+    <section class="panel">
+      <div class="panel-h"><h2>마감 · 앞으로 3주</h2><a class="btn ghost sm" href="#calendar">전체 보기</a></div>
+      ${od.length ? `<div style="padding:10px 16px 0"><div class="eyebrow" style="color:var(--stamp)">지난 마감 · 미완료 ${od.length}건</div></div><ul class="dl" id="od-list">${od.map(o=>deadlineItem(o)).join('')}</ul><div style="border-top:1px solid var(--line)"></div>` : ''}
+      ${upcoming.length ? `<ul class="dl" id="up-list">${upcoming.map(o=>deadlineItem(o)).join('')}</ul>` : '<div class="empty">3주 안에 잡힌 마감이 없어요</div>'}
+    </section>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <section class="panel">
+        <div class="panel-h"><h2>루틴</h2><a class="btn ghost sm" href="#routine">체크하러 가기</a></div>
+        <div class="panel-b" style="display:flex;flex-direction:column;gap:14px">
+          ${S.routines.map(r => { const st = routineState(r); const pct = st.total?Math.round(st.done/st.total*100):0;
+            return `<a href="#routine" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:6px">
+              <div class="row"><b>${esc(r.name)}</b><span class="faint small">${esc(r.when)} · ${esc(st.period)}</span><span class="grow"></span><span class="num small ${pct===100?'':'muted'}">${st.done}/${st.total}</span>${pct===100?'<span class="chip ok">완료</span>':''}</div>
+              <div class="prog"><i style="width:${pct}%"></i></div></a>`; }).join('')}
+        </div>
+      </section>
+      ${centerPanel()}
+      <section class="panel">
+        <div class="panel-h"><h2>바로가기</h2><a class="btn ghost sm" href="#apps">앱 관리</a></div>
+        <div class="panel-b"><div class="apps" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">${S.apps.slice(0,6).map(a=>appCard(a)).join('')}</div></div>
+      </section>
+    </div>
+  </div>`;
+  bindDone(v, () => render());
+};
+
+/* ================= apps ================= */
+const APP_ST = {
+  ok:{t:'연결됨', c:'ok'}, chk:{t:'열어서 확인 필요', c:'warn'}, url:{t:'주소 입력 필요', c:'warn'}, local:{t:'로컬 실행', c:''}, pc:{t:'PC 프로그램', c:''},
+};
+function appCard(a, editable = false) {
+  const st = a.url ? (a.st === 'chk' ? APP_ST.chk : APP_ST.ok) : (APP_ST[a.st] || APP_ST.url);
+  const ini = esc(a.name.replace(/[^가-힣A-Za-z]/g,'').slice(0,1));
+  const inner = `<div class="ic">${ini}</div><div class="n">${esc(a.name)}</div><div class="dsc">${esc(a.desc||'')}${editable&&a.repo?`<br><span class="mono">${esc(a.repo)}</span>`:''}</div>
+    <div class="st row" style="gap:6px"><span class="chip ${st.c}">${st.t}</span>${a.url?`<span class="faint small">${icon('ext','').replace('<svg','<svg style="width:13px;height:13px;vertical-align:-2px"')}</span>`:''}</div>
+    ${editable?`<button class="btn ghost sm edit" data-edit-app="${a.id}" aria-label="${esc(a.name)} 편집">${icon('edit')}</button>`:''}`;
+  return a.url ? `<a class="app" href="${esc(a.url)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="app" ${editable?'':`data-goapps`}>${inner}</div>`;
+}
+VIEWS.apps = v => {
+  v.innerHTML = `
+  <div class="page-head"><div><h1>업무 앱</h1><p>GitHub에 배포한 앱과 PC 프로그램을 한곳에서 엽니다. 주소가 없는 앱은 편집 버튼으로 URL을 넣어 주세요.</p></div>
+    <button class="btn primary" id="add-app">${icon('plus')}앱 추가</button></div>
+  <div class="apps">${S.apps.map(a => appCard(a, true)).join('')}</div>
+  ${connPanel()}
+  <section class="panel"><div class="panel-h"><h2>연결 방식</h2></div><div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
+    <div class="note"><b>웹앱 (GitHub Pages)</b> — 카드를 누르면 새 탭으로 열립니다. 휴대폰에서는 이 허브를 홈 화면에 추가하면 앱처럼 쓸 수 있어요.</div>
+    <div class="note"><b>진우정보시스템</b> — PC 설치형이라 링크로 열 수 없어요. 대신 <a href="#bridge">진우 연결</a>에서 진우 장부를 엑셀로 내려받아 수기 엑셀과 대조하고, 입력할 목록을 정리합니다.</div>
+    <div class="note"><b>시놀로지 NAS 캘린더</b> — <a href="#calendar">캘린더</a>에서 .ics 파일을 내보내 NAS 캘린더의 "가져오기"로 넣으면 마감이 센터 공유 일정에 들어갑니다.</div>
+  </div></section>`;
+  $('#add-app').onclick = () => editApp(null);
+  bindConn(v);
+  v.addEventListener('click', e => { const b = e.target.closest('[data-edit-app]'); if (b) { e.preventDefault(); editApp(b.dataset.editApp); } });
+};
+function editApp(id) {
+  const a = id ? S.apps.find(x => x.id === id) : {id: uid(), name:'', url:'', desc:'', st:'url'};
+  sheet({title: id ? '앱 편집' : '앱 추가', body: `
+    <label class="f">이름<input class="inp" id="ap-name" value="${esc(a.name)}"></label>
+    <label class="f">주소 (URL)<input class="inp" id="ap-url" placeholder="https://kittycong.github.io/..." value="${esc(a.url)}"></label>
+    <label class="f">GitHub 저장소 이름<input class="inp" id="ap-repo" value="${esc(a.repo||'')}" placeholder="예: guro_huga"></label>
+    <label class="f">설명<input class="inp" id="ap-desc" value="${esc(a.desc)}"></label>
+    <label class="f">상태<select class="inp" id="ap-st">${Object.entries(APP_ST).map(([k,o])=>`<option value="${k}" ${a.st===k?'selected':''}>${o.t}</option>`).join('')}</select></label>
+    <div id="ap-confirm"></div>`,
+    foot: `${id?'<button class="btn danger" id="ap-del">삭제</button><span class="grow"></span>':''}<button class="btn" data-close>취소</button><button class="btn primary" id="ap-save">저장</button>`,
+    onMount: el => {
+      $('#ap-save', el).onclick = () => {
+        a.name = $('#ap-name', el).value.trim() || '이름 없는 앱'; a.url = $('#ap-url', el).value.trim(); a.desc = $('#ap-desc', el).value.trim(); a.repo = $('#ap-repo', el).value.trim(); a.st = $('#ap-st', el).value;
+        if (a.url && !/^https?:\/\//.test(a.url)) a.url = 'https://' + a.url;
+        if (!id) S.apps.push(a); save(); closeSheet(); render(); toast('저장했어요');
+      };
+      const del = $('#ap-del', el);
+      if (del) del.onclick = () => {
+        if (del.dataset.armed) { S.apps = S.apps.filter(x => x.id !== id); save(); closeSheet(); render(); toast('삭제했어요'); }
+        else { del.dataset.armed = 1; del.textContent = '한 번 더 누르면 삭제'; }
+      };
+    }});
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-goapps]')) go('apps'); });
+
+function centerPanel() {
+  const t = today(), wk = addDays(t, 6);
+  const lv = leaveEvents(t, wk), bd = birthdayEvents(t, addDays(t, 30));
+  const hOk = CONN.huga.status === 'ok', bOk = CONN.birth.status === 'ok';
+  if (!hOk && !bOk) return `<section class="panel"><div class="panel-h"><h2>휴가 · 생일</h2><a class="btn ghost sm" href="#apps">연동 설정</a></div><div class="panel-b small muted">${CONN.huga.status==='loading'?'연동 데이터를 읽는 중…':'휴가 대시보드·생일 관리 앱과 아직 연결되지 않았어요. 앱 화면의 "데이터 연동"에서 확인하세요.'}</div></section>`;
+  const bal = leaveBalance();
+  const day = e => `<span class="mono">${e.date.getMonth()+1}/${e.date.getDate()}</span> ${DOW[e.date.getDay()]}`;
+  return `<section class="panel"><div class="panel-h"><h2>휴가 · 생일</h2><a class="btn ghost sm" href="#apps">연동 설정</a></div>
+    <div class="panel-b" style="display:flex;flex-direction:column;gap:12px">
+      ${hOk?`<div><div class="eyebrow" style="margin-bottom:6px">7일 안 휴가</div>${lv.length?lv.map(e=>`<div class="row small" style="gap:8px"><span class="dotcat" style="background:var(--cat-leave)"></span>${day(e)} · ${esc(e.title)}</div>`).join(''):'<div class="small faint">예정된 휴가가 없어요</div>'}</div>
+      ${bal.length?`<div class="row small" style="gap:6px">${bal.slice(0,4).map(b=>`<span class="chip ${b.left!=null&&b.left<3?'warn':'acc'}">${esc(b.name)} 연차 ${b.left!=null?`잔여 ${b.left}일`:`사용 ${b.used}일`}</span>`).join('')}</div>`:''}`:''}
+      ${bOk?`<div><div class="eyebrow" style="margin-bottom:6px">30일 안 생일</div>${bd.length?bd.slice(0,5).map(e=>`<div class="row small" style="gap:8px"><span class="dotcat" style="background:var(--cat-bday)"></span>${day(e)} · ${esc(e.p.name)} <span class="faint">${esc(e.p.dept||'')}</span>${ymd(e.date)===ymd(t)?'<span class="chip warn">오늘</span>':''}</div>`).join(''):'<div class="small faint">없어요</div>'}</div>`:''}
+    </div></section>`;
+}
+
+/* ================= calendar ================= */
+let calMonth = (() => { const t = today(); return new Date(t.getFullYear(), t.getMonth(), 1); })();
+let calFilter = new Set([...Object.keys(CATS), 'leave', 'bday']);
+
+VIEWS.calendar = v => {
+  const y = calMonth.getFullYear(), m = calMonth.getMonth();
+  const start = addDays(calMonth, -calMonth.getDay());
+  const end = addDays(new Date(y, m+1, 0), 6 - new Date(y, m+1, 0).getDay());
+  const occ = occurrences(start, end).filter(o => calFilter.has(o.rule.cat));
+  const byDay = {}; occ.forEach(o => (byDay[ymd(o.date)] ||= []).push(o));
+  const xs = extraEvents(start, end).filter(e => calFilter.has(e.kind)); const xByDay = {}; xs.forEach(e => (xByDay[ymd(e.date)] ||= []).push(e));
+  const tk = ymd(today());
+  let cells = '';
+  for (let d = new Date(start); d <= end; d = addDays(d, 1)) {
+    const k = ymd(d), list = byDay[k] || [], xl = xByDay[k] || [], h = S.holidays[k];
+    const cls = ['cell', d.getMonth()!==m?'out':'', d.getDay()===0?'sun':'', d.getDay()===6?'sat':'', h?'hol':'', k===tk?'today':''].join(' ');
+    cells += `<div class="${cls}" data-day="${k}" role="button" tabindex="0" aria-label="${d.getMonth()+1}월 ${d.getDate()}일, 일정 ${list.length}건">
+      <div class="dn"><span class="n">${d.getDate()}</span>${h?`<span class="hn">${esc(h)}</span>`:''}</div>
+      ${list.slice(0,3).map(o=>`<div class="ev ${o.done?'done':''}" style="border-left-color:${CATS[o.rule.cat].color}" title="${esc(o.rule.title)}">${esc(o.rule.title)}</div>`).join('')}
+      ${xl.slice(0, Math.max(0, 3-list.length)).map(e=>`<div class="ev x" style="border-left-color:${XCAT[e.kind].color}" title="${esc(e.title)}">${esc(e.title)}</div>`).join('')}
+      ${list.length+xl.length>3?`<div class="cal-more">+${list.length+xl.length-3}건</div>`:''}
+      <div class="pips">${list.map(o=>`<i style="background:${o.done?'var(--line-strong)':CATS[o.rule.cat].color}"></i>`).join('')}${xl.map(e=>`<i style="background:${XCAT[e.kind].color}"></i>`).join('')}</div>
+    </div>`;
+  }
+  const monthOcc = occ.filter(o => o.date.getMonth() === m);
+
+  v.innerHTML = `
+  <div class="page-head"><div><h1>마감 캘린더</h1><p>법정·정기 마감이 매달 자동으로 잡히고, 주말·공휴일이면 규칙에 따라 앞뒤로 옮겨집니다.</p></div>
+    <div class="row"><button class="btn" id="ics">${icon('down')}NAS 캘린더용 .ics</button><button class="btn primary" id="add-rule">${icon('plus')}일정·규칙 추가</button></div></div>
+
+  <section class="panel">
+    <div class="panel-h">
+      <div class="row"><button class="btn ghost sm" id="prev" aria-label="이전 달">${icon('left')}</button>
+        <h2 class="num" style="min-width:104px;text-align:center;font:700 18px var(--f-display)">${y}년 ${m+1}월</h2>
+        <button class="btn ghost sm" id="next" aria-label="다음 달">${icon('right')}</button><button class="btn sm" id="thism">이번 달</button></div>
+      <div class="row" style="gap:6px">${Object.entries({...CATS, ...(CONN.huga.status==='ok'?{leave:XCAT.leave}:{}), ...(CONN.birth.status==='ok'?{bday:XCAT.bday}:{})}).map(([k,c])=>`<button class="chip" data-cat="${k}" aria-pressed="${calFilter.has(k)}" style="cursor:pointer;border:0;${calFilter.has(k)?'':'opacity:.4'}"><span class="dotcat" style="background:${c.color}"></span>${c.name}</button>`).join('')}</div>
+    </div>
+    <div style="overflow-x:auto"><div class="cal">${DOW.map((d,i)=>`<div class="dow" style="${i===0?'color:var(--stamp)':i===6?'color:var(--accent)':''}">${d}</div>`).join('')}${cells}</div></div>
+  </section>
+
+  <div class="grid-2">
+    <section class="panel"><div class="panel-h"><h2>${m+1}월 마감 목록</h2><span class="faint small">${monthOcc.filter(o=>o.done).length}/${monthOcc.length} 완료</span></div>
+      ${monthOcc.length?`<ul class="dl" id="mlist">${monthOcc.map(o=>deadlineItem(o)).join('')}</ul>`:'<div class="empty">이 달에는 마감이 없어요</div>'}</section>
+    <section class="panel"><div class="panel-h"><h2>반복 규칙 ${S.rules.length}개</h2><span class="faint small">센터 기준에 맞게 날짜를 고쳐 쓰세요</span></div>
+      <div class="tbl-wrap" style="border:0;border-radius:0;max-height:520px;overflow:auto"><table class="tbl"><thead><tr><th>일정</th><th>주기</th><th>휴일이면</th><th></th></tr></thead><tbody>
+      ${S.rules.map(r=>`<tr style="${r.off?'opacity:.45':''}"><td class="wrap"><span class="dotcat" style="background:${CATS[r.cat].color};margin-right:6px"></span>${esc(r.title)}</td><td>${ruleText(r)}</td><td>${{prev:'앞당김',next:'미룸',none:'그대로'}[r.shift]}</td><td><button class="btn ghost sm" data-edit-rule="${r.id}">편집</button></td></tr>`).join('')}
+      </tbody></table></div></section>
+  </div>`;
+
+  $('#prev').onclick = () => { calMonth = new Date(y, m-1, 1); render(); };
+  $('#next').onclick = () => { calMonth = new Date(y, m+1, 1); render(); };
+  $('#thism').onclick = () => { const t = today(); calMonth = new Date(t.getFullYear(), t.getMonth(), 1); render(); };
+  $('#add-rule').onclick = () => editRule(null);
+  $('#ics').onclick = exportIcs;
+  $$('[data-cat]', v).forEach(b => b.onclick = () => { const k = b.dataset.cat; calFilter.has(k) ? calFilter.delete(k) : calFilter.add(k); if (!calFilter.size) calFilter = new Set([...Object.keys(CATS), 'leave', 'bday']); render(); });
+  $$('[data-edit-rule]', v).forEach(b => b.onclick = () => editRule(b.dataset.editRule));
+  $$('.cal .cell', v).forEach(c => { const open = () => dayDetail(c.dataset.day, byDay[c.dataset.day] || [], xByDay[c.dataset.day] || []); c.onclick = open; c.onkeydown = e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); open(); } }; });
+  const ml = $('#mlist', v); if (ml) bindDone(ml, () => render());
+};
+function ruleText(r) {
+  const dd = r.day === 'payday' ? `${S.settings.payday}일(급여일)` : r.day === 'last' ? '말일' : `${r.day}일`;
+  if (r.type === 'monthly') return `매월 ${dd}`;
+  if (r.type === 'yearly') return `매년 ${r.month}월 ${dd}`;
+  return r.date;
+}
+function dayDetail(k, list, xl = extraEvents(parseYmd(k), parseYmd(k))) {
+  const d = parseYmd(k), h = S.holidays[k];
+  sheet({title: `${d.getMonth()+1}월 ${d.getDate()}일 ${DOW[d.getDay()]}요일${h?' · '+h:''}`,
+    body: (list.length ? `<ul class="dl" style="margin:-16px -16px 0">${list.map(o=>deadlineItem(o)).join('')}</ul>` : '<div class="empty">잡힌 마감이 없어요</div>') + (xl.length ? `<div style="display:flex;flex-direction:column;gap:6px;padding-top:8px">${xl.map(e=>`<div class="row small" style="gap:8px"><span class="dotcat" style="background:${XCAT[e.kind].color}"></span>${esc(e.title)}<span class="faint">${XCAT[e.kind].name} · 연동 데이터</span></div>`).join('')}</div>` : ''),
+    foot: `<button class="btn" data-close>닫기</button><button class="btn primary" id="dd-add">${icon('plus')}이 날짜에 일정 추가</button>`,
+    onMount: el => {
+      $('#dd-add', el).onclick = () => editRule(null, k);
+      el.addEventListener('click', e => { const b = e.target.closest('[data-done]'); if (!b) return; toggleDone(b.dataset.done); render(); dayDetail(k, occurrences(d, d).filter(o=>calFilter.has(o.rule.cat))); });
+    }});
+}
+function editRule(id, date) {
+  const r = id ? S.rules.find(x => x.id === id) : {id: uid(), title:'', cat:'etc', type: date?'once':'monthly', day:10, month:1, date: date || ymd(today()), shift: date?'none':'next', note:'', routine:''};
+  const dayOpts = [...Array(31)].map((_, i) => `<option value="${i+1}" ${String(r.day)===String(i+1)?'selected':''}>${i+1}일</option>`).join('') + `<option value="last" ${r.day==='last'?'selected':''}>말일</option><option value="payday" ${r.day==='payday'?'selected':''}>급여일(${S.settings.payday}일)</option>`;
+  sheet({title: id ? '일정 규칙 편집' : '일정·규칙 추가', body: `
+    <label class="f">일정 이름<input class="inp" id="ru-t" value="${esc(r.title)}" placeholder="예: 2차 추경예산 진우 입력"></label>
+    <div class="form-grid">
+      <label class="f">분류<select class="inp" id="ru-c">${Object.entries(CATS).map(([k,c])=>`<option value="${k}" ${r.cat===k?'selected':''}>${c.name}</option>`).join('')}</select></label>
+      <label class="f">주기<select class="inp" id="ru-ty"><option value="monthly">매월</option><option value="yearly">매년</option><option value="once">한 번</option></select></label>
+      <label class="f" data-for="yearly">월<select class="inp" id="ru-m">${[...Array(12)].map((_,i)=>`<option value="${i+1}" ${Number(r.month)===i+1?'selected':''}>${i+1}월</option>`).join('')}</select></label>
+      <label class="f" data-for="monthly yearly">날짜<select class="inp" id="ru-d">${dayOpts}</select></label>
+      <label class="f" data-for="once">날짜<input class="inp" type="date" id="ru-date" value="${esc(r.date||'')}"></label>
+      <label class="f">주말·공휴일이면<select class="inp" id="ru-s"><option value="next">다음 평일로 미룸</option><option value="prev">전 평일로 앞당김</option><option value="none">그대로</option></select></label>
+    </div>
+    <label class="f">메모<input class="inp" id="ru-n" value="${esc(r.note)}"></label>
+    <label class="f">연결 루틴<select class="inp" id="ru-rt"><option value="">없음</option>${S.routines.map(x=>`<option value="${x.id}" ${r.routine===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></label>
+    ${id?`<label class="row small"><input type="checkbox" id="ru-off" ${r.off?'checked':''}> 이 규칙 끄기 (캘린더에 표시 안 함)</label>`:''}`,
+    foot: `${id?'<button class="btn danger" id="ru-del">삭제</button><span class="grow"></span>':''}<button class="btn" data-close>취소</button><button class="btn primary" id="ru-save">저장</button>`,
+    onMount: el => {
+      $('#ru-ty', el).value = r.type; $('#ru-s', el).value = r.shift;
+      const sync = () => { const t = $('#ru-ty', el).value; $$('[data-for]', el).forEach(x => x.hidden = !x.dataset.for.split(' ').includes(t)); };
+      $('#ru-ty', el).onchange = sync; sync();
+      $('#ru-save', el).onclick = () => {
+        const t = $('#ru-t', el).value.trim(); if (!t) { $('#ru-t', el).focus(); toast('일정 이름을 적어 주세요'); return; }
+        Object.assign(r, {title:t, cat:$('#ru-c', el).value, type:$('#ru-ty', el).value, month:Number($('#ru-m', el).value), shift:$('#ru-s', el).value, note:$('#ru-n', el).value.trim(), routine:$('#ru-rt', el).value, date:$('#ru-date', el).value || ymd(today())});
+        const dv = $('#ru-d', el).value; r.day = /^\d+$/.test(dv) ? Number(dv) : dv;
+        const off = $('#ru-off', el); if (off) r.off = off.checked;
+        if (!id) S.rules.push(r); save(); closeSheet(); render(); toast('저장했어요');
+      };
+      const del = $('#ru-del', el);
+      if (del) del.onclick = () => { if (del.dataset.armed) { S.rules = S.rules.filter(x => x.id !== id); save(); closeSheet(); render(); toast('삭제했어요'); } else { del.dataset.armed = 1; del.textContent = '한 번 더 누르면 삭제'; } };
+    }});
+}
+function exportIcs() {
+  const t = today(), occ = occurrences(new Date(t.getFullYear(), t.getMonth(), 1), addDays(t, 365));
+  const e = s => String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+  const d8 = d => ymd(d).replace(/-/g,'');
+  const stamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GRCIL//Work Hub//KO','CALSCALE:GREGORIAN','X-WR-CALNAME:구로IL 행정 마감'];
+  occ.forEach(o => lines.push('BEGIN:VEVENT', `UID:${o.key}@grcil-hub`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${d8(o.date)}`, `DTEND;VALUE=DATE:${d8(addDays(o.date,1))}`,
+    `SUMMARY:${e('[' + CATS[o.rule.cat].name + '] ' + o.rule.title)}`, `DESCRIPTION:${e(o.rule.note || '')}`, 'BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:-P2D',`DESCRIPTION:${e(o.rule.title)}`,'END:VALARM','END:VEVENT'));
+  lines.push('END:VCALENDAR');
+  const txt = lines.join('\r\n');
+  if (CAN_FILE) { download(`구로IL_마감_${ymd(t)}.ics`, txt, 'text/calendar'); toast(`${occ.length}건을 .ics로 내보냈어요`); }
+  else sheet({title:'NAS 캘린더용 .ics', body:`<div class="note">여기서는 파일 저장이 막혀 있어요. 아래 내용을 복사해 메모장에 붙여 넣고 <b>구로IL_마감.ics</b>로 저장한 뒤, 시놀로지 캘린더 → 가져오기로 넣어 주세요. (GitHub 배포본에서는 바로 파일로 받아져요)</div><textarea class="inp mono" rows="10" readonly id="ics-t">${esc(txt)}</textarea>`,
+    foot:`<button class="btn" data-close>닫기</button><button class="btn primary" id="ics-c">${icon('copy')}${occ.length}건 복사</button>`, onMount: el => { $('#ics-c', el).onclick = () => copyText(txt, '.ics 내용을 복사했어요'); }});
+}
+
+/* ================= routines ================= */
+VIEWS.routine = v => {
+  v.innerHTML = `
+  <div class="page-head"><div><h1>루틴 체크리스트</h1><p>매달·매년 반복되는 절차입니다. 체크 상태는 기간(월·연)별로 따로 저장돼요.</p></div>
+    <button class="btn primary" id="add-rt">${icon('plus')}루틴 추가</button></div>
+  <div class="grid-2" id="rts">${S.routines.map(routineCard).join('')}</div>`;
+  $('#add-rt').onclick = () => editRoutine(null);
+  v.addEventListener('click', e => {
+    const c = e.target.closest('[data-step]');
+    if (c) { const [rid, i] = c.dataset.step.split(':'); const rt = S.routines.find(x => x.id === rid); const st = routineState(rt);
+      const arr = S.checks[rid + '@' + st.period] = st.arr.slice(); arr[i] = !arr[i]; save(); render(); return; }
+    const ed = e.target.closest('[data-edit-rt]'); if (ed) editRoutine(ed.dataset.editRt);
+    const rs = e.target.closest('[data-reset-rt]');
+    if (rs) { const rt = S.routines.find(x => x.id === rs.dataset.resetRt); if (rs.dataset.armed) { delete S.checks[rt.id + '@' + routineState(rt).period]; save(); render(); } else { rs.dataset.armed = 1; rs.textContent = '한 번 더'; } }
+    const nx = e.target.closest('[data-next-adhoc]');
+    if (nx) { const rt = S.routines.find(x => x.id === nx.dataset.nextAdhoc); const n = (parseInt(periodKey(rt)) || 1) + 1; S.checks[rt.id + ':adhoc-cur'] = n + '차'; save(); render(); toast(`${n}차 ${rt.name}를 시작했어요`); }
+  });
+};
+function routineCard(rt) {
+  const st = routineState(rt), pct = st.total ? Math.round(st.done / st.total * 100) : 0;
+  const linked = S.rules.filter(r => r.routine === rt.id && !r.off);
+  const nextOcc = occurrences(today(), addDays(today(), 400)).find(o => o.rule.routine === rt.id);
+  const LN = {bridge:'진우 연결', docs:'문서', calendar:'캘린더', apps:'앱'};
+  return `<section class="panel">
+    <div class="panel-h"><div><h2>${esc(rt.name)}</h2><div class="faint small">${esc(rt.when)} · <b class="num">${esc(st.period)}</b>${nextOcc?` · 다음 마감 ${nextOcc.date.getMonth()+1}/${nextOcc.date.getDate()} ${esc(nextOcc.rule.title)}`:''}</div></div>
+      <div class="row" style="gap:4px">${rt.freq==='adhoc'?`<button class="btn ghost sm" data-next-adhoc="${rt.id}">새 차수</button>`:''}<button class="btn ghost sm" data-reset-rt="${rt.id}">초기화</button><button class="btn ghost sm" data-edit-rt="${rt.id}">편집</button></div></div>
+    <div style="padding:12px 16px 4px"><div class="row small"><span class="num">${st.done}/${st.total} 단계</span><span class="grow"></span>${pct===100?'<span class="chip ok">이번 기간 완료</span>':''}</div><div class="prog" style="margin-top:6px"><i style="width:${pct}%"></i></div></div>
+    <ul class="steps">${rt.steps.map((s, i) => `<li class="${st.arr[i]?'on':''}"><button class="check" aria-pressed="${!!st.arr[i]}" data-step="${rt.id}:${i}" aria-label="${esc(s.t)}">${st.arr[i]?icon('check'):''}</button><span class="tx">${esc(s.t)}</span>${s.link?`<a class="lnk" href="#${s.link}">${LN[s.link]||s.link} →</a>`:''}</li>`).join('')}</ul>
+  </section>`;
+}
+function editRoutine(id) {
+  const rt = id ? S.routines.find(x => x.id === id) : {id: uid(), name:'', freq:'monthly', when:'', steps:[]};
+  sheet({title: id ? '루틴 편집' : '루틴 추가', body: `
+    <label class="f">루틴 이름<input class="inp" id="rt-n" value="${esc(rt.name)}"></label>
+    <div class="form-grid"><label class="f">주기<select class="inp" id="rt-f"><option value="monthly">매월</option><option value="yearly">매년 (10월 시작)</option><option value="adhoc">필요 시 (차수)</option></select></label>
+    <label class="f">언제<input class="inp" id="rt-w" value="${esc(rt.when)}" placeholder="예: 매월 1~5일"></label></div>
+    <label class="f">단계 (한 줄에 하나)<textarea class="inp" id="rt-s" rows="8">${esc(rt.steps.map(s=>s.t).join('\n'))}</textarea></label>`,
+    foot: `${id?'<button class="btn danger" id="rt-del">삭제</button><span class="grow"></span>':''}<button class="btn" data-close>취소</button><button class="btn primary" id="rt-save">저장</button>`,
+    onMount: el => {
+      $('#rt-f', el).value = rt.freq;
+      $('#rt-save', el).onclick = () => {
+        const old = Object.fromEntries(rt.steps.map(s => [s.t, s.link]));
+        rt.name = $('#rt-n', el).value.trim() || '새 루틴'; rt.freq = $('#rt-f', el).value; rt.when = $('#rt-w', el).value.trim();
+        rt.steps = $('#rt-s', el).value.split('\n').map(s => s.trim()).filter(Boolean).map(t => ({t, link: old[t]}));
+        if (!id) S.routines.push(rt); save(); closeSheet(); render(); toast('저장했어요');
+      };
+      const del = $('#rt-del', el);
+      if (del) del.onclick = () => { if (del.dataset.armed) { S.routines = S.routines.filter(x => x.id !== id); save(); closeSheet(); render(); } else { del.dataset.armed = 1; del.textContent = '한 번 더 누르면 삭제'; } };
+    }});
+}
+
+/* ================= 진우 ↔ 엑셀 bridge ================= */
+const FIELD = {
+  date:{label:'일자', re:/일자|날짜|거래일|전표일|결의일|date/i, req:true},
+  amt:{label:'금액 (또는 차변)', re:/^금\s*액$|금액|차\s*변|지출액|지출|출금|수입액|세입액|입금/, req:true},
+  amt2:{label:'대변 (있으면)', re:/대\s*변/},
+  desc:{label:'적요·내용', re:/적\s*요|내\s*용|내역|비\s*고/},
+  acct:{label:'계정·목', re:/계정|과목|세\s*목|^목$/},
+  group:{label:'묶을 기준 (재원/계정)', re:/재원|자금|fund/i, req:true},
+  kind:{label:'수입/지출 구분', re:/구\s*분|수입\s*지출|입출/},
+  party:{label:'거래처', re:/거래처|지급처|상대|업체/},
+  fund:{label:'재원', re:/재원|자금/},
+};
+const MODES = {
+  recon:{title:'장부 대조', slots:[['jinwoo','진우 장부 (계정별원장·전표 엑셀)'],['manual','수기 엑셀 (지출·수입 관리대장)']], fields:['date','amt','amt2','desc','acct']},
+  summary:{title:'재원×월 요약', slots:[['summary','요약할 엑셀 (수기 대장 또는 진우 장부)']], fields:['date','amt','amt2','group','kind']},
+  entry:{title:'진우 입력 목록', slots:[['entry','입력할 거래가 담긴 엑셀']], fields:['date','acct','desc','party','fund','amt','amt2']},
+};
+const SKIP_RE = /월\s*계|누\s*계|합\s*계|소\s*계|전기\s*이월|차기\s*이월|이월\s*금?$/;
+const B = { mode:'recon', files:{}, map:{}, period:'', resTab:'onlyB', onlyUnentered:false };
+
+/* ---------- parsing ---------- */
+function toYmd(v) {
+  if (v == null || v === '') return null;
+  if (v instanceof Date && !isNaN(v)) return ymd(new Date(v.getFullYear(), v.getMonth(), v.getDate(), 12));
+  if (typeof v === 'number') {
+    if (v > 19000000 && v < 21000000) { const s = String(v); return `${s.slice(0,4)}-${s.slice(4,6)}-${s.slice(6,8)}`; }
+    if (v > 20000 && v < 80000 && window.XLSX) { const p = XLSX.SSF.parse_date_code(v); return `${p.y}-${pad(p.m)}-${pad(p.d)}`; }
+    return null;
+  }
+  const s = String(v).trim();
+  let m = s.match(/(\d{4})\s*[.\-\/년]\s*(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})/);
+  if (m) return `${m[1]}-${pad(m[2])}-${pad(m[3])}`;
+  m = s.match(/^(\d{4})(\d{2})(\d{2})$/); if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  return null;
+}
+function toNum(v) {
+  if (typeof v === 'number') return v;
+  if (v == null) return 0;
+  let s = String(v).replace(/[,\s원₩]/g, '');
+  if (!s || s === '-') return 0;
+  let neg = /^\(.*\)$/.test(s) || /^△|^▲/.test(s); s = s.replace(/[()△▲]/g, '');
+  const n = parseFloat(s); return isNaN(n) ? 0 : (neg ? -Math.abs(n) : n);
+}
+function detectHeader(rows) {
+  const all = Object.values(FIELD).map(f => f.re);
+  for (let i = 0; i < Math.min(rows.length, 20); i++) {
+    const cells = rows[i].filter(c => typeof c === 'string' && c.trim());
+    if (cells.length >= 3 && cells.some(c => all.some(re => re.test(c)))) return i;
+  }
+  return Math.max(0, rows.findIndex(r => r.some(c => c !== '')));
+}
+function autoMap(headers, fields) {
+  const m = {}, used = new Set();
+  for (const f of fields) {
+    const re = FIELD[f].re;
+    let idx = headers.findIndex((h, i) => !used.has(i) && re.test(String(h)));
+    if (f === 'group' && idx < 0) idx = headers.findIndex((h, i) => !used.has(i) && FIELD.acct.re.test(String(h)));
+    if (idx >= 0) { m[f] = idx; used.add(idx); }
+  }
+  // 차변이 금액으로 잡혔으면 대변을 amt2로
+  return m;
+}
+function readWorkbook(file) {
+  return new Promise((res, rej) => {
+    if (!window.XLSX) return rej(new Error('엑셀 모듈을 불러오지 못했어요. 인터넷 연결을 확인해 주세요'));
+    const fr = new FileReader();
+    fr.onload = () => { try { res(XLSX.read(new Uint8Array(fr.result), {type:'array', cellDates:true})); } catch (e) { rej(e); } };
+    fr.onerror = () => rej(fr.error); fr.readAsArrayBuffer(file);
+  });
+}
+function setSheet(slot, wb, name) {
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:true, defval:''});
+  const f = B.files[slot]; f.sheet = name; f.rows = rows; f.hdr = detectHeader(rows);
+  B.map[slot] = autoMap(rows[f.hdr] || [], MODES[B.mode].fields);
+}
+function items(slot) {
+  const f = B.files[slot], mp = B.map[slot] || {}; if (!f) return [];
+  const out = [];
+  f.rows.slice(f.hdr + 1).forEach((r, i) => {
+    const get = k => mp[k] != null ? r[mp[k]] : '';
+    const date = toYmd(get('date')); if (!date) return;
+    const desc = String(get('desc') ?? '').trim();
+    if (SKIP_RE.test(desc) || SKIP_RE.test(String(get('acct')))) return;
+    const a1 = toNum(get('amt')), a2 = mp.amt2 != null ? toNum(get('amt2')) : 0;
+    const amt = a1 || a2; if (!amt) return;
+    out.push({i, date, amt, abs: Math.abs(amt), side: a1 ? 'a' : 'b', desc, acct: String(get('acct') ?? '').trim(), group: String(get('group') ?? '').trim() || '(미지정)',
+      kind: String(get('kind') ?? '').trim(), party: String(get('party') ?? '').trim(), fund: String(get('fund') ?? '').trim()});
+  });
+  return out;
+}
+
+/* ---------- sample data (예시) ---------- */
+function sampleBooks() {
+  const j = [['[예시] 계정별원장 2026년 9월','','','','',''],['일자','계정과목','적요','차변','대변','잔액'],
+    ['2026-09-01','','전월이월','','','12,450,000'],
+    ['2026-09-02','사무용품비','A4용지·토너 구입','184,000','',''],['2026-09-05','공공요금','8월 전기요금','96,320','',''],
+    ['2026-09-10','제세공과금','8월분 4대보험 기관부담','1,284,560','',''],['2026-09-12','여비','자립생활 교육 출장 교통비','42,800','',''],
+    ['2026-09-15','회의비','운영위원회 다과','67,000','',''],['2026-09-19','차량비','센터 차량 주유','85,000','',''],
+    ['2026-09-22','사업비','동료상담 프로그램 강사료','300,000','',''],['2026-09-25','인건비','9월 급여','18,640,000','',''],
+    ['','','월계','20,699,680','','']];
+  const m = [['날짜','재원','관','항','목','내용','거래처','지출액']];
+  const add = (d, f, g, h, mk, c, p, a) => m.push([d, f, g, h, mk, c, p, a]);
+  // 7~8월 (요약용)
+  add('2026-07-03','보조금','사무비','운영비','사무용품비','복사용지','오피스디포',152000); add('2026-07-10','보조금','사무비','운영비','제세공과금','6월분 4대보험',' 국민건강보험공단',1262300);
+  add('2026-07-25','보조금','사무비','인건비','급여','7월 급여','직원',18640000); add('2026-07-18','후원금','사업비','운영비','사업비','여름 나들이 차량 대여','OO관광',450000);
+  add('2026-08-05','보조금','사무비','운영비','공공요금','7월 전기요금','한국전력',101200); add('2026-08-10','보조금','사무비','운영비','제세공과금','7월분 4대보험','국민건강보험공단',1270400);
+  add('2026-08-25','보조금','사무비','인건비','급여','8월 급여','직원',18640000); add('2026-08-21','후원금','사업비','운영비','사업비','동료상담 교재 인쇄','OO인쇄',230000);
+  add('2026-08-28','자부담','사무비','운영비','회의비','직원 워크숍 식비','OO식당',180000);
+  // 9월 (대조용: 일부러 차이 만듦)
+  add('2026-09-02','보조금','사무비','운영비','사무용품비','A4용지·토너','오피스디포',184000);
+  add('2026-09-05','보조금','사무비','운영비','공공요금','8월 전기요금','한국전력',96320);
+  add('2026-09-10','보조금','사무비','운영비','제세공과금','8월분 4대보험','국민건강보험공단',1284560);
+  add('2026-09-11','보조금','사무비','운영비','여비','교육 출장 교통비','코레일',42800);   // 진우는 9/12 → 근접 일치
+  add('2026-09-15','자부담','사무비','운영비','회의비','운영위원회 다과','OO제과',76000);  // 진우 67,000 → 금액 불일치
+  add('2026-09-19','보조금','사무비','운영비','차량비','주유','OO주유소',85000);
+  add('2026-09-22','후원금','사업비','운영비','사업비','동료상담 강사료','강사',300000);
+  add('2026-09-23','후원금','사업비','운영비','사업비','추석 나눔 물품','OO마트',520000);   // 진우 미입력
+  add('2026-09-25','보조금','사무비','인건비','급여','9월 급여','직원',18640000);
+  return {j, m};
+}
+function loadSamples() {
+  const {j, m} = sampleBooks();
+  const mk = (name, rows) => ({name, sample:true, rows, hdr:detectHeader(rows), sheets:['Sheet1'], sheet:'Sheet1'});
+  B.files.jinwoo = mk('예시_진우_계정별원장_2026-09.xlsx', j);
+  B.files.manual = mk('예시_지출관리대장_2026.xlsx', m);
+  B.files.summary = mk('예시_지출관리대장_2026.xlsx', m);
+  B.files.entry = null;
+  B.map.jinwoo = autoMap(j[B.files.jinwoo.hdr], MODES.recon.fields);
+  B.map.manual = autoMap(m[B.files.manual.hdr], MODES.recon.fields);
+  B.map.summary = autoMap(m[B.files.summary.hdr], MODES.summary.fields);
+}
+
+/* ---------- reconciliation ---------- */
+function reconcile() {
+  let A = items('jinwoo'), Bm = items('manual');
+  const months = [...new Set([...A, ...Bm].map(x => x.date.slice(0, 7)))].sort();
+  if (!B.period || !months.includes(B.period)) {
+    const cnt = {}; A.forEach(x => cnt[x.date.slice(0,7)] = (cnt[x.date.slice(0,7)]||0) + 1);
+    B.period = Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0] || months[months.length-1] || '';
+  }
+  if (B.period !== 'all') { A = A.filter(x => x.date.startsWith(B.period)); Bm = Bm.filter(x => x.date.startsWith(B.period)); }
+  const usedB = new Set(), matched = [], near = [], diff = [];
+  const idx = {}; Bm.forEach((b, i) => (idx[b.date + '|' + b.abs] ||= []).push(i));
+  const restA = [];
+  A.forEach(a => { const l = idx[a.date + '|' + a.abs]; const bi = l && l.find(i => !usedB.has(i)); if (bi != null) { usedB.add(bi); matched.push({a, b: Bm[bi]}); } else restA.push(a); });
+  const restA2 = [];
+  restA.forEach(a => {
+    let best = -1, bd = 99;
+    Bm.forEach((b, i) => { if (usedB.has(i) || b.abs !== a.abs) return; const dd = Math.abs((parseYmd(a.date) - parseYmd(b.date)) / 864e5); if (dd <= 3 && dd < bd) { bd = dd; best = i; } });
+    if (best >= 0) { usedB.add(best); near.push({a, b: Bm[best], gap: bd}); } else restA2.push(a);
+  });
+  // 같은 날짜, 금액만 다른 건 (금액 불일치)
+  const onlyA = [];
+  restA2.forEach(a => {
+    const bi = Bm.findIndex((b, i) => !usedB.has(i) && b.date === a.date);
+    if (bi >= 0 && restA2.filter(x => x.date === a.date).length === 1 && Bm.filter((b, i) => !usedB.has(i) && b.date === a.date).length === 1) { usedB.add(bi); diff.push({a, b: Bm[bi], d: Bm[bi].abs - a.abs}); }
+    else onlyA.push(a);
+  });
+  const onlyB = Bm.filter((_, i) => !usedB.has(i));
+  const sum = l => l.reduce((s, x) => s + x.abs, 0);
+  return {months, matched, near, diff, onlyA, onlyB, sumA: sum(A), sumB: sum(Bm), nA: A.length, nB: Bm.length};
+}
+
+/* ---------- views ---------- */
+VIEWS.bridge = v => {
+  if (!B.init) { loadSamples(); B.init = true; }
+  const M = MODES[B.mode];
+  v.innerHTML = `
+  <div class="page-head"><div><h1>진우 ↔ 엑셀 연결</h1><p>진우정보시스템에서 내려받은 장부 엑셀과 수기로 관리하는 엑셀을 이어 붙입니다. 파일은 이 기기 안에서만 읽고, 어디로도 보내지 않아요.</p></div></div>
+  <div class="seg" role="group" aria-label="작업 선택">${Object.entries(MODES).map(([k,o])=>`<button aria-pressed="${B.mode===k}" data-mode="${k}">${o.title}</button>`).join('')}</div>
+  ${B.mode==='recon'?`<div class="note">진우 <b>회계 → 장부 → 계정별원장(또는 전표조회)</b>을 엑셀로 저장해 왼쪽에, 수기 지출·수입 대장을 오른쪽에 넣으세요. 날짜+금액으로 짝을 맞추고, 하루~사흘 어긋난 건과 금액이 다른 건을 따로 보여 줍니다. 월계·누계·이월 줄은 자동으로 뺍니다.</div>`:''}
+  ${B.mode==='summary'?`<div class="note">재원(보조금·후원금·자부담 등)이나 계정별로 월 합계를 냅니다. 추경 검토나 월초 보고용 한 장 요약으로 쓰세요.</div>`:''}
+  ${B.mode==='entry'?`<div class="note">진우에 쳐 넣어야 할 거래를 날짜순으로 정리합니다. 금액·적요를 누르면 복사되고, 입력을 마친 줄은 체크해 두면 이 기기에 기억돼요. <b>장부 대조</b>에서 "엑셀에만 있음" 건을 바로 보낼 수도 있어요.</div>`:''}
+  <div class="grid-${M.slots.length===2?'2':'2'}" style="${M.slots.length===1?'grid-template-columns:1fr':''}">${M.slots.map(([k,t])=>slotHtml(k,t)).join('')}</div>
+  <div id="bres"></div>`;
+  $$('[data-mode]', v).forEach(b => b.onclick = () => { B.mode = b.dataset.mode; render(); });
+  M.slots.forEach(([k]) => bindSlot(v, k));
+  const out = $('#bres', v);
+  if (B.mode === 'recon') renderRecon(out); else if (B.mode === 'summary') renderSummary(out); else renderEntry(out);
+};
+function slotHtml(k, title) {
+  const f = B.files[k], M = MODES[B.mode];
+  const hdr = f ? (f.rows[f.hdr] || []) : [];
+  const opts = sel => `<option value="">— 없음 —</option>` + hdr.map((h, i) => `<option value="${i}" ${String(sel)===String(i)?'selected':''}>${esc(h || `(${XLSXcol(i)}열)`)}</option>`).join('');
+  return `<section class="panel"><div class="panel-h"><h3>${esc(title)}</h3>${f&&f.sample?'<span class="chip warn">예시 데이터</span>':''}</div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px">
+    <label class="drop" data-drop="${k}">
+      <span class="row"><span class="fn">${f?esc(f.name):'파일을 여기에 끌어 놓거나 눌러서 선택'}</span></span>
+      <span class="faint small">.xlsx · .xls · .csv${f?` · 데이터 ${items(k).length}건 인식`:''}</span>
+      <input type="file" id="file-${k}" accept=".xlsx,.xls,.csv,.xlsm" hidden>
+    </label>
+    ${f ? `<div class="row">${f.sheets.length>1?`<label class="f grow">시트<select class="inp" data-sheet="${k}">${f.sheets.map(s=>`<option ${s===f.sheet?'selected':''}>${esc(s)}</option>`).join('')}</select></label>`:''}
+      <label class="f" style="width:130px">제목 줄<select class="inp" data-hdr="${k}">${f.rows.slice(0,20).map((r,i)=>`<option value="${i}" ${i===f.hdr?'selected':''}>${i+1}행</option>`).join('')}</select></label></div>
+    <div class="map">${M.fields.map(fl=>`<label class="f">${FIELD[fl].label}${FIELD[fl].req&&!(fl==='group')?' *':''}<select class="inp" data-map="${k}:${fl}">${opts((B.map[k]||{})[fl])}</select></label>`).join('')}</div>` : ''}
+  </div></section>`;
+}
+function XLSXcol(i) { let s = ''; i++; while (i) { const r = (i - 1) % 26; s = String.fromCharCode(65 + r) + s; i = Math.floor((i - 1) / 26); } return s; }
+function bindSlot(v, k) {
+  const drop = $(`[data-drop="${k}"]`, v), inp = $(`#file-${k}`, v);
+  const handle = async file => {
+    if (!file) return;
+    try {
+      const wb = await readWorkbook(file);
+      B.files[k] = {name:file.name, wb, sheets:wb.SheetNames, rows:[], hdr:0};
+      setSheet(k, wb, wb.SheetNames[0]); B.period = '';
+      toast(`${file.name} — ${items(k).length}건 읽었어요`); render();
+    } catch (e) { toast('파일을 읽지 못했어요: ' + (e.message || e)); }
+  };
+  inp.onchange = () => handle(inp.files[0]);
+  drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('over'); });
+  drop.addEventListener('dragleave', () => drop.classList.remove('over'));
+  drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); handle(e.dataTransfer.files[0]); });
+  const sh = $(`[data-sheet="${k}"]`, v); if (sh) sh.onchange = () => { setSheet(k, B.files[k].wb, sh.value); render(); };
+  const hd = $(`[data-hdr="${k}"]`, v); if (hd) hd.onchange = () => { const f = B.files[k]; f.hdr = Number(hd.value); B.map[k] = autoMap(f.rows[f.hdr] || [], MODES[B.mode].fields); render(); };
+  $$(`[data-map^="${k}:"]`, v).forEach(s => s.onchange = () => { const fl = s.dataset.map.split(':')[1]; (B.map[k] ||= {})[fl] = s.value === '' ? null : Number(s.value); render(); });
+}
+function missingReq(slot) {
+  const mp = B.map[slot] || {}; return MODES[B.mode].fields.filter(f => FIELD[f].req && mp[f] == null).map(f => FIELD[f].label);
+}
+function tableHtml(cols, rows, foot) {
+  return `<div class="tbl-wrap" style="max-height:460px;overflow:auto"><table class="tbl"><thead><tr>${cols.map(c=>`<th class="${c.r?'r':''}">${c.h}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.map(r=>`<tr ${r._attr||''}>${cols.map(c=>`<td class="${c.r?'r':''} ${c.cls||''}">${c.f(r)}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${cols.length}" class="faint" style="text-align:center;padding:20px">해당 건이 없어요</td></tr>`}</tbody>${foot?`<tfoot><tr>${foot}</tr></tfoot>`:''}</table></div>`;
+}
+function renderRecon(out) {
+  if (!B.files.jinwoo || !B.files.manual) { out.innerHTML = '<div class="empty panel">두 파일을 모두 넣으면 결과가 여기 나와요</div>'; return; }
+  const miss = [...missingReq('jinwoo').map(x=>'진우: '+x), ...missingReq('manual').map(x=>'수기: '+x)];
+  if (miss.length) { out.innerHTML = `<div class="note warn">열을 지정해 주세요 — ${esc(miss.join(', '))}</div>`; return; }
+  const R = reconcile(), gap = R.sumB - R.sumA;
+  const tabs = [['onlyB','엑셀에만 있음 (진우 입력 필요)',R.onlyB.length,'crit'],['onlyA','진우에만 있음',R.onlyA.length,'crit'],['diff','금액 불일치',R.diff.length,'warn'],['near','날짜 어긋남',R.near.length,'warn'],['matched','일치',R.matched.length,'ok']];
+  if (!tabs.find(t => t[0] === B.resTab)) B.resTab = 'onlyB';
+  const dt = x => `<span class="mono">${x.date.slice(5).replace('-','/')}</span>`;
+  const money = x => `<span class="num">${won(x.abs)}</span>`;
+  const C = {
+    onlyB:[{h:'일자',f:r=>dt(r)},{h:'계정·목',f:r=>esc(r.acct)},{h:'적요',f:r=>esc(r.desc),cls:'wrap'},{h:'금액',r:1,f:money}],
+    onlyA:[{h:'일자',f:r=>dt(r)},{h:'계정',f:r=>esc(r.acct)},{h:'적요',f:r=>esc(r.desc),cls:'wrap'},{h:'금액',r:1,f:money}],
+    diff:[{h:'일자',f:r=>dt(r.a)},{h:'적요 (진우 / 엑셀)',f:r=>esc(r.a.desc)+'<br><span class="faint">'+esc(r.b.desc)+'</span>',cls:'wrap'},{h:'진우',r:1,f:r=>money(r.a)},{h:'엑셀',r:1,f:r=>money(r.b)},{h:'차이',r:1,f:r=>`<b class="num" style="color:var(--stamp)">${r.d>0?'+':''}${won(r.d)}</b>`}],
+    near:[{h:'진우 일자',f:r=>dt(r.a)},{h:'엑셀 일자',f:r=>dt(r.b)},{h:'적요',f:r=>esc(r.a.desc||r.b.desc),cls:'wrap'},{h:'금액',r:1,f:r=>money(r.a)},{h:'',f:r=>`<span class="chip warn">${r.gap}일 차이</span>`}],
+    matched:[{h:'일자',f:r=>dt(r.a)},{h:'진우 적요',f:r=>esc(r.a.desc),cls:'wrap'},{h:'엑셀 적요',f:r=>esc(r.b.desc),cls:'wrap'},{h:'금액',r:1,f:r=>money(r.a)}],
+  };
+  const list = R[B.resTab];
+  out.innerHTML = `<section class="panel"><div class="panel-h"><h2>대조 결과</h2>
+      <div class="row"><label class="f" style="flex-direction:row;align-items:center;gap:8px">기간<select class="inp" id="per" style="width:auto">${R.months.map(mm=>`<option value="${mm}" ${mm===B.period?'selected':''}>${mm.replace('-','년 ')}월</option>`).join('')}<option value="all" ${B.period==='all'?'selected':''}>전체</option></select></label>
+      <button class="btn sm" id="r-copy">${icon('copy')}이 표 복사</button><button class="btn sm" id="r-xlsx" ${CAN_FILE?'':'title="GitHub 배포본에서 가능"'}>${icon('down')}결과 엑셀</button></div></div>
+    <div class="panel-b" style="display:flex;flex-direction:column;gap:14px">
+      <div class="stat-row">
+        <div class="stat"><div class="v">${won(R.sumA)}</div><div class="l">진우 합계 · ${R.nA}건</div></div>
+        <div class="stat"><div class="v">${won(R.sumB)}</div><div class="l">수기 엑셀 합계 · ${R.nB}건</div></div>
+        <div class="stat ${gap?'crit':'ok'}"><div class="v">${gap>0?'+':''}${won(gap)}</div><div class="l">차액 (엑셀 − 진우)</div></div>
+        <div class="stat ${R.onlyA.length+R.onlyB.length+R.diff.length?'warn':'ok'}"><div class="v">${R.onlyA.length+R.onlyB.length+R.diff.length+R.near.length}</div><div class="l">확인할 건</div></div>
+      </div>
+      <div class="seg" role="tablist">${tabs.map(([k,t,n,c])=>`<button role="tab" aria-pressed="${B.resTab===k}" data-rt="${k}">${t} <span class="chip ${n?c:''}" style="height:18px;margin-left:4px">${n}</span></button>`).join('')}</div>
+      ${tableHtml(C[B.resTab], list)}
+      ${B.resTab==='onlyB'&&R.onlyB.length?`<div class="row"><button class="btn primary" id="to-entry">${icon('right')}이 ${R.onlyB.length}건을 진우 입력 목록으로</button><span class="faint small">입력 목록에서 한 줄씩 복사·체크하며 진우에 넣으세요</span></div>`:''}
+    </div></section>`;
+  $('#per', out).onchange = e => { B.period = e.target.value; render(); };
+  $$('[data-rt]', out).forEach(b => b.onclick = () => { B.resTab = b.dataset.rt; render(); });
+  const toE = $('#to-entry', out);
+  if (toE) toE.onclick = () => {
+    const rows = [['일자','계정·목','적요','거래처','재원','금액'], ...R.onlyB.map(x => [x.date, x.acct, x.desc, '', '', x.abs])];
+    // 원본 수기 행에서 거래처·재원 가져오기
+    const src = B.files.manual, hdr = src.rows[src.hdr].map(String);
+    const pi = hdr.findIndex(h => FIELD.party.re.test(h)), fi = hdr.findIndex(h => FIELD.fund.re.test(h));
+    R.onlyB.forEach((x, n) => { const r = src.rows[src.hdr + 1 + x.i]; if (pi >= 0) rows[n+1][3] = r[pi]; if (fi >= 0) rows[n+1][4] = r[fi]; });
+    B.files.entry = {name:`대조결과_엑셀에만있음_${B.period}.xlsx`, rows, hdr:0, sheets:['입력목록'], sheet:'입력목록', fromRecon:true};
+    B.map.entry = autoMap(rows[0], MODES.entry.fields); B.mode = 'entry'; render(); toast(`${R.onlyB.length}건을 입력 목록으로 보냈어요`);
+  };
+  const flat = {
+    onlyB: r => [r.date, r.acct, r.desc, r.abs], onlyA: r => [r.date, r.acct, r.desc, r.abs],
+    diff: r => [r.a.date, r.a.desc, r.b.desc, r.a.abs, r.b.abs, r.d], near: r => [r.a.date, r.b.date, r.a.desc || r.b.desc, r.a.abs, r.gap],
+    matched: r => [r.a.date, r.a.desc, r.b.desc, r.a.abs],
+  };
+  const heads = {onlyB:['일자','계정','적요','금액'], onlyA:['일자','계정','적요','금액'], diff:['일자','진우 적요','엑셀 적요','진우 금액','엑셀 금액','차이'], near:['진우 일자','엑셀 일자','적요','금액','일수 차이'], matched:['일자','진우 적요','엑셀 적요','금액']};
+  $('#r-copy', out).onclick = () => copyText([heads[B.resTab], ...list.map(flat[B.resTab])].map(r => r.join('\t')).join('\n'), '표를 복사했어요. 엑셀에 붙여 넣으세요');
+  $('#r-xlsx', out).onclick = () => {
+    if (!CAN_FILE) { toast('엑셀 저장은 GitHub 배포본에서 돼요. 여기서는 "이 표 복사"를 써 주세요'); return; }
+    const wb = XLSX.utils.book_new();
+    tabs.forEach(([k, t]) => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([heads[k], ...R[k].map(flat[k])]), t.replace(/[()\/]/g,'').slice(0, 28)));
+    const buf = XLSX.write(wb, {bookType:'xlsx', type:'array'}); download(`진우대조_${B.period}.xlsx`, new Blob([buf])); toast('결과 엑셀을 저장했어요');
+  };
+}
+function renderSummary(out) {
+  if (!B.files.summary) { out.innerHTML = '<div class="empty panel">파일을 넣으면 요약표가 여기 나와요</div>'; return; }
+  const miss = missingReq('summary'); if (miss.length) { out.innerHTML = `<div class="note warn">열을 지정해 주세요 — ${esc(miss.join(', '))}</div>`; return; }
+  const it = items('summary'); const months = [...new Set(it.map(x => x.date.slice(0, 7)))].sort();
+  const hasKind = (B.map.summary || {}).kind != null;
+  const groups = {}; it.forEach(x => { const g = (hasKind && x.kind ? x.kind + ' · ' : '') + x.group; (groups[g] ||= {}); groups[g][x.date.slice(0,7)] = (groups[g][x.date.slice(0,7)] || 0) + x.abs; });
+  const gk = Object.keys(groups).sort();
+  const colTot = months.map(mm => gk.reduce((s, g) => s + (groups[g][mm] || 0), 0)), grand = colTot.reduce((a, b) => a + b, 0);
+  const maxV = Math.max(1, ...gk.map(g => months.reduce((s, mm) => s + (groups[g][mm]||0), 0)));
+  out.innerHTML = `<section class="panel"><div class="panel-h"><h2>${hasKind?'구분·':''}${esc(String((B.files.summary.rows[B.files.summary.hdr]||[])[B.map.summary.group] || '재원'))} × 월 합계</h2>
+    <div class="row"><button class="btn sm" id="s-copy">${icon('copy')}표 복사</button><button class="btn sm" id="s-xlsx">${icon('down')}엑셀</button></div></div>
+    <div class="panel-b" style="display:flex;flex-direction:column;gap:14px">
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>구분</th>${months.map(mm=>`<th class="r">${Number(mm.slice(5))}월</th>`).join('')}<th class="r">합계</th><th>비중</th></tr></thead><tbody>
+    ${gk.map(g => { const t = months.reduce((s, mm) => s + (groups[g][mm]||0), 0); return `<tr><td><b>${esc(g)}</b></td>${months.map(mm=>`<td class="r">${groups[g][mm]?won(groups[g][mm]):'<span class="faint">–</span>'}</td>`).join('')}<td class="r"><b>${won(t)}</b></td><td style="min-width:120px"><div class="prog"><i style="width:${Math.round(t/maxV*100)}%"></i></div><span class="faint small num">${grand?Math.round(t/grand*1000)/10:0}%</span></td></tr>`; }).join('')}
+    </tbody><tfoot><tr><td>월 합계</td>${colTot.map(v=>`<td class="r">${won(v)}</td>`).join('')}<td class="r">${won(grand)}</td><td></td></tr></tfoot></table></div>
+    <div class="faint small">${it.length}건 집계 · 월계·누계·이월 줄 제외 · 금액은 절댓값 기준</div></div></section>`;
+  const aoa = [['구분', ...months.map(mm => mm), '합계'], ...gk.map(g => [g, ...months.map(mm => groups[g][mm] || 0), months.reduce((s, mm) => s + (groups[g][mm]||0), 0)]), ['월 합계', ...colTot, grand]];
+  $('#s-copy', out).onclick = () => copyText(aoa.map(r => r.join('\t')).join('\n'), '요약표를 복사했어요. 엑셀에 붙여 넣으세요');
+  $('#s-xlsx', out).onclick = () => { if (!CAN_FILE) { toast('엑셀 저장은 GitHub 배포본에서 돼요. "표 복사"를 써 주세요'); return; }
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), '재원별월합계'); download(`재원월요약_${ymd(today())}.xlsx`, new Blob([XLSX.write(wb, {bookType:'xlsx', type:'array'})])); };
+}
+function entryKey(x) { return [x.date, x.acct, x.desc, x.abs].join('|'); }
+function renderEntry(out) {
+  if (!B.files.entry) { out.innerHTML = `<div class="empty panel">파일을 넣거나, <a href="#bridge" id="go-recon">장부 대조</a>에서 "엑셀에만 있음" 건을 보내세요</div>`; const g = $('#go-recon', out); if (g) g.onclick = e => { e.preventDefault(); B.mode = 'recon'; render(); }; return; }
+  const miss = missingReq('entry'); if (miss.length) { out.innerHTML = `<div class="note warn">열을 지정해 주세요 — ${esc(miss.join(', '))}</div>`; return; }
+  const all = items('entry').sort((a, b) => a.date.localeCompare(b.date));
+  const doneN = all.filter(x => S.entered[entryKey(x)]).length;
+  const list = B.onlyUnentered ? all.filter(x => !S.entered[entryKey(x)]) : all;
+  out.innerHTML = `<section class="panel"><div class="panel-h"><div><h2>진우 입력 목록</h2><div class="faint small">금액·적요를 누르면 복사돼요</div></div>
+    <div class="row"><span class="chip ${doneN===all.length&&all.length?'ok':'acc'} num">${doneN}/${all.length} 입력</span><label class="row small"><input type="checkbox" id="unent" ${B.onlyUnentered?'checked':''}> 남은 것만</label></div></div>
+    <div style="padding:10px 16px 0"><div class="prog"><i style="width:${all.length?doneN/all.length*100:0}%"></i></div></div>
+    <div class="panel-b">${tableHtml([
+      {h:'입력', f:x=>`<button class="check" aria-pressed="${!!S.entered[entryKey(x)]}" data-ent="${esc(entryKey(x))}" aria-label="입력 완료">${S.entered[entryKey(x)]?icon('check'):''}</button>`},
+      {h:'일자', f:x=>`<span class="mono copyc" data-cp="${x.date}">${x.date}</span>`},
+      {h:'계정·목', f:x=>esc(x.acct)},
+      {h:'적요', cls:'wrap t', f:x=>`<span class="copyc" data-cp="${esc(x.desc)}">${esc(x.desc)||'<span class="faint">–</span>'}</span>`},
+      {h:'거래처', f:x=>esc(x.party)}, {h:'재원', f:x=>esc(x.fund)},
+      {h:'금액', r:1, f:x=>`<b class="num copyc" data-cp="${x.abs}">${won(x.abs)}</b>`},
+    ], list.map(x => Object.assign({_attr: S.entered[entryKey(x)] ? 'class="entered"' : ''}, x)),
+    `<td colspan="6">합계 ${list.length}건</td><td class="r">${won(list.reduce((s,x)=>s+x.abs,0))}</td>`)}</div></section>`;
+  $('#unent', out).onchange = e => { B.onlyUnentered = e.target.checked; render(); };
+  out.addEventListener('click', e => {
+    const c = e.target.closest('[data-cp]'); if (c) { copyText(c.dataset.cp, `복사: ${c.dataset.cp}`); return; }
+    const b = e.target.closest('[data-ent]'); if (b) { const k = b.dataset.ent; if (S.entered[k]) delete S.entered[k]; else S.entered[k] = Date.now(); save(); render(); }
+  });
+}
+
+/* ================= documents ================= */
+const DOCT = {
+  emp:{name:'재직증명서', log:true},
+  career:{name:'경력증명서', log:true},
+  expense:{name:'지출결의서', log:false},
+  draft:{name:'기안문 (내부결재)', log:true},
+};
+const D = { type:'emp', staffIds:['s1'], f:{} };
+function dfDefaults() {
+  const t = ymd(today());
+  return {
+    emp:{purpose:'금융기관 제출용', issue:t},
+    career:{purpose:'경력 확인용', issue:t},
+    expense:{date:t, gwan:'사무비', hang:'운영비', mok:'사무용품비', fund:'보조금', amount:184000, desc:'사무용 A4 용지 및 토너 구입', party:'오피스디포', pay:'법인카드', proof:'카드전표, 거래명세서'},
+    draft:{date:t, title:'2026년 2차 추가경정예산(안) 보고', body:'1. 관련: 2026년 1차 추가경정예산\n2. 후원 재원의 수입 변동에 따라 2026년 2차 추가경정예산(안)을 아래와 같이 보고하오니 검토 후 결재하여 주시기 바랍니다.\n\n  가. 변경 사유: 개인 CMS 정기후원 감소분 반영\n  나. 변경 내역: 붙임 참조\n  다. 시행: 결재 후 진우정보시스템 추경예산 입력', attach:'2026년 2차 추경예산(안) 1부.  끝.'},
+  };
+}
+function nextDocNo() { const y = today().getFullYear(); return `${S.settings.docPrefix} 제${y}-${String((S.docSeq[y] || 0) + 1).padStart(4, '0')}호`; }
+function korWon(n) {
+  n = Math.floor(Math.abs(Number(n) || 0)); if (!n) return '영';
+  const dg = ['','일','이','삼','사','오','육','칠','팔','구'], su = ['','십','백','천'], big = ['','만','억','조'];
+  let out = '', g = 0;
+  while (n > 0) {
+    const part = n % 10000; n = Math.floor(n / 10000);
+    if (part) { let s = ''; const ds = String(part).padStart(4, '0').split('').map(Number);
+      ds.forEach((d, i) => { if (d) s += dg[d] + su[3 - i]; }); out = s + big[g] + out; }
+    g++;
+  }
+  return out;
+}
+const fmtK = s => { if (!s) return ''; const d = parseYmd(s); return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`; };
+function orgSeal() { const o = S.settings.org; return `<div class="issuer">${esc(o.name)}<br>센터장 ${esc(o.rep || '○○○')} <span class="seal">${esc(o.name.replace(/장애인자립생활센터/, '').slice(0,4) || '직인')}<br>직인</span></div>`; }
+function apprTable() { const a = S.settings.approvers; return `<table class="appr"><tr><td class="lab" rowspan="2">결 재</td>${a.map(x=>`<td>${esc(x)}</td>`).join('')}</tr><tr>${a.map(()=>'<td></td>').join('')}</tr></table>`; }
+
+function docHtml(type, f, st, no) {
+  const o = S.settings.org;
+  if (type === 'emp' || type === 'career') {
+    const career = type === 'career';
+    const until = st.left ? fmtK(st.left) : (career ? fmtK(f.issue) : '현재');
+    return `<div class="a4"><div class="docno">${esc(no)}</div><h1>${career?'경력증명서':'재직증명서'}</h1>
+      <table class="dt">
+        <tr><th>성 명</th><td>${esc(st.name.replace(/\s*\(예시\)/,''))}</td><th>생년월일</th><td>${esc(fmtK(st.birth)) || '<span style="color:#999">미입력</span>'}</td></tr>
+        <tr><th>소 속</th><td>${esc(st.dept)}</td><th>직 위</th><td>${esc(st.pos)}</td></tr>
+        <tr><th>${career?'근무기간':'재직기간'}</th><td colspan="3">${esc(fmtK(st.hired))} ~ ${esc(until)}${career||st.left?'':' (재직 중)'}</td></tr>
+        ${career?`<tr><th>담당업무</th><td colspan="3">${esc(st.duty||'')}</td></tr>`:''}
+        <tr><th>기관명</th><td colspan="3">${esc(o.name)}</td></tr>
+        <tr><th>소재지</th><td colspan="3">${esc(o.addr)}${o.tel?` (☎ ${esc(o.tel)})`:''}</td></tr>
+        <tr><th>용 도</th><td colspan="3">${esc(f.purpose)}</td></tr>
+      </table>
+      <p class="cert">위의 사실을 증명합니다.</p>
+      <p class="date">${esc(fmtK(f.issue))}</p>${orgSeal()}</div>`;
+  }
+  if (type === 'expense') {
+    return `<div class="a4"><div class="docno">결의일 ${esc(fmtK(f.date))}</div>${apprTable()}<div class="clear"></div>
+      <h1 style="margin-top:4mm">지출결의서</h1>
+      <table class="dt">
+        <tr><th>금 액</th><td colspan="3"><span class="amount-big">금 ${korWon(f.amount)}원정</span> (₩${won(f.amount)})</td></tr>
+        <tr><th>관 · 항 · 목</th><td colspan="3">${esc(f.gwan)} · ${esc(f.hang)} · ${esc(f.mok)}</td></tr>
+        <tr><th>재 원</th><td>${esc(f.fund)}</td><th>결제 방법</th><td>${esc(f.pay)}</td></tr>
+        <tr><th>거 래 처</th><td colspan="3">${esc(f.party)}</td></tr>
+        <tr><th style="height:40mm">적 요</th><td colspan="3" class="body">${esc(f.desc)}</td></tr>
+        <tr><th>증빙 서류</th><td colspan="3">${esc(f.proof)}</td></tr>
+      </table>
+      <p style="margin-top:8mm">위 금액을 지출하고자 하오니 결재하여 주시기 바랍니다.</p>
+      <p style="text-align:right;margin-top:10mm">담당자 : ${esc(S.staff[0]?.name||'')} (인)</p></div>`;
+  }
+  return `<div class="a4"><div style="text-align:center;font:700 22px 'Hahmlet',serif;margin-bottom:6mm">${esc(o.name)}</div>${apprTable()}<div class="clear"></div>
+    <table class="dt">
+      <tr><th>문서번호</th><td>${esc(no)}</td><th>시행일자</th><td>${esc(fmtK(f.date))}</td></tr>
+      <tr><th>수 신</th><td colspan="3">내부결재</td></tr>
+      <tr><th>기 안 자</th><td colspan="3">${esc(S.staff[0]?.dept||'')} ${esc(S.staff[0]?.pos||'')} ${esc(S.staff[0]?.name||'')}</td></tr>
+      <tr><th>제 목</th><td colspan="3"><b>${esc(f.title)}</b></td></tr>
+    </table>
+    <div class="body" style="margin-top:6mm;min-height:120mm">${esc(f.body)}</div>
+    <p>붙임 &nbsp;${esc(f.attach)}</p></div>`;
+}
+function formHtml(type, f) {
+  const inp = (k, l, t = 'text', cls = '') => `<label class="f ${cls}">${l}<input class="inp" type="${t}" id="df-${k}" value="${esc(f[k] ?? '')}"></label>`;
+  if (type === 'emp' || type === 'career') return `
+    <div class="f">직원 선택 <span class="faint" style="font-weight:400">(여러 명 고르면 한꺼번에 만들어져요)</span></div>
+    <div style="display:flex;flex-direction:column;gap:4px;max-height:170px;overflow:auto;border:1px solid var(--line);border-radius:8px;padding:8px">
+      ${S.staff.map(s=>`<label class="row small" style="gap:8px"><input type="checkbox" data-staff="${s.id}" ${D.staffIds.includes(s.id)?'checked':''}> <b>${esc(s.name)}</b> <span class="faint">${esc(s.dept)} · ${esc(s.pos)}${s.left?' · 퇴사':''}</span></label>`).join('')}
+    </div>
+    <div class="form-grid">${inp('purpose','용도','text','span2')}${inp('issue','발급일','date')}</div>`;
+  if (type === 'expense') return `<div class="form-grid">${inp('date','결의일','date')}${inp('fund','재원')}${inp('gwan','관')}${inp('hang','항')}${inp('mok','목')}${inp('amount','금액 (원)','number')}${inp('party','거래처','text','span2')}${inp('pay','결제 방법')}${inp('proof','증빙 서류')}</div>
+    <label class="f">적요<textarea class="inp" id="df-desc" rows="3">${esc(f.desc)}</textarea></label>`;
+  return `<div class="form-grid">${inp('date','시행일자','date')}</div>${inp('title','제목')}
+    <label class="f">본문<textarea class="inp" id="df-body" rows="9">${esc(f.body)}</textarea></label>${inp('attach','붙임')}`;
+}
+VIEWS.docs = v => {
+  if (!D.f.emp) D.f = dfDefaults();
+  const f = D.f[D.type], T = DOCT[D.type];
+  v.innerHTML = `
+  <div class="page-head"><div><h1>문서 자동생성</h1><p>직원 정보와 기관 정보를 한 번 넣어 두면 증명서·결의서·기안문이 A4 양식으로 채워집니다. 문서번호는 발급대장에 기록할 때 자동으로 올라가요.</p></div></div>
+  <div class="seg no-print" role="group">${Object.entries(DOCT).map(([k,o])=>`<button aria-pressed="${D.type===k}" data-dt="${k}">${o.name}</button>`).join('')}</div>
+  <div class="print-host"><div class="doc-layout">
+    <section class="panel doc-form"><div class="panel-h"><h2>${T.name} 내용</h2></div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px" id="dform">
+      ${formHtml(D.type, f)}
+      ${T.log?`<div class="note small">다음 문서번호 <b class="mono">${esc(nextDocNo())}</b></div>`:''}
+      <div class="row">
+        <button class="btn primary" id="d-print">${icon('print')}인쇄 · PDF</button>
+        ${T.log?`<button class="btn" id="d-log">발급대장에 기록</button>`:''}
+      </div>
+      ${CAN_FILE?'':'<div class="note warn small">이 화면(Claude 아티팩트)에서는 인쇄 창이 막혀 있어요. GitHub 배포본에서 같은 데이터로 인쇄하세요 — 설정·백업에서 데이터를 옮길 수 있어요.</div>'}
+    </div></section>
+    <div class="preview-wrap" id="pv"></div>
+  </div></div>
+
+  <div class="grid-2 no-print">
+    <section class="panel"><div class="panel-h"><h2>발급대장</h2><span class="faint small">${S.docLog.length}건</span></div>
+      ${tableHtml([{h:'문서번호',f:r=>`<span class="mono">${esc(r.no)}</span>`},{h:'종류',f:r=>esc(r.type)},{h:'대상·제목',f:r=>esc(r.name),cls:'wrap'},{h:'용도',f:r=>esc(r.purpose||'')},{h:'발급일',f:r=>esc(r.date)}], S.docLog.slice().reverse())}
+      <div class="panel-b row"><button class="btn sm" id="log-copy">${icon('copy')}대장 복사</button></div></section>
+    <section class="panel"><div class="panel-h"><h2>직원 명부</h2><div class="row"><button class="btn sm" id="st-paste">엑셀에서 붙여넣기</button><button class="btn sm primary" id="st-add">${icon('plus')}추가</button></div></div>
+      ${tableHtml([{h:'성명',f:s=>`<b>${esc(s.name)}</b>`},{h:'소속·직위',f:s=>esc(s.dept+' '+s.pos)},{h:'입사일',f:s=>`<span class="mono">${esc(s.hired)}</span>`},{h:'퇴사일',f:s=>s.left?`<span class="mono">${esc(s.left)}</span>`:'<span class="chip ok">재직</span>'},{h:'',f:s=>`<button class="btn ghost sm" data-edit-st="${s.id}">편집</button>`}], S.staff)}
+      <div class="panel-b faint small">주민등록번호는 저장하지 않아요. 증명서에는 생년월일만 들어갑니다.</div></section>
+  </div>`;
+
+  const renderPreview = () => {
+    const pv = $('#pv', v); let html;
+    if (D.type === 'emp' || D.type === 'career') {
+      const sel = S.staff.filter(s => D.staffIds.includes(s.id));
+      const base = S.docSeq[today().getFullYear()] || 0, y = today().getFullYear();
+      html = sel.length ? sel.map((s, i) => docHtml(D.type, f, s, `${S.settings.docPrefix} 제${y}-${String(base + 1 + i).padStart(4, '0')}호`)).join('') : '<div class="empty">직원을 한 명 이상 골라 주세요</div>';
+    } else html = docHtml(D.type, f, null, nextDocNo());
+    pv.innerHTML = `<div class="a4-scale">${html}</div>`;
+    fitA4(pv);
+  };
+  renderPreview();
+  const ro = new ResizeObserver(() => fitA4($('#pv', v))); ro.observe($('#pv', v));
+
+  $$('[data-dt]', v).forEach(b => b.onclick = () => { D.type = b.dataset.dt; render(); });
+  $('#dform', v).addEventListener('input', e => {
+    const id = e.target.id; if (id && id.startsWith('df-')) { f[id.slice(3)] = e.target.type === 'number' ? Number(e.target.value) : e.target.value; renderPreview(); }
+  });
+  $('#dform', v).addEventListener('change', e => {
+    const s = e.target.dataset.staff; if (!s) return;
+    D.staffIds = e.target.checked ? [...new Set([...D.staffIds, s])] : D.staffIds.filter(x => x !== s); renderPreview();
+  });
+  $('#d-print', v).onclick = () => { if (!CAN_FILE) { toast('인쇄는 GitHub 배포본에서 돼요'); return; } $('.a4-scale', v).style.transform = 'none'; window.print(); fitA4($('#pv', v)); };
+  const lg = $('#d-log', v);
+  if (lg) lg.onclick = () => {
+    const y = today().getFullYear();
+    const targets = (D.type === 'emp' || D.type === 'career') ? S.staff.filter(s => D.staffIds.includes(s.id)).map(s => s.name) : [f.title];
+    if (!targets.length) { toast('대상을 먼저 골라 주세요'); return; }
+    targets.forEach(nm => { S.docSeq[y] = (S.docSeq[y] || 0) + 1; S.docLog.push({no:`${S.settings.docPrefix} 제${y}-${String(S.docSeq[y]).padStart(4,'0')}호`, type:DOCT[D.type].name, name:nm, purpose:f.purpose||'', date:f.issue||f.date}); });
+    save(); render(); toast(`${targets.length}건을 발급대장에 기록했어요`);
+  };
+  $('#log-copy', v).onclick = () => copyText([['문서번호','종류','대상·제목','용도','발급일'], ...S.docLog.map(r => [r.no, r.type, r.name, r.purpose||'', r.date])].map(r => r.join('\t')).join('\n'), '발급대장을 복사했어요');
+  $('#st-add', v).onclick = () => editStaff(null);
+  $$('[data-edit-st]', v).forEach(b => b.onclick = () => editStaff(b.dataset.editSt));
+  $('#st-paste', v).onclick = pasteStaff;
+};
+function fitA4(pv) {
+  if (!pv) return; const sc = $('.a4-scale', pv); if (!sc) return;
+  const w = pv.clientWidth - 32, a4w = 794; // 210mm ≈ 794px
+  const k = Math.min(1, w / a4w); sc.style.transform = `scale(${k})`; sc.style.width = a4w + 'px';
+  sc.style.height = ''; const h = sc.scrollHeight; sc.style.height = (h * k) + 'px'; sc.style.marginBottom = '0';
+}
+function editStaff(id) {
+  const s = id ? S.staff.find(x => x.id === id) : {id: uid(), name:'', birth:'', dept:'', pos:'', hired:'', left:'', duty:''};
+  const inp = (k, l, t = 'text') => `<label class="f">${l}<input class="inp" type="${t}" id="st-${k}" value="${esc(s[k] || '')}"></label>`;
+  sheet({title: id ? '직원 정보' : '직원 추가', body: `<div class="form-grid">${inp('name','성명')}${inp('birth','생년월일','date')}${inp('dept','소속')}${inp('pos','직위')}${inp('hired','입사일','date')}${inp('left','퇴사일','date')}</div>${inp('duty','담당업무')}`,
+    foot: `${id?'<button class="btn danger" id="st-del">삭제</button><span class="grow"></span>':''}<button class="btn" data-close>취소</button><button class="btn primary" id="st-save">저장</button>`,
+    onMount: el => {
+      $('#st-save', el).onclick = () => { ['name','birth','dept','pos','hired','left','duty'].forEach(k => s[k] = $('#st-' + k, el).value.trim()); if (!s.name) { toast('성명을 적어 주세요'); return; } if (!id) S.staff.push(s); save(); closeSheet(); render(); toast('저장했어요'); };
+      const del = $('#st-del', el); if (del) del.onclick = () => { if (del.dataset.armed) { S.staff = S.staff.filter(x => x.id !== id); D.staffIds = D.staffIds.filter(x => x !== id); save(); closeSheet(); render(); } else { del.dataset.armed = 1; del.textContent = '한 번 더 누르면 삭제'; } };
+    }});
+}
+function pasteStaff() {
+  sheet({title:'엑셀에서 직원 붙여넣기', wide:true, body:`<div class="note">엑셀에서 제목 줄까지 포함해 범위를 복사한 뒤 아래에 붙여 넣으세요. <b>성명, 생년월일, 소속(부서), 직위, 입사일, 퇴사일, 담당업무</b> 열을 이름으로 알아봅니다.</div>
+    <textarea class="inp mono" id="sp-t" rows="9" placeholder="성명&#9;생년월일&#9;부서&#9;직위&#9;입사일"></textarea><div id="sp-r" class="small faint"></div>`,
+    foot:`<button class="btn" data-close>취소</button><button class="btn primary" id="sp-go">추가하기</button>`,
+    onMount: el => {
+      const parse = () => {
+        const lines = $('#sp-t', el).value.split(/\r?\n/).filter(l => l.trim()).map(l => l.split('\t'));
+        if (lines.length < 2) return [];
+        const h = lines[0].map(x => x.trim()), col = re => h.findIndex(x => re.test(x));
+        const c = {name:col(/성명|이름/), birth:col(/생년|생일/), dept:col(/소속|부서|팀/), pos:col(/직위|직급|직책/), hired:col(/입사|채용/), left:col(/퇴사|퇴직/), duty:col(/업무|담당/)};
+        if (c.name < 0) return [];
+        return lines.slice(1).map(r => { const o = {id: uid()}; for (const k in c) { const v = c[k] >= 0 ? (r[c[k]] || '').trim() : ''; o[k] = /birth|hired|left/.test(k) ? (toYmd(v) || '') : v; } return o; }).filter(o => o.name);
+      };
+      $('#sp-t', el).oninput = () => { const p = parse(); $('#sp-r', el).textContent = p.length ? `${p.length}명 인식: ${p.slice(0,5).map(x=>x.name).join(', ')}${p.length>5?' …':''}` : '제목 줄에 "성명"이 있어야 해요'; };
+      $('#sp-go', el).onclick = () => { const p = parse(); if (!p.length) { toast('인식된 직원이 없어요'); return; } S.staff.push(...p); save(); closeSheet(); render(); toast(`${p.length}명을 추가했어요`); };
+    }});
+}
+
+/* ================= settings & backup ================= */
+VIEWS.settings = v => {
+  const st = S.settings, o = st.org;
+  const hol = Object.entries(S.holidays).sort().map(([d, n]) => `${d} ${n}`).join('\n');
+  v.innerHTML = `
+  <div class="page-head"><div><h1>설정 · 백업</h1><p>기관 정보, 급여일, 공휴일을 고치고 데이터를 다른 기기로 옮깁니다.</p></div></div>
+  <div class="grid-2">
+    <section class="panel"><div class="panel-h"><h2>기관 · 문서</h2></div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px">
+      <div class="form-grid">
+        <label class="f span2">기관명<input class="inp" id="o-name" value="${esc(o.name)}"></label>
+        <label class="f">대표자(센터장)<input class="inp" id="o-rep" value="${esc(o.rep)}"></label>
+        <label class="f">전화<input class="inp" id="o-tel" value="${esc(o.tel)}"></label>
+        <label class="f span2">소재지<input class="inp" id="o-addr" value="${esc(o.addr)}"></label>
+        <label class="f">문서번호 머리말<input class="inp" id="o-pre" value="${esc(st.docPrefix)}"></label>
+        <label class="f">급여일 (매월)<input class="inp" type="number" min="1" max="31" id="o-pay" value="${esc(st.payday)}"></label>
+        <label class="f span2">결재란 (쉼표로 구분)<input class="inp" id="o-appr" value="${esc(st.approvers.join(', '))}"></label>
+      </div>
+      <div class="row"><button class="btn primary" id="o-save">저장</button></div>
+    </div></section>
+
+    <section class="panel"><div class="panel-h"><h2>백업 · 기기 간 옮기기</h2></div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px">
+      <div class="note">데이터는 <b>이 브라우저</b>에만 저장돼요. PC ↔ 휴대폰, 아티팩트판 ↔ GitHub 배포본 사이에서는 백업을 내보내고 다른 쪽에서 가져오세요. 주 1회 백업 파일을 NAS에 넣어 두기를 권해요.</div>
+      <div class="row">
+        <button class="btn" id="bk-copy">${icon('copy')}백업 복사</button>
+        <button class="btn" id="bk-dl">${icon('down')}백업 파일 저장</button>
+      </div>
+      <label class="f">가져오기 — 백업 내용을 붙여 넣거나 파일을 고르세요<textarea class="inp mono" id="bk-in" rows="4" placeholder='{"v":1,...}'></textarea></label>
+      <div class="row"><input type="file" id="bk-file" accept=".json,application/json" class="small"><span class="grow"></span><button class="btn primary" id="bk-load">가져오기</button></div>
+      <div style="border-top:1px solid var(--line);padding-top:12px" class="row"><span class="faint small grow">모든 데이터를 처음 상태로 되돌립니다</span><button class="btn danger sm" id="bk-reset">초기화</button></div>
+    </div></section>
+  </div>
+  <section class="panel"><div class="panel-h"><h2>공휴일</h2><span class="faint small">한 줄에 "YYYY-MM-DD 이름". 마감 순연 계산에 쓰여요</span></div><div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
+    <textarea class="inp mono" id="hol" rows="8">${esc(hol)}</textarea><div class="row"><button class="btn" id="hol-save">공휴일 저장</button><span class="faint small">2026~2027년 기본값 포함 · 임시공휴일은 직접 추가</span></div></div></section>`;
+
+  $('#o-save').onclick = () => {
+    Object.assign(o, {name:$('#o-name').value.trim(), rep:$('#o-rep').value.trim(), tel:$('#o-tel').value.trim(), addr:$('#o-addr').value.trim()});
+    st.docPrefix = $('#o-pre').value.trim() || '구로IL'; st.payday = Math.min(31, Math.max(1, Number($('#o-pay').value) || 25));
+    st.approvers = $('#o-appr').value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 6);
+    save(); toast('저장했어요');
+  };
+  const dump = () => JSON.stringify(S);
+  $('#bk-copy').onclick = () => copyText(dump(), '백업 내용을 복사했어요. 다른 기기의 "가져오기"에 붙여 넣으세요');
+  $('#bk-dl').onclick = () => { download(`업무허브_백업_${ymd(today())}.json`, dump(), 'application/json'); if (CAN_FILE) toast('백업 파일을 저장했어요'); };
+  $('#bk-file').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { $('#bk-in').value = r.result; toast('파일을 읽었어요. "가져오기"를 누르세요'); }; r.readAsText(f); };
+  $('#bk-load').onclick = () => {
+    try { const d = JSON.parse($('#bk-in').value); if (!d || !d.rules || !d.settings) throw 0; S = d; const def = defaults(); for (const k of Object.keys(def)) if (S[k] === undefined) S[k] = def[k]; save(); render(); toast('가져왔어요'); }
+    catch (e) { toast('백업 형식이 아니에요. 복사한 내용 전체를 붙여 넣어 주세요'); }
+  };
+  const rs = $('#bk-reset'); rs.onclick = () => { if (rs.dataset.armed) { S = defaults(); save(); render(); toast('초기화했어요'); } else { rs.dataset.armed = 1; rs.textContent = '한 번 더 누르면 초기화'; } };
+  $('#hol-save').onclick = () => {
+    const h = {}; $('#hol').value.split('\n').forEach(l => { const m = l.trim().match(/^(\d{4}-\d{2}-\d{2})\s*(.*)$/); if (m) h[m[1]] = m[2] || '공휴일'; });
+    S.holidays = h; save(); toast(`공휴일 ${Object.keys(h).length}일을 저장했어요`);
+  };
+};
+
+/* ================= boot ================= */
+S = load();
+render();
+loadConnectors().then(() => { if (['home','calendar','apps'].includes(current())) render(); });
+
+</script>
+</body>
+</html>
