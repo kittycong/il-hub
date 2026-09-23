@@ -1,4 +1,4 @@
-# 구로IL 업무허브
+# IL 허브 (구로IL 업무허브)
 
 사무행정 업무를 한곳에서 보는 통합 허브 (PC·모바일 겸용, 설치 없음, 서버 없음).
 
@@ -10,10 +10,10 @@
 - **앱**: 업무분장·휴가·채용·출장문서·생일·빵당번 앱 모음 + 휴가·생일 데이터 자동 연동(읽기 전용)
 
 ## 배포 (GitHub Pages)
-1. GitHub에서 새 저장소 `grcil-hub` 만들기 (Public)
+1. GitHub에서 새 저장소 `il-hub` 만들기 (Public)
 2. 이 폴더의 `index.html`, `manifest.webmanifest`, `icon.svg`, `README.md` 업로드 (Add file → Upload files)
 3. Settings → Pages → Branch: `main` / `(root)` → Save
-4. 1~2분 뒤 `https://kittycong.github.io/grcil-hub/` 접속
+4. 1~2분 뒤 `https://kittycong.github.io/il-hub/` 접속
 5. 휴대폰: 위 주소를 열고 "홈 화면에 추가"
 
 ## 데이터
@@ -22,7 +22,7 @@
 - 주민등록번호는 저장하지 않습니다.
 
 ## 앱 데이터 연동 (읽기 전용)
-- 허브를 반드시 `kittycong.github.io/grcil-hub/` 에 배포하세요. 같은 도메인이라 휴가 대시보드(`guro_huga`)·생일 관리(`birth_guro1`)가 이 브라우저에 저장한 데이터를 허브가 바로 읽습니다.
+- 허브를 반드시 `kittycong.github.io/il-hub/` 에 배포하세요. 같은 도메인이라 휴가 대시보드(`guro_huga`)·생일 관리(`birth_guro1`)가 이 브라우저에 저장한 데이터를 허브가 바로 읽습니다.
 - 휴가: 이 브라우저의 최신 작업본 → 공유 데이터 `guro_huga/data/app-data.json` 순으로 읽습니다. Supabase에만 저장했다면 휴가 앱에서 "공유 저장"을 한 번 해 주세요.
 - 생일: 생일 앱에 저장된 명단 → 없으면 앱의 기본 명단.
 - 토큰·관리자 비밀번호 키는 읽지 않고, 다른 앱의 데이터를 수정하지 않습니다.
