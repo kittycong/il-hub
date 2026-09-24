@@ -87,8 +87,8 @@ a{color:var(--accent)}
   .shell{grid-template-columns:1fr}
   .side{display:none}
   .main{padding-block:16px 96px}
-  .tabbar{display:grid;grid-template-columns:repeat(6,1fr);position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
-  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--ink-3);text-decoration:none;padding:4px 0;position:relative}
+  .tabbar{display:grid;grid-template-columns:repeat(7,1fr);position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;white-space:nowrap;color:var(--ink-3);text-decoration:none;padding:4px 0;position:relative}
   .tabbar a[aria-current="page"]{color:var(--accent);font-weight:600}
   .tabbar svg{width:22px;height:22px}
   .tabbar .dot{position:absolute;top:2px;right:calc(50% - 16px);width:8px;height:8px;border-radius:50%;background:var(--stamp)}
@@ -250,6 +250,9 @@ tr.entered td.t{text-decoration:line-through}
 /* ---------- documents ---------- */
 .doc-layout{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:18px;align-items:start}
 @media (max-width:980px){.doc-layout{grid-template-columns:1fr}}
+.ho-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,340px);gap:18px;align-items:start}
+.ho-layout>*{min-width:0}
+@media (max-width:860px){.ho-layout{grid-template-columns:1fr}}
 .preview-wrap{background:var(--sunk);border-radius:var(--radius);padding:16px;overflow:auto;border:1px solid var(--line)}
 .a4{background:var(--paper);color:var(--paper-ink);width:210mm;min-height:297mm;padding:22mm 20mm;margin:0 auto;box-shadow:var(--shadow);font:14px/1.7 "Noto Serif KR","Hahmlet","Batang",serif;position:relative}
 .a4-scale{transform-origin:top left}
@@ -326,6 +329,7 @@ const ICON = {
   doc:'<path d="M6 2.5h8l5 5V21a.5.5 0 0 1-.5.5h-12A.5.5 0 0 1 6 21z"/><path d="M14 2.5v5h5M9 12h7M9 16h7"/>',
   apps:'<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
+  hand:'<path d="M4 7h9a3 3 0 0 1 0 6H9"/><path d="m7 10-3-3 3-3"/><path d="M20 17h-9a3 3 0 0 1 0-6"/><path d="m17 20 3-3-3-3"/>',
   check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
   edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
@@ -356,6 +360,13 @@ function load() {
     const byId = Object.fromEntries(def.apps.map(a => [a.id, a]));
     saved.apps = saved.apps.map(a => byId[a.id] ? {...a, url: byId[a.id].url || a.url, st: byId[a.id].st, desc: byId[a.id].desc} : a);
     saved.v = 3;
+  }
+  if (saved.v < 4) { // v4: 인수인계 문서에서 나온 마감 추가, 급여 루틴을 실제 절차로
+    const have = new Set(saved.rules.map(r => r.id));
+    saved.rules.push(...def.rules.filter(r => !have.has(r.id)));
+    const rt2 = saved.routines.find(r => r.id === 'rt2'), d2 = def.routines.find(r => r.id === 'rt2');
+    if (rt2 && rt2.steps.length === 6 && rt2.steps[0].t === '근태·연차·입퇴사 변동 반영') rt2.steps = d2.steps;
+    saved.v = 4;
   }
   return saved;
 }
@@ -398,6 +409,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet()
 const ROUTES = [
   {id:'home', label:'오늘', icon:'home'},
   {id:'calendar', label:'캘린더', icon:'cal'},
+  {id:'handover', label:'인수인계', icon:'hand'},
   {id:'routine', label:'루틴', icon:'list'},
   {id:'bridge', label:'진우 연결', icon:'bridge'},
   {id:'docs', label:'문서', icon:'doc'},
@@ -424,6 +436,253 @@ function render() {
 }
 window.addEventListener('hashchange', render);
 
+/* ================= 인수인계 업무 매뉴얼 (SOP) =================
+   원본: 전임자 인계 한글 문서 11종 (2026.9). 비밀번호·아이디·개인 평가내용·직원 실명은 넣지 않음.
+   경로는 공용서버 기준 상대경로. 서버 주소는 설정에서 이 기기에만 저장. */
+const HO_CATS = {
+  hr:{name:'인사', color:'var(--cat-pay)'},
+  pay:{name:'급여', color:'var(--cat-acc)'},
+  ins:{name:'사회보험', color:'var(--cat-ins)'},
+  fin:{name:'회계·자금', color:'var(--cat-tax)'},
+  gen:{name:'총무·운영', color:'var(--cat-etc)'},
+};
+const HO_FREQ = {daily:'매일', monthly:'매월', yearly:'매년', adhoc:'발생 시'};
+const SYS = {
+  jinwoo:'진우(복지종합시스템)', botem:'보탬e', ibk:'기업은행', shinhan:'신한은행', edi:'4대보험 EDI',
+  kcomwel:'고용·산재 토탈서비스', nhis:'건강보험 EDI·통합징수포털', nps:'국민연금 EDI', salary:'월급봉투', kiss:'키스오피스', gonje:'한국사회복지공제회', excel:'엑셀', nas:'공용서버',
+};
+
+const HO_SOPS = [
+/* ---------------- 급여 ---------------- */
+{id:'pay', cat:'pay', freq:'monthly', title:'사무국 직원 급여', when:'매월 25일 지급 (주말이면 전 금요일) · 작업은 20일 전후 시작',
+ systems:['jinwoo','edi','botem','ibk','shinhan','salary','excel'],
+ paths:[
+  ['급여 기준표 (호봉 시설기준)','사무행정실\\01_인사\\급여\\사무국직원\\2026년\\2026년 사무국직원 호봉 시설기준 급여 책정.xlsx'],
+  ['일할계산','사무행정실\\01_인사\\급여\\사무국직원\\2026년\\2026년 일할계산.xlsx'],
+  ['사회보험 고지내역','사무행정실\\01_인사\\급여\\사무국직원\\2026년\\사회보험 고지내역'],
+  ['사회보험부담금','사무행정실\\01_인사\\급여\\사무국직원\\2026년\\사회보험부담금'],
+  ['급여베이스','사무행정실\\01_인사\\급여\\사무국직원\\2026년\\급여베이스'],
+  ['기안','사무행정실\\01_인사\\급여\\사무국직원\\2026년\\기안'],
+  ['급여이체 엑셀','사무행정실\\01_인사\\급여\\사무국직원\\2026년\\급여이체'],
+  ['월급봉투 업로드 파일','사무행정실\\01_인사\\급여\\사무국직원\\2026년\\월급봉투'],
+  ['원천세 신고','사무행정실\\01_인사\\원천세 신고'],
+  ['내부기안 색인 (번호 따기)','문서대장\\2026내부기안대장 (서울시·주택·PAS 색인)'],
+ ],
+ sections:[
+  {h:'1. 사전 준비', steps:[
+   '해당 월 입사자·퇴사자 확인 → 있으면 일할계산 (월 급여 ÷ 해당 월 총 일수 × 재직일수)',
+   '4대보험 EDI에서 국민연금·건강·고용 고지내역 확인 → 고지내역 폴더에 해당 월 엑셀 저장',
+   '같은 고지내역을 사회보험부담금 파일에도 붙여넣기 (사용자 부담분 확인용)',
+   '중도입사자: 입사 첫 달 국민연금 공제 안 함 → 다음 달 "국민연금 평균소득월액 적용" 체크',
+   '명절수당·특별상여 있는 달인지 확인 (명절수당 = 명절 든 달 기본급 60%, 지침 확인)'],
+   warn:['급여대장 보험료와 실제 고지내역이 다르면 실제 고지내역 기준으로 처리 (5월 정산분 반영 이후 차이 있음)','65년생 이상은 생일 지나면 국민연금 대상 아님']},
+  {h:'2. 진우 급여 입력', steps:[
+   '급여관리 → 급여정보관리에서 직원별 급여정보 입력',
+   '근로일은 공휴일이어도 평일 날짜 수로, 총근로시간 = 근로일 × 8시간',
+   '식비 비과세 (올해 지침 금액 확인, 2026년 13만원) · 재원 비율대로 배분',
+   '두 개 이상 재원인 직원은 급여 기준표의 재원 비율 확인'],
+   warn:['재원: IL센터지원·주택(코디) = 보조금 / 활동지원·후원 = 자부담 / 특별상여는 대부분 자부담','국민연금은 소득이 20% 이상 안 바뀌면 고정']},
+  {h:'3. 급여 계산 · 보험료 수정', steps:[
+   '[급여계산] 작업연월 확인 → 부서별(사무국·사무행정실·활동지원팀·복지사업팀·사회서비스실) 하나씩 조회',
+   '[급여지급관리] 직원별 건강·고용보험료를 실제 고지금액으로 수정 → 저장',
+   '급여지급Data → Excel전송 (같은 부서 선택) → 급여베이스 폴더에 해당 월 저장',
+   '사회보험부담금 파일 급여베이스 시트에 붙여넣기 → 진우 급여대장 총액과 일치 확인',
+   '사회보험부담금대장에 사업주 부담분(고용·산재·건강) 붙여넣고 금액 확인'],
+   warn:['급여지급관리에서 보험료 수정·저장한 뒤에는 절대 [급여계산] 다시 돌리지 않기 (수정값이 덮어써짐)']},
+  {h:'4. 급여 기안', steps:[
+   '내부기안 색인에서 재원별 기안번호 따기 (서울시·주택·PAS)',
+   '사회보험부담금대장 시트 보고 재원별 급여세부내역서 작성',
+   '진우 급여대장 출력: 부서명별, 합계 출력, 첫 장만 결재란, 입사일 기준 표시',
+   '두 재원 이상 직원은 급여대장 이름 옆에 재원 수기 기재',
+   '재원별 기안 = 세부내역서 + 급여대장(해당 직원 페이지, 결재란 제외) + 사회보험·퇴직적립금 대장',
+   '결재: 국장·소장 서명, 대표는 메신저로 · 급여대장과 보험대장은 가로로 스캔'],
+   warn:['세부내역서: PAS는 후생경비 없음, 제수당(가족+명절)에 식비 포함','기안 재원 구분: 서울시(후원·상여 시 운영 포함) / PAS / 주택(상여 시 운영 포함)']},
+  {h:'5. 보탬e 인건비 집행', steps:[
+   '연초·신규인력 시 [참여인력관리(93002)] 등록 (근로계약서·통장사본 첨부)',
+   '[참여인력관리] 해당 월 급여금액 등록 (실지급액, 원천징수액 = 사용자분+근로자분+퇴직적립금)',
+   '[인건비 집행관리(93089)] 집행목적만 "O월 인건비"로 수정 → 저장 → 집행요청'],
+   warn:['서울시 부담금 인원 한도 있음 — 잦은 입퇴사로 급여 부족·보험료 잔액 생기면 구청 보고']},
+  {h:'6. 이체', steps:[
+   '결재 완료 후 기업은행 대량이체로 후원·활동지원 급여 각각 예약이체 (급여일 오전 9시, 인증서 3번)',
+   '이체 엑셀은 급여이체 폴더 기존 파일 참고 (적요 "구로장애인자립생활센"까지 — 글자수 제한)',
+   '보탬e [집행이체관리(93003)] 재원별 예약이체 (서울시 인증서 2번 / 나머지 1번)',
+   '사회보험(근로자·사용자분)은 예수금 통장, 퇴직적립금은 퇴직적립금 통장으로 각 재원 통장에서 이체',
+   '급여날 출근하자마자 보탬e 급여 송금 확인 · 보탬e로 받은 보험료·퇴직금도 예수금·퇴직 통장으로'],
+   warn:['신한은행 인증서: 예수금·퇴직 이체 2번, 주택 4번']},
+  {h:'7. 명세서 · 증빙', steps:[
+   '월급봉투(salaryday.co.kr) 비즈니스 계정으로 명세서 업로드·발송 (인증문자 담당자 확인)',
+   '진우 급여명세서 인쇄해 파일에 보관',
+   '은행 송금확인증 발급 (대량이체는 상세보기 인쇄)',
+   '사업 담당별 전표용으로 송금확인증 + 급여대장 복사본 전달 (주택 3·후원·활동·서울시)',
+   '서울시 급여: 복사본 + 기안 + 지출결의서 묶어 서울시 지출결의서 철',
+   '보탬e 서울시 사업: 비율 지급자 금액 수기 수정본을 증빙 업로드'],
+   warn:[]},
+  {h:'8. 마감', steps:[
+   '급여·보험료·퇴직적립금 이체 모두 완료 확인',
+   '원천세 신고 엑셀에 사무국 직원 해당 월 급여 입력',
+   '보험금대장 시트에 지급 급여 반영',
+   '중도입사자 전월 일할분이 다음 달 급여에 더해졌는지 확인'],
+   warn:[]},
+ ],
+ rules:['r1','r2','r3','r4']},
+
+{id:'resignins', cat:'pay', freq:'adhoc', title:'퇴사자 사회보험 정산', when:'퇴사 발생 시 · 고지산출은 매월 15일 이후',
+ systems:['nhis','excel'],
+ paths:[['퇴사자 건강보험료 계산','사무행정실\\01_인사\\급여\\사무국직원\\2026년\\사무국직원 퇴사자 건강보험료 계산.xlsx']],
+ sections:[
+  {h:'정산', steps:[
+   '사회보험통합징수포털에서 고지산출내역 엑셀 받아 건강보험 고지내역에 저장',
+   '퇴사자 건강보험료 계산 엑셀에 해당 직원 기입',
+   '납부할 보험료에 고지산출 보험료 기입: − 면 환급, + 면 급여에서 공제',
+   '말일 퇴사자는 지급 연기 동의서 받고 다음 달 초 상실신고 후 정산 반영 (14일 이내)'],
+   warn:['퇴사자 원천세 신고 때 실제 건강·고용보험 고지액을 원천세 담당에게 전달 (원천징수영수증 반영)']},
+  {h:'보조금 담당 퇴사자 이체', steps:[
+   '추가 징수 시: 근로자에게 받은 금액을 보조금 통장으로 → 근로자분과 합쳐 예수금 통장으로',
+   '환급 시: 예수금 통장 → 사업비 통장 → 근로자에게 이체'], warn:[]},
+ ], rules:[]},
+
+{id:'yearins', cat:'ins', freq:'yearly', title:'활동지원사 사회보험 연말정산', when:'다음 해 4월 고지 확인 후 → 5월 급여(4월분) 반영',
+ systems:['edi','jinwoo','excel'],
+ paths:[['전년도 정산자료','사무행정실\\01_인사\\사회보험정산\\2025년\\2025년 사회보험 정산']],
+ sections:[
+  {h:'1. 준비', steps:['전년도 「사회보험정산_보고자료」 복사해 올해 파일 만들기','전년도 「건강보험료」「고용보험 합계」 형식으로 올해 정산용 파일 준비'], warn:[]},
+  {h:'2. 고지내역 정리', steps:['건강·고용보험 파일에 당해 1~12월 + 다음 해 1~4월 고지내역 월별 붙여넣기','각 파일 TOTAL 시트 → 보고자료의 건강보험집계·고용보험집계 시트에 붙여넣기'], warn:[]},
+  {h:'3. 연말정산·급여 반영', steps:['사회보험정산 시트에 연말정산 데이터(성명·사번·부서·국민연금) 붙여넣기','진우에서 활동지원사 당해 급여 + 다음 해 1~3월 급여 추출해 붙여넣기','산출된 정산 결과값 확인'], warn:[]},
+  {h:'4. 검토·기안', steps:['정산금액 큰 대상자는 고지내역·급여데이터와 다시 대조','누락·중복 확인 후 「사회보험정산 리스트 보고」 정리','기안 작성 (정산요약서 + 정산 리스트 첨부) → 결재'], warn:['정산요약서와 리스트 금액 일치 확인']},
+  {h:'5. 전달', steps:['결재 후 활동지원사 급여담당자에게 정산 리스트 전달 (5월 급여 반영)'], warn:['당해 근무 활동지원사 누락 없는지 최종 확인']},
+ ], rules:['y8']},
+
+/* ---------------- 사회보험 신고 ---------------- */
+{id:'join', cat:'ins', freq:'adhoc', title:'입사자 4대보험 취득신고', when:'건강보험 입사 후 14일 이내 · 고용·산재·연금은 1일 입사면 당월 15일, 중간 입사면 다음 달 15일',
+ systems:['kcomwel','edi'],
+ paths:[['입사자 신고','사무행정실\\01_인사\\사회보험신고\\(연도)\\입사자신고']],
+ sections:[
+  {h:'준비', steps:['주민번호·인적사항 확인, 피부양자 등록 여부 먼저 확인','월 근무시간 174시간, 주 40시간 · 급여는 입사 달 호봉 금액 (비고에 호봉)','입사 후 1주~10일 사이에 신고하면 기한 안전'], warn:[]},
+  {h:'고용·산재 토탈서비스 신고', steps:[
+   '사업장 명의 인증서(1번)로 로그인 → 근로자 자격취득신고',
+   '센터 사업장번호 911-00-06539-1 선택 (복지일자리 사업장과 구분)',
+   '고용: 월평균보수, 취득일=입사일, 직종 231(사회복지사·상담사), 주 40시간, 계약종료연월',
+   '국민연금 18세 이상 당연취득 · 취득월 납부: 미희망 (1일 입사·활동지원사는 희망)',
+   '건강보험 취득부호: 직장가입자 변경 · 피부양자 있으면 신청 "예"',
+   '신고자료 검증 → 접수 → 서식 출력해 사회보험신고서 파일에 철'],
+   warn:['국민연금: 60세 생일 지난 사람은 체크하지 않음 (입사일 기준)']},
+ ], rules:['r5']},
+
+{id:'leave', cat:'ins', freq:'adhoc', title:'퇴사자 4대보험 상실신고', when:'퇴사 후 14일 이내 (빠를수록 좋음)',
+ systems:['kcomwel','jinwoo'],
+ paths:[['퇴사자 신고','사무행정실\\01_인사\\사회보험신고\\(연도)\\퇴사자신고']],
+ sections:[
+  {h:'신고', steps:[
+   '당해 근무월 = 월급 나간 달 · 연간 총액 = 진우 급여대장 + 마지막 달 일할분 (식비 제외)',
+   '고용·산재 토탈 → 자격상실신고',
+   '고용보험 상실일 = 퇴사일 + 1일 · 상실사유는 사직서 사유대로 (계약만료 32 / 개인사정 11-20)',
+   '국민연금 상실부호: 사용관계 종료 · 건강보험 상실부호: 퇴직',
+   '신고자료 검증 → 접수 → 이틀 뒤 마이페이지 민원접수현황(4대공통서식)에서 처리 확인'],
+   warn:['초일취득·당월상실 납부여부는 체크하지 않음','국민연금 수정신고는 20% 이상 차이 날 때만']},
+  {h:'보수 변경', steps:['고용·산재·건강: 월평균보수변경신고로 수정한 금액 신고'], warn:[]},
+ ], rules:['r5']},
+
+{id:'parental', cat:'ins', freq:'adhoc', title:'출산휴가·육아휴직 사회보험', when:'산전 육아휴직 · 출산휴가 · 산후 육아휴직 시작/종료 시',
+ systems:['nhis','nps','kcomwel'],
+ paths:[],
+ sections:[
+  {h:'구간별 처리', steps:[
+   '산전 육아휴직 시작: 건강보험 납부고지 유예 신청 · 국민연금 납부예외',
+   '출산휴가 시작: 건강보험 유예 해지 · 국민연금 납부재개',
+   '산후 육아휴직 시작: 건강보험 유예 재신청 (자녀 주민번호 필요) · 국민연금 납부예외',
+   '고용·산재 휴직 신청 (계속 또는 출산휴가 이후 신청)',
+   '복귀 후 각 보험 납부 재개'],
+   warn:['출산휴가 90일 중 60일은 통상임금 100% (기본급+식비+연 상여/12), 30일은 0원','출산휴가 차액 지급분은 고용보험료 떼지 않음 (보수총액 신고 때 정산)']},
+  {h:'육아휴직 확인서', steps:['12·13번란에 출산전후 휴가 90일 전체 기간 작성','60일은 지급한 통상임금, 30일은 0원'], warn:[]},
+  {h:'육아휴직 후 퇴사', steps:['건강보험 납입고지유예 해지 신고 먼저 (해지일=퇴사일, 동시퇴직 Y, 유예기간 보수총액 기재)','그다음 4대보험 상실신고'], warn:[]},
+ ], rules:[]},
+
+/* ---------------- 인사 ---------------- */
+{id:'contract', cat:'hr', freq:'adhoc', title:'근로계약 관리', when:'신규 입사 · 계약 만료 · 호봉 승급 · 정규직 전환 · 승진 시 (1일자)',
+ systems:['nas'],
+ paths:[['근로계약서 서식','사무행정실\\01_인사\\근로계약서\\(연도)\\서식']],
+ sections:[
+  {h:'계약', steps:['기간제·상용 등 근로형태 구분해 최신 서식으로 작성','계약 전 호봉·개인정보 확인 (서울시 사회복지시설 인건비 기준)','2부 출력 → 간인 → 근로계약 담당자 보고','계약만료일 확인해 재계약','체결 후 개인 인사파일에 보관'], warn:[]},
+ ], rules:[]},
+
+{id:'newhire', cat:'hr', freq:'adhoc', title:'신규 입사자 인사업무', when:'입사 확정 시',
+ systems:['jinwoo','nas'],
+ paths:[['근로계약서','사무행정실\\01_인사\\근로계약서\\(연도)\\계약서'],['수습 평가서약서·근무평가표','사무행정실\\01_인사\\인사평가\\수습직원']],
+ sections:[
+  {h:'순서', steps:[
+   '인사카드 받아 보건복지부·처우개선계획 경력 기준으로 호봉 획정 → 국장·소장·대표 보고',
+   '최신 근로계약서 양식에 입력 → 2부 출력·간인',
+   '수습 평가서약서·근무평가표(최신본), 개인정보 동의서, 계약서 2부를 인사 담당에게 전달',
+   '계약서 받으면 호봉대로 4대보험 취득신고 (→ 입사자 4대보험 취득신고)',
+   '진우에 인정경력·호봉 등록',
+   '단체상해공제 인원 추가 (→ 단체상해공제)',
+   '보탬e 보조금 인력이면 참여인력 등록'], warn:[]},
+ ], rules:[]},
+
+{id:'promo', cat:'hr', freq:'adhoc', title:'특별승급 심사', when:'특별승급 추천 시',
+ systems:['nas'], paths:[],
+ sections:[
+  {h:'심사표 작성', steps:['대상자 소속·직위/직급·현 호봉·입사일·주요경력·자격증 기재','5개 항목 각 20점 채점: 직무수행·전문성 / 업무성과·완성도 / 책임성·조직기여 / 문제해결·업무개선 / 리더십·조직관리','종합의견 작성 → 평가자 서명','결재 후 호봉 변경 계약서 (1일자) · 진우 호봉 수정'], warn:[]},
+ ], rules:[]},
+
+{id:'accident', cat:'hr', freq:'adhoc', title:'단체상해공제 가입·해지', when:'입사·퇴사 시 · 만료일 11월 9일 갱신',
+ systems:['gonje'], paths:[],
+ sections:[
+  {h:'가입 (신규 입사)', steps:['개인정보 동의서 받기','공제회 → 인원추가 → 인적정보 입력·동의 → 저장','청약서/영수증 출력 → 추가 청약서·인원명세서로 기안 후 지출'], warn:['보험료 재원: 보조금 급여자 → 자율재원 / 활동지원 급여자 → 활동지원 재원','정부지원 단체상해 원칙, 지원금 소진 시 일반 가입 (현재 일반)']},
+  {h:'해지 (퇴사)', steps:['인원해지 → 가입자 리스트 → 대상자 선택 → 등록','환급정보는 가입 때 지출한 재원 계좌로'], warn:[]},
+ ], rules:['y9']},
+
+/* ---------------- 회계·자금 ---------------- */
+{id:'daily', cat:'fin', freq:'daily', title:'자금일보', when:'매일 오전 (월요일은 금·토·일 내역까지)',
+ systems:['ibk','shinhan','excel'],
+ paths:[['자금일보','사무행정실\\03_회계\\자금일보\\2026년\\2026년 자금일보']],
+ sections:[
+  {h:'작성', steps:[
+   '기업은행·신한은행 전일 수입·지출 확인',
+   '[수입입력]·[지출입력] 시트에 작성',
+   '[자금일보] 시트 검색기간 = 전일 → [내역조회]',
+   '계좌별 잔액이 실제 은행 잔액과 같은지 확인',
+   '[출력하기] → [파일생성] → 오늘 날짜로 저장, 원본 엑셀도 저장',
+   '출력본 문서철에 편철·도장, 중요한 건은 국장·소장·대표 보고'], warn:[]},
+ ], rules:[]},
+
+{id:'rent', cat:'fin', freq:'monthly', title:'임차료·관리비 지출 (보탬e)', when:'매월 · 전자세금계산서 수신 후',
+ systems:['botem','shinhan'], paths:[],
+ sections:[
+  {h:'준비', steps:['임차료·관리비 전자세금계산서(메일)·우편 명세서 보관','공급자·공급가액·거래내역 확인'], warn:['구비 보조금 월 1,200,000원 (임차료 1,000,000 + 관리비 200,000), 나머지는 활동지원사업비']},
+  {h:'보탬e 집행', steps:['[집행관리(93001)] → 해당 사업 → [집행등록(증빙우선)]','집행목적 "O월 임차료, 관리비", 증빙유형 기타, 품목 임차료·관리비, 세금계산서 첨부','행추가 → 지방비 공급가액 1,200,000 · 거래처 개인사업자 · 계좌 확인 (불일치 사유: 계좌이체 집행요청)','저장 → [집행요청] → [집행이체관리] 미요청 건 [이체실행] (인증서 1번)','신한은행 구비 운영비 계좌 출금 확인'], warn:[]},
+  {h:'활동지원 추가 이체', steps:['임차료 = 임차료 + 부가세 − 1,000,000 · 관리비 = 총 관리비 − 200,000','활동지원 통장에서 추가 이체','세부내역서·송금확인증·청구서 원본·세금계산서를 활동지원 담당에게 전달'], warn:[]},
+ ], rules:['r10','y10']},
+
+/* ---------------- 총무·운영 ---------------- */
+{id:'supply', cat:'gen', freq:'monthly', title:'사무용품 구매 (PAS·서울시·구비)', when:'월 1회 결제 · 서울시·구비 수용비는 11월 말까지 소진',
+ systems:['kiss','nas'],
+ paths:[['키스오피스 거래명세서 스캔','사무행정실\\총무\\키스오피스\\거래명세서'],['내부기안대장','문서대장\\2026내부기안대장']],
+ sections:[
+  {h:'구매', steps:['재원별 기안 3건 (PAS·서울시·구로구) → 결재','세부내역서 + 재원별 카드 챙겨 키스오피스 결제 (사무용품만, 재원별 금액 비슷하게)','전달 거래처원장 받아 대표 스캔본 전달, 원본 편철, 스캔본 저장'], warn:['시비·구비 수용비는 남기지 않기 — 사업팀 수용비 사용 계획 먼저 확인','2026 수용비 보조금 분기 2,000,000원 (연 8,000,000원)']},
+  {h:'증빙', steps:['영수증 복사본 옆에 원본 붙이기','사진 넣어 물품검수조서 작성','PAS 담당에게 전달'], warn:[]},
+ ], rules:['r11','y11']},
+
+{id:'board', cat:'gen', freq:'adhoc', title:'운영위원회 준비', when:'보통 분기 1회 (활동지원·운영 각각)',
+ systems:['nas'], paths:[],
+ sections:[
+  {h:'준비', steps:['회의자료 출력: 안건 표지가 홀수쪽에 오도록 빈 페이지 삽입','쫄대 파일 + 투명 파일에도 자료 준비 (쫄대 사용 어려운 분 배려)','전날·당일 다과비 기안번호 따기 (참석 인원수 기재)','PAS·자율재원 다과는 CU에서 각 카드로 (과일주스·커피)','녹음기 준비, 프로그램실 컴퓨터 미리 켜기'], warn:[]},
+  {h:'마무리', steps:['녹음 파일 저장','회의록 작성·결재'], warn:[]},
+ ], rules:[]},
+];
+
+// 인수인계 문서에서 나온 추가 마감 (기존 사용자에게도 id가 없으면 추가)
+const HO_RULES = [
+  {id:'y8', title:'활동지원사 사회보험 연말정산', cat:'ins', type:'yearly', month:4, day:20, shift:'next', note:'4월 고지 확인 후 → 5월 급여(4월분) 반영'},
+  {id:'y9', title:'단체상해공제 만료·갱신', cat:'etc', type:'yearly', month:11, day:9, shift:'prev', note:'한국사회복지공제회'},
+  {id:'y10', title:'구비 운영비 전년 정산·사업계획서 제출', cat:'acc', type:'yearly', month:1, day:31, shift:'prev', note:'임차료·관리비 보조금 (월 120만원)'},
+  {id:'y11', title:'서울시·구비 수용비 소진 확인', cat:'acc', type:'yearly', month:11, day:30, shift:'prev', note:'남기지 않기 — 사업팀 사용 계획 확인'},
+  {id:'y12', title:'사회보험 요율·IL센터 지침 확인', cat:'pay', type:'yearly', month:1, day:2, shift:'next', note:'건강·고용 요율, 식비·명절수당 기준'},
+  {id:'y13', title:'보탬e 참여인력 연초 등록', cat:'pay', type:'yearly', month:1, day:20, shift:'prev', note:'근로계약서·통장사본 첨부'},
+  {id:'r10', title:'임차료·관리비 보탬e 집행', cat:'acc', type:'monthly', day:10, shift:'next', note:'세금계산서 수신 후 · 날짜는 센터 기준으로 수정'},
+  {id:'r11', title:'사무용품 결제 (키스오피스)', cat:'acc', type:'monthly', day:15, shift:'next', note:'월 1회 · 날짜는 센터 기준으로 수정'},
+];
+
 /* ================= defaults & schedule engine ================= */
 const CATS = {
   pay:{name:'급여·인사', color:'var(--cat-pay)'},
@@ -448,13 +707,14 @@ const HOLIDAYS_DEFAULT = {
 
 function defaults() {
   return {
-    v: 3,
+    v: 4,
     settings: {
       payday: 25,
       since: ymd(today()),   // 이 날짜 이전 마감은 '지난 마감'으로 치지 않음
       docPrefix: '구로IL',
       org: {name:'구로장애인자립생활센터', rep:'', addr:'서울특별시 구로구', tel:''},
-      approvers: ['담당','팀장','사무국장','센터장'],
+      approvers: ['담당','팀장','사무국장','소장','대표'],
+      nasRoot: '',
     },
     holidays: clone(HOLIDAYS_DEFAULT),
     apps: [
@@ -484,6 +744,7 @@ function defaults() {
       {id:'y5', title:'후원금 수입·사용결과 보고·공개', cat:'don', type:'yearly', month:3, day:31, shift:'next', note:'결산 제출과 함께', routine:'rt4'},
       {id:'y6', title:'기부금영수증 발급명세서 제출', cat:'don', type:'yearly', month:6, day:30, shift:'next', note:'센터 해당 여부 확인'},
       {id:'y7', title:'다음 연도 예산서 제출', cat:'acc', type:'yearly', month:12, day:26, shift:'prev', note:'회계연도 개시 5일 전까지', routine:'rt4'},
+      ...HO_RULES,
       {id:'o1', title:'전임자 퇴사 · 인수 완료', cat:'etc', type:'once', date:'2026-09-29', shift:'none', note:'반복업무·마감 목록을 캘린더에 모두 등록했는지 확인'},
     ],
     done: {},
@@ -495,12 +756,15 @@ function defaults() {
         {t:'4대보험 고지서 확인 (EDI)'},
         {t:'원천세 신고 자료 준비'}]},
       {id:'rt2', name:'급여', freq:'monthly', when:'매월 20~25일', steps:[
-        {t:'근태·연차·입퇴사 변동 반영'},
-        {t:'진우 급여 메뉴에서 급여 계산'},
-        {t:'급여대장 출력·결재'},
-        {t:'급여 이체'},
-        {t:'급여명세서 배포'},
-        {t:'원천세·4대보험 공제액 확인'}]},
+        {t:'입퇴사자 일할계산 · 4대보험 고지내역 저장', link:'handover'},
+        {t:'진우 급여정보 입력 → 급여계산', link:'handover'},
+        {t:'급여지급관리 보험료 실제 고지액으로 수정 (이후 재계산 금지)', link:'handover'},
+        {t:'급여베이스·사회보험부담금 대사', link:'handover'},
+        {t:'재원별 급여 기안·결재', link:'handover'},
+        {t:'보탬e 인건비 집행요청', link:'handover'},
+        {t:'급여·보험료·퇴직적립금 예약이체', link:'handover'},
+        {t:'명세서 발송·송금확인증 전달', link:'handover'},
+        {t:'원천세 신고 엑셀 입력', link:'handover'}]},
       {id:'rt3', name:'월말 마감', freq:'monthly', when:'매월 말일 전후', steps:[
         {t:'CMS 후원금 입금 대사'},
         {t:'지출결의서·증빙 누락 점검', link:'docs'},
@@ -754,6 +1018,7 @@ VIEWS.home = v => {
               <div class="prog"><i style="width:${pct}%"></i></div></a>`; }).join('')}
         </div>
       </section>
+      ${hoDailyPanel()}
       ${centerPanel()}
       <section class="panel">
         <div class="panel-h"><h2>바로가기</h2><a class="btn ghost sm" href="#apps">앱 관리</a></div>
@@ -1368,6 +1633,7 @@ function orgSeal() { const o = S.settings.org; return `<div class="issuer">${esc
 function apprTable() { const a = S.settings.approvers; return `<table class="appr"><tr><td class="lab" rowspan="2">결 재</td>${a.map(x=>`<td>${esc(x)}</td>`).join('')}</tr><tr>${a.map(()=>'<td></td>').join('')}</tr></table>`; }
 
 function docHtml(type, f, st, no) {
+  if (typeof docHtml2 === 'function' && ['trip','purchase','fixed','outgoing','leave'].includes(type)) return docHtml2(type, f, no);
   const o = S.settings.org;
   if (type === 'emp' || type === 'career') {
     const career = type === 'career';
@@ -1410,6 +1676,7 @@ function docHtml(type, f, st, no) {
     <p>붙임 &nbsp;${esc(f.attach)}</p></div>`;
 }
 function formHtml(type, f) {
+  if (['trip','purchase','fixed','outgoing','leave'].includes(type)) return formHtml2(type, f);
   const inp = (k, l, t = 'text', cls = '') => `<label class="f ${cls}">${l}<input class="inp" type="${t}" id="df-${k}" value="${esc(f[k] ?? '')}"></label>`;
   if (type === 'emp' || type === 'career') return `
     <div class="f">직원 선택 <span class="faint" style="font-weight:400">(여러 명 고르면 한꺼번에 만들어져요)</span></div>
@@ -1423,10 +1690,10 @@ function formHtml(type, f) {
     <label class="f">본문<textarea class="inp" id="df-body" rows="9">${esc(f.body)}</textarea></label>${inp('attach','붙임')}`;
 }
 VIEWS.docs = v => {
-  if (!D.f.emp) D.f = dfDefaults();
+  if (!D.f.emp) D.f = Object.assign(dfDefaults(), dfDefaults2());
   const f = D.f[D.type], T = DOCT[D.type];
   v.innerHTML = `
-  <div class="page-head"><div><h1>문서 자동생성</h1><p>직원 정보와 기관 정보를 한 번 넣어 두면 증명서·결의서·기안문이 A4 양식으로 채워집니다. 문서번호는 발급대장에 기록할 때 자동으로 올라가요.</p></div></div>
+  <div class="page-head"><div><h1>문서 자동생성</h1><p>증명서·결의서·기안문과 문서 웹앱의 출장신청서·물품구매·고정거래·발신공문·휴가신청을 같은 항목으로 작성합니다. 문서번호는 발급대장에 기록할 때 자동으로 올라가요.</p></div></div>
   <div class="seg no-print" role="group">${Object.entries(DOCT).map(([k,o])=>`<button aria-pressed="${D.type===k}" data-dt="${k}">${o.name}</button>`).join('')}</div>
   <div class="print-host"><div class="doc-layout">
     <section class="panel doc-form"><div class="panel-h"><h2>${T.name} 내용</h2></div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px" id="dform">
@@ -1441,6 +1708,7 @@ VIEWS.docs = v => {
     <div class="preview-wrap" id="pv"></div>
   </div></div>
 
+  ${docappPanel()}
   <div class="grid-2 no-print">
     <section class="panel"><div class="panel-h"><h2>발급대장</h2><span class="faint small">${S.docLog.length}건</span></div>
       ${tableHtml([{h:'문서번호',f:r=>`<span class="mono">${esc(r.no)}</span>`},{h:'종류',f:r=>esc(r.type)},{h:'대상·제목',f:r=>esc(r.name),cls:'wrap'},{h:'용도',f:r=>esc(r.purpose||'')},{h:'발급일',f:r=>esc(r.date)}], S.docLog.slice().reverse())}
@@ -1465,7 +1733,11 @@ VIEWS.docs = v => {
 
   $$('[data-dt]', v).forEach(b => b.onclick = () => { D.type = b.dataset.dt; render(); });
   $('#dform', v).addEventListener('input', e => {
-    const id = e.target.id; if (id && id.startsWith('df-')) { f[id.slice(3)] = e.target.type === 'number' ? Number(e.target.value) : e.target.value; renderPreview(); }
+    const id = e.target.id; if (!id || !id.startsWith('df-')) return;
+    const k = id.slice(3); f[k] = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+    if (k === 'preset') { const p = FUND_PRESETS[Number(f.preset)]; Object.assign(f, {fund:p.fund, subj:p.subj, short:p.short}); render(); return; }
+    if (k === 'kind' && D.type === 'trip') { render(); return; }
+    renderPreview();
   });
   $('#dform', v).addEventListener('change', e => {
     const s = e.target.dataset.staff; if (!s) return;
@@ -1475,7 +1747,7 @@ VIEWS.docs = v => {
   const lg = $('#d-log', v);
   if (lg) lg.onclick = () => {
     const y = today().getFullYear();
-    const targets = (D.type === 'emp' || D.type === 'career') ? S.staff.filter(s => D.staffIds.includes(s.id)).map(s => s.name) : [f.title];
+    const targets = (D.type === 'emp' || D.type === 'career') ? S.staff.filter(s => D.staffIds.includes(s.id)).map(s => s.name) : [f.title || (f.item ? f.item + ' 구매' : '') || (f.kind ? f.kind + ' · ' + (f.purpose || '') : '') || DOCT[D.type].name];
     if (!targets.length) { toast('대상을 먼저 골라 주세요'); return; }
     targets.forEach(nm => { S.docSeq[y] = (S.docSeq[y] || 0) + 1; S.docLog.push({no:`${S.settings.docPrefix} 제${y}-${String(S.docSeq[y]).padStart(4,'0')}호`, type:DOCT[D.type].name, name:nm, purpose:f.purpose||'', date:f.issue||f.date}); });
     save(); render(); toast(`${targets.length}건을 발급대장에 기록했어요`);
@@ -1484,6 +1756,7 @@ VIEWS.docs = v => {
   $('#st-add', v).onclick = () => editStaff(null);
   $$('[data-edit-st]', v).forEach(b => b.onclick = () => editStaff(b.dataset.editSt));
   $('#st-paste', v).onclick = pasteStaff;
+  $$('[data-hubdoc]', v).forEach(b => b.onclick = () => { D.type = b.dataset.hubdoc; render(); window.scrollTo(0, 0); });
 };
 function fitA4(pv) {
   if (!pv) return; const sc = $('.a4-scale', pv); if (!sc) return;
@@ -1519,6 +1792,262 @@ function pasteStaff() {
     }});
 }
 
+/* ================= 문서 웹앱(chulchang-munseo)과 같은 방식의 양식 ================= */
+// 문서 웹앱 메뉴 전체 — 허브에서 같이 쓰는 양식은 hub 키로 연결
+const DOCAPP_URL = 'https://chulchang-munseo.vercel.app/';
+const DOCAPP_MENU = [
+  ['출장','출장신청서·복명서','trip'], ['출장','장블랑제리 합본 기안',null], ['출장','정기 출장 일괄 생성',null],
+  ['기안·구매','물품구매 (내부기안)','purchase'], ['기안·구매','고정거래 기안','fixed'], ['기안·구매','처우개선비 기안',null], ['기안·구매','회의비 지급 기안',null],
+  ['소모품','소모품 증빙',null], ['후원','후원물품 수령증',null], ['후원','센터 내부 후원수령',null],
+  ['인사·근태','휴가신청','leave'], ['인사·근태','급여명세서',null], ['인사·근태','급여명세서 수정',null], ['인사·근태','면접평가표',null],
+  ['공문·회의','발신공문','outgoing'], ['공문·회의','인사회의록 (운영위원회)',null], ['루틴','루틴 업무 (반복 출장)',null],
+];
+// 재원·예산과목 프리셋 (문서 웹앱 "예산과목·재원 프리셋"과 같은 구조: 이름 / 재원 / 예산과목 / 비목)
+const FUND_PRESETS = [
+  {n:'서울시 IL센터지원사업', fund:'보조금(서울시)', subj:'운영비-일반운영비-사무용품비', short:'사무용품비'},
+  {n:'구비 운영비', fund:'보조금(구비)', subj:'운영비-일반운영비-임차료', short:'임차료'},
+  {n:'주택 (가형·다형)', fund:'보조금(주택)', subj:'사업비-주택사업비', short:'사업비'},
+  {n:'활동지원 (PAS)', fund:'활동지원사업 자부담', subj:'운영비-일반운영비', short:'운영비'},
+  {n:'후원', fund:'후원금', subj:'사업비', short:'사업비'},
+  {n:'자율재원', fund:'자부담', subj:'운영비-업무추진비-회의비', short:'회의비'},
+];
+Object.assign(DOCT, {
+  trip:{name:'출장신청서·복명서', log:true, appr:['담당','사무국장','소장','대표']},
+  purchase:{name:'물품구매 (내부기안)', log:true, appr:['담당','사무국장','소장','대표']},
+  fixed:{name:'고정거래 기안', log:true, appr:['담당','팀장','사무국장','소장','대표']},
+  outgoing:{name:'발신공문', log:true, appr:['담당','팀장','사무국장','소장','대표']},
+  leave:{name:'휴가신청서', log:false, appr:['담당','팀장','사무국장','소장']},
+});
+function dfDefaults2() {
+  const t = ymd(today()), tm = ymd(addDays(today(), 1));
+  return {
+    trip:{kind:'출장신청서', writer:'', travelers:'', purpose:'구로구 장애인 자립생활 지원 협력기관 방문', purpose2:'', start:tm, end:'', date:t, tstart:'10:00', tend:'12:00', place:'구로구청 (02-860-2114)', content:'', cost:'교통비 (대중교통)', etc:''},
+    purchase:{gr:'GR-', date:t, pay:'카드결제', item:'사무용품', spec:'A4용지 80g 외', qty:1, recv:tm, preset:0, fund:FUND_PRESETS[0].fund, subj:FUND_PRESETS[0].subj, short:FUND_PRESETS[0].short, q1n:'키스오피스', q1:184000, q2n:'오피스디포', q2:192000, q3n:'알파문구', q3:198000, winner:'키스오피스', price:184000, ship:0, note:''},
+    fixed:{gr:'GR-', open:'비공개', title:'2026년 10월 임차료 및 관리비 지출', body:'사무실 임차료 및 관리비를 아래와 같이 지출하고자 합니다.', what:'10월 임차료·관리비', period:'2026.01.01 ~ 2026.12.31', date:t, recv:t, pay:'계좌이체', payee:'(건물 관리 주체)', preset:1, fund:FUND_PRESETS[1].fund, subj:FUND_PRESETS[1].subj, total:1200000, attach:'붙임 1부', note:''},
+    outgoing:{kind:'일반 발신공문', no:'', date:t, to:'구로구청장 (장애인복지과장)', via:'', title:'2026년 운영비 정산 자료 제출', body:'1. 귀 기관의 무궁한 발전을 기원합니다.\n2. 2026년 운영비 보조금 정산 자료를 아래와 같이 제출합니다.', items:'정산 기간: 2026. 1. 1. ~ 2026. 12. 31.\n제출 자료: 정산서 1부, 증빙 사본 1부', attach:'2026년 운영비 정산서 1부.'},
+    leave:{staff:'s1', type:'연차', date:t, start:tm, end:tm, reason:'개인 사유', succDept:'사무행정팀', succName:'', remain:''},
+  };
+}
+function apprTable2(list) { const a = list || S.settings.approvers; return `<table class="appr"><tr><td class="lab" rowspan="2">결 재</td>${a.map(x=>`<td>${esc(x)}</td>`).join('')}</tr><tr>${a.map(()=>'<td></td>').join('')}</tr></table>`; }
+const kd = s => { if (!s) return ''; const d = parseYmd(s); return `${d.getFullYear()}. ${d.getMonth()+1}. ${d.getDate()}.`; };
+function bizDays(a, b) { if (!a) return 0; let n = 0; for (let d = parseYmd(a), e = parseYmd(b || a); d <= e; d = addDays(d, 1)) if (!isOff(d)) n++; return n; }
+const HANGA = ['가','나','다','라','마','바','사','아','자','차'];
+
+function docHtml2(type, f, no) {
+  const o = S.settings.org, ap = apprTable2(DOCT[type].appr);
+  const head = `<div style="text-align:center;font:700 22px 'Hahmlet',serif;margin-bottom:6mm">${esc(o.name)}</div>`;
+  if (type === 'trip') {
+    const rep = f.kind === '출장복명서', span = f.end && f.end !== f.start ? `${kd(f.start)} ~ ${kd(f.end)}` : kd(f.start);
+    return `<div class="a4"><div class="docno">${esc(no)}</div>${ap}<div class="clear"></div><h1>${rep?'출 장 복 명 서':'출 장 신 청 서'}</h1>
+      <table class="dt">
+        <tr><th>출 장 자</th><td colspan="3">${esc(f.travelers || f.writer)}</td></tr>
+        <tr><th>출장 기간</th><td colspan="3">${span} ${esc(f.tstart)} ~ ${esc(f.tend)}</td></tr>
+        <tr><th>출 장 지</th><td colspan="3">${esc(f.place)}</td></tr>
+        <tr><th>출장 목적</th><td colspan="3">${esc(f.purpose)}${f.purpose2?'<br>'+esc(f.purpose2):''}</td></tr>
+        ${rep?`<tr><th style="height:50mm">출장 내용<br>(결과)</th><td colspan="3" class="body">${esc(f.content)}</td></tr>`:''}
+        <tr><th>출장 경비</th><td colspan="3">${esc(f.cost)}</td></tr>
+        <tr><th>기타 사항</th><td colspan="3">${esc(f.etc)}</td></tr>
+      </table>
+      <p class="cert">위와 같이 출장을 ${rep?'다녀왔기에 복명':'신청'}합니다.</p><p class="date">${kd(f.date)}</p>
+      <p style="text-align:right;margin-right:10mm">${rep?'보고자':'신청자'} : ${esc(f.writer)} (인)</p></div>`;
+  }
+  if (type === 'purchase') {
+    const qty = Number(f.qty) || 1, sum = Number(f.price) * qty + Number(f.ship || 0);
+    const qs = [[f.q1n,f.q1],[f.q2n,f.q2],[f.q3n,f.q3]].filter(x => x[0]);
+    return `<div class="a4">${head}${ap}<div class="clear"></div>
+      <table class="dt"><tr><th>내부결재번호</th><td>${esc(f.gr)}</td><th>지출일자</th><td>${kd(f.date)}</td></tr>
+      <tr><th>제 목</th><td colspan="3"><b>${esc(f.item)} 구매 (${esc(f.short)})</b></td></tr></table>
+      <div class="body" style="margin:4mm 0">1. ${esc(o.name)} 운영에 필요한 물품을 아래와 같이 구매하고자 합니다.\n2. 세부 내역</div>
+      <table class="dt">
+        <tr><th>품목명</th><td>${esc(f.item)}</td><th>규격/모델명</th><td>${esc(f.spec)}</td></tr>
+        <tr><th>수량 · 단가</th><td>${qty} × ${won(f.price)}원</td><th>배송료</th><td>${won(f.ship)}원</td></tr>
+        <tr><th>합 계</th><td colspan="3"><span class="amount-big">금 ${korWon(sum)}원정</span> (₩${won(sum)})</td></tr>
+        <tr><th>재 원</th><td>${esc(f.fund)}</td><th>지출방법</th><td>${esc(f.pay)}</td></tr>
+        <tr><th>예산과목</th><td colspan="3">${esc(f.subj)}</td></tr>
+        <tr><th>예상 수령일</th><td>${kd(f.recv)}</td><th>낙찰 업체</th><td>${esc(f.winner)}</td></tr>
+      </table>
+      <div style="margin:2mm 0 1mm"><b>비교견적</b></div>
+      <table class="dt" style="margin-top:0"><tr><th style="width:auto">업체</th>${qs.map(q=>`<td style="text-align:center">${esc(q[0])}${q[0]===f.winner?' ◎':''}</td>`).join('')}</tr>
+        <tr><th style="width:auto">견적 금액</th>${qs.map(q=>`<td style="text-align:right">${won(q[1])}원</td>`).join('')}</tr></table>
+      ${f.note?`<p>비고: ${esc(f.note)}</p>`:''}<p>붙임 &nbsp;비교견적서 ${qs.length}부.  끝.</p></div>`;
+  }
+  if (type === 'fixed') {
+    return `<div class="a4">${head}${ap}<div class="clear"></div>
+      <table class="dt"><tr><th>내부결재번호</th><td>${esc(f.gr)}</td><th>공개 구분</th><td>${esc(f.open)}</td></tr>
+      <tr><th>접수일</th><td>${kd(f.recv)}</td><th>지출일자</th><td>${kd(f.date)}</td></tr>
+      <tr><th>제 목</th><td colspan="3"><b>${esc(f.title)}</b></td></tr></table>
+      <div class="body" style="margin:4mm 0;min-height:30mm">1. ${esc(f.body)}\n2. 지출 내역</div>
+      <table class="dt">
+        <tr><th>지출내용</th><td colspan="3">${esc(f.what)}</td></tr>
+        <tr><th>계약기간</th><td colspan="3">${esc(f.period)}</td></tr>
+        <tr><th>지 출 처</th><td>${esc(f.payee)}</td><th>지출방법</th><td>${esc(f.pay)}</td></tr>
+        <tr><th>재 원</th><td>${esc(f.fund)}</td><th>예산과목</th><td>${esc(f.subj)}</td></tr>
+        <tr><th>소요예산 총액</th><td colspan="3"><span class="amount-big">금 ${korWon(f.total)}원정</span> (₩${won(f.total)})</td></tr>
+      </table>${f.note?`<p style="color:#c0392b;font-style:italic">${esc(f.note)}</p>`:''}
+      <p>붙임 &nbsp;${f.attach==='붙임 없음'?'없음':esc(f.attach)+'.  끝.'}</p></div>`;
+  }
+  if (type === 'outgoing') {
+    const items = (f.items || '').split('\n').map(s => s.trim()).filter(Boolean);
+    return `<div class="a4"><div style="text-align:center;font:700 26px 'Hahmlet',serif;letter-spacing:.2em;margin:4mm 0 8mm">${esc(o.name)}</div>
+      <table style="width:100%;font-size:15px;line-height:2"><tr><td style="width:18mm">수신</td><td>${esc(f.to)}</td></tr>${f.via?`<tr><td>(경유)</td><td>${esc(f.via)}</td></tr>`:''}<tr><td>제목</td><td><b>${esc(f.title)}</b></td></tr></table>
+      <hr style="border:0;border-top:2px solid #333;margin:3mm 0 6mm">
+      <div class="body">${esc(f.body)}</div>
+      ${items.length?`<div style="margin:3mm 0 0 8mm;line-height:2">${items.map((x,i)=>`${HANGA[i]||'-'}. ${esc(x)}`).join('<br>')}</div>`:''}
+      ${f.attach?`<p style="margin-top:8mm">붙임 &nbsp;${esc(f.attach)}  끝.</p>`:'<p style="text-align:right">끝.</p>'}
+      <div class="issuer" style="margin-top:22mm">${esc(o.name)}장 <span class="seal">직인<br>생략</span></div>
+      <div style="position:absolute;left:20mm;right:20mm;bottom:22mm;border-top:1px solid #333;padding-top:3mm;font-size:12px;line-height:1.8">
+        ${ap.replace('class="appr"','class="appr" style="float:none;margin:0 0 3mm"')}
+        시행 ${esc(f.no || no)} (${kd(f.date)}) &nbsp; 접수 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>${esc(o.addr)} ${o.tel?'/ 전화 '+esc(o.tel):''} / 공개구분: 비공개</div></div>`;
+  }
+  // leave
+  const st = S.staff.find(s => s.id === f.staff) || {};
+  const unit = f.type === '반차' ? 0.5 : f.type === '반반차' ? 0.25 : 1, days = f.type === '연차' ? bizDays(f.start, f.end) : unit;
+  const tt = f.type === '반차' ? '09:00 ~ 13:00 (또는 14:00 ~ 18:00)' : f.type === '반반차' ? '2시간' : '09:00 ~ 18:00';
+  return `<div class="a4">${ap}<div class="clear"></div><h1 style="margin-top:4mm">휴 가 신 청 서</h1>
+    <table class="dt">
+      <tr><th>소 속</th><td>${esc(st.dept||'')}</td><th>직 위</th><td>${esc(st.pos||'')}</td></tr>
+      <tr><th>성 명</th><td colspan="3">${esc((st.name||'').replace(/\s*\(예시\)/,''))}</td></tr>
+      <tr><th>휴가 구분</th><td>${esc(f.type)}</td><th>일 수</th><td>${days}일</td></tr>
+      <tr><th>기 간</th><td colspan="3">${kd(f.start)}${f.type==='연차'&&f.end!==f.start?' ~ '+kd(f.end):''} (${tt})</td></tr>
+      <tr><th>사 유</th><td colspan="3">${esc(f.reason)}</td></tr>
+      <tr><th>업무 인수자</th><td colspan="3">${esc(f.succDept)} ${esc(f.succName)}</td></tr>
+      ${f.remain!==''?`<tr><th>신청 후 잔여</th><td colspan="3">${esc(f.remain)}일</td></tr>`:''}
+    </table>
+    <p class="cert">위와 같이 휴가를 신청합니다.</p><p class="date">${kd(f.date)}</p>
+    <p style="text-align:right;margin-right:10mm">신청자 : ${esc((st.name||'').replace(/\s*\(예시\)/,''))} (인)</p></div>`;
+}
+
+function formHtml2(type, f) {
+  const inp = (k, l, t = 'text', cls = '') => `<label class="f ${cls}">${l}<input class="inp" type="${t}" id="df-${k}" value="${esc(f[k] ?? '')}"></label>`;
+  const sel = (k, l, opts, cls = '') => `<label class="f ${cls}">${l}<select class="inp" id="df-${k}">${opts.map(o => `<option ${String(f[k])===String(o)?'selected':''}>${esc(o)}</option>`).join('')}</select></label>`;
+  const area = (k, l, r = 3) => `<label class="f">${l}<textarea class="inp" id="df-${k}" rows="${r}">${esc(f[k] ?? '')}</textarea></label>`;
+  const preset = `<label class="f span2">재원·예산과목 프리셋<select class="inp" id="df-preset">${FUND_PRESETS.map((p,i)=>`<option value="${i}" ${Number(f.preset)===i?'selected':''}>${esc(p.n)}</option>`).join('')}</select></label>`;
+  if (type === 'trip') return `<div class="form-grid">${sel('kind','문서종류',['출장신청서','출장복명서'])}${inp('writer','작성자')}${inp('travelers','출장자 (최대 3명, 쉼표)','text','span2')}${inp('start','출장 시작일','date')}${inp('end','출장 종료일 (당일이면 비움)','date')}${inp('tstart','시작 시간','time')}${inp('tend','종료 시간','time')}${inp('date','작성(보고)일자','date')}</div>
+    ${inp('place','출장지 (연락처 포함)')}${inp('purpose','출장 목적')}${inp('purpose2','출장 목적 2줄째 (선택)')}${f.kind==='출장복명서'?area('content','출장 내용 (결과)',5):''}${inp('cost','출장 경비')}${inp('etc','기타 사항')}`;
+  if (type === 'purchase') return `<div class="form-grid">${inp('gr','내부결재번호 (GR)')}${inp('date','지출일자','date')}${sel('pay','지출방법',['카드결제','계좌이체'])}${inp('recv','예상 수령일','date')}${inp('item','품목명','text','span2')}${inp('spec','규격/모델명','text','span2')}${inp('qty','수량','number')}${inp('price','단가 (원)','number')}${inp('ship','배송료','number')}${preset}${inp('fund','재원')}${inp('subj','예산과목','text','span2')}</div>
+    <div class="f">비교견적 (3곳)</div><div class="form-grid">${inp('q1n','업체 1')}${inp('q1','금액','number')}${inp('q2n','업체 2')}${inp('q2','금액','number')}${inp('q3n','업체 3')}${inp('q3','금액','number')}${inp('winner','낙찰 상호명','text','span2')}</div>${inp('note','비고')}`;
+  if (type === 'fixed') return `<div class="form-grid">${inp('gr','내부결재번호 (GR)')}${sel('open','공개 구분',['비공개','공개'])}${inp('recv','접수일','date')}${inp('date','지출일자','date')}</div>${inp('title','제목')}${area('body','본문',3)}
+    <div class="form-grid">${inp('what','지출내용','text','span2')}${inp('period','계약기간','text','span2')}${inp('payee','지출처')}${sel('pay','지출방법',['계좌이체','카드결제'])}${preset}${inp('fund','재원')}${inp('subj','예산과목')}${inp('total','소요예산 총액','number')}${sel('attach','붙임',['견적서 1부','붙임 1부','붙임 없음'])}</div>${inp('note','비고 (부재 사유 등, 빨간 기울임)')}`;
+  if (type === 'outgoing') return `<div class="form-grid">${sel('kind','문서 종류',['일반 발신공문','종사자 전력조회 요청'])}${inp('no','문서번호 (비우면 자동)')}${inp('date','시행일','date')}</div>${inp('to','수신자')}${inp('via','경유 (선택)')}${inp('title','제목')}${area('body','본문',4)}${area('items','항목 (한 줄에 하나 → 가. 나. 다.)',3)}${inp('attach','붙임')}`;
+  return `<div class="form-grid"><label class="f span2">신청자<select class="inp" id="df-staff">${S.staff.map(s=>`<option value="${s.id}" ${f.staff===s.id?'selected':''}>${esc(s.name)} · ${esc(s.dept)}</option>`).join('')}</select></label>${sel('type','휴가 종류',['연차','반차','반반차'])}${inp('date','작성일자','date')}${inp('start','시작일','date')}${inp('end','종료일','date')}${inp('remain','신청 후 잔여일수','number')}</div>
+    ${inp('reason','사유')}<div class="form-grid">${inp('succDept','업무 인수자 부서')}${inp('succName','업무 인수자 성명')}</div>`;
+}
+function docappPanel() {
+  const groups = {}; DOCAPP_MENU.forEach(([g, n, k]) => (groups[g] ||= []).push([n, k]));
+  return `<section class="panel no-print"><div class="panel-h"><div><h2>문서 웹앱 메뉴</h2><div class="faint small">chulchang-munseo · 허브에 같은 양식이 있으면 바로 작성, 나머지는 웹앱에서</div></div><a class="btn sm" href="${DOCAPP_URL}" target="_blank" rel="noopener">${icon('ext')}웹앱 열기</a></div>
+    <div class="panel-b" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">${Object.entries(groups).map(([g, list]) => `<div><div class="eyebrow" style="margin-bottom:6px">${esc(g)}</div>${list.map(([n, k]) => k
+      ? `<button class="btn ghost sm" data-hubdoc="${k}" style="width:100%;justify-content:space-between">${esc(n)}<span class="chip ok" style="height:18px">허브에서 작성</span></button>`
+      : `<a class="btn ghost sm" href="${DOCAPP_URL}" target="_blank" rel="noopener" style="width:100%;justify-content:space-between">${esc(n)}<span class="faint small">웹앱 →</span></a>`).join('')}</div>`).join('')}</div></section>`;
+}
+
+/* ================= 인수인계 ================= */
+const HO_ST = {new:{t:'미숙지', c:''}, learn:{t:'실습 중', c:'warn'}, ok:{t:'혼자 가능', c:'ok'}};
+const HO = {cat:'all', open:null};
+function hoState() { S.ho = S.ho || {status:{}, notes:{}, checks:{}}; return S.ho; }
+function hoPeriod(sop) {
+  const t = today();
+  if (sop.freq === 'daily') return ymd(t);
+  if (sop.freq === 'monthly') return `${t.getFullYear()}-${pad(t.getMonth()+1)}`;
+  if (sop.freq === 'yearly') return `${t.getFullYear()}`;
+  return hoState().checks[sop.id + ':cur'] || '1건';
+}
+function hoSteps(sop) { return sop.sections.flatMap((s, si) => s.steps.map((t, i) => ({t, k:`${si}.${i}`}))); }
+function hoRun(sop) {
+  const st = hoState(), key = sop.id + '@' + hoPeriod(sop), arr = st.checks[key] || {};
+  const all = hoSteps(sop), done = all.filter(x => arr[x.k]).length;
+  return {key, arr, done, total: all.length};
+}
+function fullPath(p) { const r = (S.settings.nasRoot || '').replace(/\\+$/, ''); return r ? r + '\\' + p : '공용서버\\' + p; }
+
+VIEWS.handover = v => {
+  const st = hoState();
+  if (HO.open) return hoDetail(v, HO_SOPS.find(s => s.id === HO.open));
+  const list = HO_SOPS.filter(s => HO.cat === 'all' || s.cat === HO.cat);
+  const okN = HO_SOPS.filter(s => st.status[s.id] === 'ok').length, lrN = HO_SOPS.filter(s => st.status[s.id] === 'learn').length;
+  const qN = Object.values(st.notes).filter(x => x && x.trim()).length;
+  v.innerHTML = `
+  <div class="page-head"><div><h1>인수인계</h1><p>전임자 인계 문서 11종을 업무별 절차로 정리했어요. 단계마다 체크하며 실행하고, 모르는 건 질문 메모에 적어 두세요.</p></div>
+    <div class="row"><button class="btn" id="ho-q">${icon('copy')}질문 목록 복사 (${qN})</button></div></div>
+  <section class="panel today-strip">
+    <div class="datebox"><div class="d num">${okN}<span style="font-size:20px;color:var(--ink-3)">/${HO_SOPS.length}</span></div><div class="m">혼자 가능</div></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="prog" style="height:10px"><i style="width:${okN/HO_SOPS.length*100}%;background:var(--ok)"></i></div>
+      <div class="row small"><span class="chip ok">혼자 가능 ${okN}</span><span class="chip warn">실습 중 ${lrN}</span><span class="chip">미숙지 ${HO_SOPS.length-okN-lrN}</span><span class="faint">목표: 인수 후 1주 안에 전부 "혼자 가능"</span></div>
+    </div>
+  </section>
+  <div class="seg" role="group">${[['all','전체'], ...Object.entries(HO_CATS).map(([k,c]) => [k, c.name])].map(([k,n]) => `<button aria-pressed="${HO.cat===k}" data-hc="${k}">${n} <span class="faint small">${k==='all'?HO_SOPS.length:HO_SOPS.filter(s=>s.cat===k).length}</span></button>`).join('')}</div>
+  <div class="apps" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">
+    ${list.map(s => { const r = hoRun(s), ss = HO_ST[st.status[s.id] || 'new'];
+      return `<button class="app" data-open="${s.id}" style="text-align:left;cursor:pointer;font:inherit">
+        <div class="row" style="gap:6px"><span class="dotcat" style="background:${HO_CATS[s.cat].color}"></span><span class="faint small">${HO_CATS[s.cat].name} · ${HO_FREQ[s.freq]}</span><span class="grow"></span><span class="chip ${ss.c}">${ss.t}</span></div>
+        <div class="n">${esc(s.title)}</div><div class="dsc">${esc(s.when)}</div>
+        <div class="st" style="width:100%"><div class="row small" style="gap:6px"><span class="faint">${hoPeriod(s)} 진행</span><span class="grow"></span><span class="num">${r.done}/${r.total}</span></div><div class="prog" style="margin-top:4px"><i style="width:${r.total?r.done/r.total*100:0}%"></i></div></div>
+        ${st.notes[s.id]?.trim()?'<span class="chip acc" style="position:absolute;top:10px;right:10px;display:none"></span>':''}
+      </button>`; }).join('')}
+  </div>
+  <div class="note small">비밀번호·아이디·계좌번호는 여기 넣지 않았어요. 공개 사이트라서 문서철이나 비밀번호 관리 앱에 따로 보관하세요. 공용서버 주소는 <a href="#settings">설정</a>에서 이 기기에만 저장할 수 있어요.</div>`;
+  $$('[data-hc]', v).forEach(b => b.onclick = () => { HO.cat = b.dataset.hc; render(); });
+  $$('[data-open]', v).forEach(b => b.onclick = () => { HO.open = b.dataset.open; render(); window.scrollTo(0, 0); });
+  $('#ho-q', v).onclick = () => {
+    const qs = HO_SOPS.filter(s => st.notes[s.id]?.trim()).map(s => `■ ${s.title}\n${st.notes[s.id].trim().split('\n').map(l => '  - ' + l.replace(/^[-•]\s*/, '')).join('\n')}`);
+    if (!qs.length) { toast('아직 적은 질문이 없어요. 업무를 열어 질문 메모에 적어 주세요'); return; }
+    copyText(`[인수인계 질문 목록] ${ymd(today())}\n\n` + qs.join('\n\n'), `질문 ${qs.length}개 업무를 복사했어요`);
+  };
+};
+
+function hoDetail(v, s) {
+  const st = hoState(), r = hoRun(s), cur = st.status[s.id] || 'new';
+  const linked = (s.rules || []).map(id => S.rules.find(x => x.id === id)).filter(Boolean);
+  const nextOf = rule => occurrences(today(), addDays(today(), 400)).find(o => o.rule.id === rule.id);
+  v.innerHTML = `
+  <div class="row"><button class="btn ghost sm" id="ho-back">${icon('left')}인수인계 목록</button></div>
+  <div class="page-head"><div><div class="eyebrow">${HO_CATS[s.cat].name} · ${HO_FREQ[s.freq]}</div><h1>${esc(s.title)}</h1><p>${esc(s.when)}</p></div>
+    <div class="seg" role="group" aria-label="숙지 상태">${Object.entries(HO_ST).map(([k,o]) => `<button aria-pressed="${cur===k}" data-st="${k}">${o.t}</button>`).join('')}</div></div>
+  <div class="ho-layout">
+    <section class="panel">
+      <div class="panel-h"><div><h2>실행 체크리스트</h2><div class="faint small">${esc(hoPeriod(s))} · ${r.done}/${r.total} 단계</div></div>
+        <div class="row" style="gap:4px">${s.freq==='adhoc'?'<button class="btn ghost sm" id="ho-new">새 건 시작</button>':''}<button class="btn ghost sm" id="ho-reset">체크 초기화</button></div></div>
+      <div style="padding:10px 16px 0"><div class="prog"><i style="width:${r.total?r.done/r.total*100:0}%"></i></div></div>
+      ${s.sections.map((sec, si) => `
+        <div style="padding:14px 16px 4px"><b>${esc(sec.h)}</b></div>
+        <ul class="steps">${sec.steps.map((t, i) => { const k = `${si}.${i}`, on = !!r.arr[k];
+          return `<li class="${on?'on':''}"><button class="check" aria-pressed="${on}" data-k="${k}" aria-label="${esc(t)}">${on?icon('check'):''}</button><span class="tx">${esc(t)}</span></li>`; }).join('')}</ul>
+        ${(sec.warn||[]).map(w => `<div class="note warn small" style="margin:6px 16px">주의 · ${esc(w)}</div>`).join('')}`).join('')}
+      <div style="height:12px"></div>
+    </section>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <section class="panel"><div class="panel-h"><h3>질문 메모</h3><span class="faint small" id="ho-saved"></span></div>
+        <div class="panel-b"><textarea class="inp" id="ho-note" rows="6" placeholder="전임자에게 물어볼 것, 실제로 해 보니 다른 점을 적어 두세요">${esc(st.notes[s.id] || '')}</textarea></div></section>
+      <section class="panel"><div class="panel-h"><h3>사용 시스템</h3></div><div class="panel-b row" style="gap:6px">${s.systems.map(k => `<span class="chip">${esc(SYS[k] || k)}</span>`).join('')}</div></section>
+      ${s.paths.length ? `<section class="panel"><div class="panel-h"><h3>파일 위치</h3><span class="faint small">누르면 복사</span></div>
+        <div class="panel-b" style="display:flex;flex-direction:column;gap:10px">${s.paths.map(([l, p]) => `<div><div class="small muted">${esc(l)}</div><span class="mono small copyc" data-cp="${esc(fullPath(p))}" style="word-break:break-all">${esc(fullPath(p))}</span></div>`).join('')}</div></section>` : ''}
+      ${linked.length ? `<section class="panel"><div class="panel-h"><h3>관련 마감</h3><a class="btn ghost sm" href="#calendar">캘린더</a></div>
+        <ul class="dl">${linked.map(rule => { const o = nextOf(rule); return o ? deadlineItem(o, false) : ''; }).join('')}</ul></section>` : ''}
+    </div>
+  </div>`;
+  $('#ho-back', v).onclick = () => { HO.open = null; render(); };
+  $$('[data-st]', v).forEach(b => b.onclick = () => { st.status[s.id] = b.dataset.st; save(); render(); toast(`"${HO_ST[b.dataset.st].t}"로 표시했어요`); });
+  v.addEventListener('click', e => {
+    const c = e.target.closest('[data-k]');
+    if (c) { const arr = st.checks[r.key] = Object.assign({}, st.checks[r.key]); arr[c.dataset.k] = !arr[c.dataset.k]; save(); render(); return; }
+    const cp = e.target.closest('[data-cp]'); if (cp) { copyText(cp.dataset.cp, '경로를 복사했어요'); return; }
+    const d = e.target.closest('[data-done]'); if (d) { toggleDone(d.dataset.done); render(); }
+  });
+  let tm; $('#ho-note', v).oninput = e => { clearTimeout(tm); tm = setTimeout(() => { st.notes[s.id] = e.target.value; save(); const x = $('#ho-saved'); if (x) x.textContent = '저장됨'; }, 400); };
+  const rs = $('#ho-reset', v); rs.onclick = () => { if (rs.dataset.armed) { delete st.checks[r.key]; save(); render(); } else { rs.dataset.armed = 1; rs.textContent = '한 번 더'; } };
+  const nw = $('#ho-new', v); if (nw) nw.onclick = () => { const n = (parseInt(hoPeriod(s)) || 1) + 1; st.checks[s.id + ':cur'] = n + '건'; save(); render(); toast(`${n}번째 건을 시작했어요`); };
+}
+
+/* 오늘 화면용: 매일 업무 */
+function hoDailyPanel() {
+  const daily = HO_SOPS.filter(s => s.freq === 'daily');
+  if (!daily.length) return '';
+  return `<section class="panel"><div class="panel-h"><h2>매일 업무</h2><a class="btn ghost sm" href="#handover">인수인계</a></div>
+    <ul class="dl">${daily.map(s => { const r = hoRun(s), done = r.done === r.total;
+      return `<li class="${done?'done':''}"><div class="when"><b>오늘</b><span class="faint">${DOW[today().getDay()]}</span></div><div><div class="t">${esc(s.title)}</div><div class="s">${esc(s.when)} · ${r.done}/${r.total} 단계</div></div><button class="btn sm" data-hoopen="${s.id}">${done?'완료':'열기'}</button></li>`; }).join('')}</ul></section>`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-hoopen]'); if (b) { HO.open = b.dataset.hoopen; go('handover'); } });
+
 /* ================= 개선: 빠른 검색 · 주간 보고 · 앱 점검 · 매핑 기억 · 오프라인 ================= */
 
 /* ---------- 1. 빠른 검색 (Ctrl+K) ---------- */
@@ -1531,6 +2060,8 @@ function searchIndex() {
   S.staff.forEach(p => out.push({k:'직원', t:p.name, s:`${p.dept} ${p.pos}`, go:() => { D.type = 'emp'; D.staffIds = [p.id]; go('docs'); }}));
   Object.entries(DOCT).forEach(([k, o]) => out.push({k:'문서', t:o.name, go:() => { D.type = k; go('docs'); }}));
   Object.values(MODES).forEach((m, i) => out.push({k:'진우 연결', t:m.title, go:() => { B.mode = Object.keys(MODES)[i]; go('bridge'); }}));
+  HO_SOPS.forEach(s => { out.push({k:'인수인계', t:s.title, s:s.when, go:() => { HO.open = s.id; go('handover'); }}); s.sections.forEach(sec => sec.steps.forEach(t => out.push({k:'절차', t, s:s.title, go:() => { HO.open = s.id; go('handover'); }}))); });
+  out.push({k:'기능', t:'인수인계 질문 목록', go:() => { HO.open = null; go('handover'); }});
   out.push({k:'기능', t:'주간 업무 보고 만들기', go:weeklyReport});
   out.push({k:'기능', t:'NAS 캘린더용 .ics 내보내기', go:exportIcs});
   return out;
@@ -1636,6 +2167,7 @@ VIEWS.settings = v => {
         <label class="f span2">소재지<input class="inp" id="o-addr" value="${esc(o.addr)}"></label>
         <label class="f">문서번호 머리말<input class="inp" id="o-pre" value="${esc(st.docPrefix)}"></label>
         <label class="f">급여일 (매월)<input class="inp" type="number" min="1" max="31" id="o-pay" value="${esc(st.payday)}"></label>
+        <label class="f span2">공용서버 주소 (이 기기에만 저장 · 예: \\\\서버IP)<input class="inp" id="o-nas" value="${esc(st.nasRoot||'')}" placeholder="비우면 '공용서버\\'로 표시"></label>
         <label class="f span2">결재란 (쉼표로 구분)<input class="inp" id="o-appr" value="${esc(st.approvers.join(', '))}"></label>
       </div>
       <div class="row"><button class="btn primary" id="o-save">저장</button></div>
@@ -1659,6 +2191,7 @@ VIEWS.settings = v => {
     Object.assign(o, {name:$('#o-name').value.trim(), rep:$('#o-rep').value.trim(), tel:$('#o-tel').value.trim(), addr:$('#o-addr').value.trim()});
     st.docPrefix = $('#o-pre').value.trim() || '구로IL'; st.payday = Math.min(31, Math.max(1, Number($('#o-pay').value) || 25));
     st.approvers = $('#o-appr').value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 6);
+    st.nasRoot = $('#o-nas').value.trim();
     save(); toast('저장했어요');
   };
   const dump = () => JSON.stringify(S);
