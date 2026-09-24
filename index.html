@@ -291,6 +291,7 @@ tr.entered td.t{text-decoration:line-through}
 <div class="shell">
   <aside class="side">
     <div class="brand"><b>구로IL 업무허브</b><span>사무행정팀 · 김휘원</span></div>
+    <button class="btn" id="side-search" style="justify-content:flex-start;color:var(--ink-3)" onclick="openSearch()">검색 <span class="mono small" style="margin-left:auto">Ctrl K</span></button>
     <nav class="nav" id="nav-side"></nav>
     <div class="side-foot" id="side-foot"></div>
   </aside>
@@ -303,7 +304,7 @@ tr.entered td.t{text-decoration:line-through}
 /* ================= core ================= */
 const ENV = window.HUB_ENV || 'web';           // 'artifact' | 'web'
 const CAN_FILE = ENV !== 'artifact';            // print & download only outside the artifact frame
-const KEY = 'grcil-hub-v1';
+const KEY = 'il-hub-v1';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -340,7 +341,7 @@ const icon = (k, cls='') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none"
 let S;
 function load() {
   let saved = null;
-  try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+  try { saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('grcil-hub-v1') || 'null'); } catch (e) {} // 이전 이름 데이터 이어받기
   const def = defaults();
   if (!saved) return def;
   // merge shallowly so new default keys appear after updates
@@ -350,6 +351,11 @@ function load() {
   if ((saved.v || 1) < 2) { // v2: 실제 저장소 목록으로 앱 교체, 직접 추가한 앱은 유지
     const mine = (saved.apps || []).filter(a => !/^a\d$/.test(a.id));
     saved.apps = [...def.apps, ...mine]; saved.v = 2;
+  }
+  if (saved.v < 3) { // v3: 확인된 실제 주소 반영 (기본 앱만 갱신, 직접 추가한 앱 유지)
+    const byId = Object.fromEntries(def.apps.map(a => [a.id, a]));
+    saved.apps = saved.apps.map(a => byId[a.id] ? {...a, url: byId[a.id].url || a.url, st: byId[a.id].st, desc: byId[a.id].desc} : a);
+    saved.v = 3;
   }
   return saved;
 }
@@ -442,7 +448,7 @@ const HOLIDAYS_DEFAULT = {
 
 function defaults() {
   return {
-    v: 2,
+    v: 3,
     settings: {
       payday: 25,
       since: ymd(today()),   // 이 날짜 이전 마감은 '지난 마감'으로 치지 않음
@@ -453,11 +459,11 @@ function defaults() {
     holidays: clone(HOLIDAYS_DEFAULT),
     apps: [
       {id:'a1', name:'업무분장·인수인계', repo:'eopmu-bunjang', url:'https://kittycong.github.io/eopmu-bunjang/', desc:'업무 담당 매핑, 인수인계 기록', st:'ok'},
-      {id:'a2', name:'휴가 대시보드', repo:'guro_huga', url:'https://kittycong.github.io/guro_huga/', desc:'연차·반차 현황, 휴가신청서 출력 · 허브에 휴가 연동', st:'chk'},
+      {id:'a2', name:'휴가 대시보드', repo:'guro_huga', url:'https://kittycong.github.io/guro_huga/', desc:'연차·반차 현황, 휴가신청서 출력 · 허브에 휴가 연동', st:'ok'},
       {id:'a3', name:'채용 캘린더', repo:'guro_recruitment-calendar-app', url:'https://kittycong.github.io/guro_recruitment-calendar-app/', desc:'채용 일정·칸반·HWPX 공고 생성', st:'ok'},
-      {id:'a4', name:'출장·기안 문서생성', repo:'chulchang-munseo', url:'https://kittycong.github.io/chulchang-munseo/', desc:'출장신청서, 기안, 구매, 인사, 공문', st:'chk'},
-      {id:'a5', name:'생일 관리', repo:'birth_guro1', url:'https://kittycong.github.io/birth_guro1/', desc:'직원 생일 알림 · 허브에 생일 연동', st:'chk'},
-      {id:'a6', name:'빵 수령 당번표', repo:'bread-duty-app', url:'', desc:'주차별 당번 자동 배정 (Next.js · Vercel 배포 주소 입력)', st:'url'},
+      {id:'a4', name:'출장·기안 문서생성', repo:'chulchang-munseo', url:'https://chulchang-munseo.vercel.app/', desc:'출장신청서·복명서, 물품구매 기안, 급여명세서 (Vercel)', st:'ok'},
+      {id:'a5', name:'생일 관리', repo:'birth_guro1', url:'https://kittycong.github.io/birth_guro1/', desc:'직원 생일 알림 · 허브에 생일 연동', st:'ok'},
+      {id:'a6', name:'빵 수령 당번표', repo:'bread-duty-app', url:'https://bread-duty-app-1-bread-duty.vercel.app/', desc:'수요일 빵 수령 당번, 공휴일이면 목요일로 (Vercel)', st:'ok'},
       {id:'a8', name:'진우정보시스템', url:'', desc:'총무·회계: 급여, 증명서, 전표, 장부, 예결산·추경', st:'pc'},
       {id:'a9', name:'시놀로지 NAS 캘린더', url:'', desc:'센터 공유 일정. 이 허브의 .ics를 가져오기', st:'url'},
     ],
@@ -592,7 +598,7 @@ function routineState(rt, period = periodKey(rt)) {
 
 /* ================= 앱 데이터 연동 (읽기 전용) =================
    같은 도메인(kittycong.github.io)에 올라간 앱끼리는 브라우저 저장소를 공유하므로,
-   허브를 kittycong.github.io/grcil-hub/ 에 배포하면 아래 데이터를 자동으로 읽는다.
+   허브를 kittycong.github.io/il-hub/ 에 배포하면 아래 데이터를 자동으로 읽는다.
    토큰·비밀번호 키는 절대 읽지 않는다. 쓰기(수정)는 하지 않는다. */
 const GH = {owner:'kittycong', raw:'https://raw.githubusercontent.com/kittycong'};
 const CONN = {
@@ -668,7 +674,8 @@ function connPanel() {
   return `<section class="panel" id="conn"><div class="panel-h"><h2>데이터 연동</h2><button class="btn ghost sm" id="conn-re">다시 읽기</button></div>
     ${row('huga', CONN.huga, hd ? `직원 ${(hd.employees||[]).length}명 · 휴가 기록 ${(hd.records||[]).length}건${hd.updatedAt?` · 기준 ${esc(hd.updatedAt)}`:''}` : '')}
     ${row('birth', CONN.birth, bd ? `${bd.length}명` : '')}
-    <div class="panel-b faint small">읽기 전용이에요. 각 앱의 데이터를 바꾸지 않고, 토큰·비밀번호는 읽지 않습니다. 허브를 <b>kittycong.github.io/grcil-hub/</b>에 올려야 같은 브라우저의 앱 데이터가 자동으로 이어져요.</div></section>`;
+    ${hd && hugaStaleDays() > 30 ? `<div class="panel-b" style="padding-bottom:0"><div class="note warn small">휴가 데이터가 ${hugaStaleDays()}일 전(${esc(hd.updatedAt)}) 기준이에요. 휴가 앱에서 <b>공유 저장</b>을 누르면 최신으로 이어져요.</div></div>` : ''}
+    <div class="panel-b faint small">읽기 전용이에요. 각 앱의 데이터를 바꾸지 않고, 토큰·비밀번호는 읽지 않습니다. 허브를 <b>kittycong.github.io/il-hub/</b>에 올려야 같은 브라우저의 앱 데이터가 자동으로 이어져요.</div></section>`;
 }
 function bindConn(v) {
   const re = $('#conn-re', v); if (re) re.onclick = async () => { await loadConnectors(); render(); toast('연동 데이터를 다시 읽었어요'); };
@@ -694,7 +701,7 @@ function deadlineItem(o, showNote = true) {
   return `<li class="${o.done?'done':''}">
     <div class="when"><b>${o.date.getMonth()+1}/${o.date.getDate()}</b><span class="${late?'chip crit':o.done?'faint':dd==='오늘'?'chip warn':'faint'}" style="${late||dd==='오늘'?'height:18px;padding:0 6px;font-size:11px':''}">${DOW[o.date.getDay()]} · ${dd}</span></div>
     <div style="min-width:0"><div class="t"><span class="dotcat" style="background:${c.color};margin-right:6px"></span>${esc(o.rule.title)}</div>
-      ${showNote ? `<div class="s">${esc(c.name)}${o.rule.note?' · '+esc(o.rule.note):''}${shifted}</div>` : ''}</div>
+      ${showNote ? `<div class="s">${esc(c.name)}${o.rule.note?' · '+esc(o.rule.note):''}${shifted}${o.rule.routine?` · <a href="#routine">루틴 열기</a>`:''}</div>` : ''}</div>
     <button class="check" aria-pressed="${o.done}" aria-label="${esc(o.rule.title)} 완료 표시" data-done="${o.key}">${o.done?icon('check'):''}</button>
   </li>`;
 }
@@ -717,7 +724,7 @@ VIEWS.home = v => {
   v.innerHTML = `
   <div class="page-head">
     <div><div class="eyebrow">${t.getFullYear()}년 ${t.getMonth()+1}월 ${t.getDate()}일 ${DOW[t.getDay()]}요일${hol?' · '+esc(hol):''}</div><h1>오늘 챙길 일</h1></div>
-    <div class="row"><a class="btn sm" href="#calendar">${icon('cal')}캘린더</a><a class="btn sm" href="#settings">${icon('gear')}설정·백업</a></div>
+    <div class="row"><button class="btn sm" id="h-search">검색</button><button class="btn sm primary" id="h-week">${icon('copy')}주간 보고</button><a class="btn sm" href="#settings">${icon('gear')}설정</a></div>
   </div>
 
   <section class="panel today-strip">
@@ -755,6 +762,7 @@ VIEWS.home = v => {
     </div>
   </div>`;
   bindDone(v, () => render());
+  $('#h-search', v).onclick = openSearch; $('#h-week', v).onclick = weeklyReport;
 };
 
 /* ================= apps ================= */
@@ -762,7 +770,8 @@ const APP_ST = {
   ok:{t:'연결됨', c:'ok'}, chk:{t:'열어서 확인 필요', c:'warn'}, url:{t:'주소 입력 필요', c:'warn'}, local:{t:'로컬 실행', c:''}, pc:{t:'PC 프로그램', c:''},
 };
 function appCard(a, editable = false) {
-  const st = a.url ? (a.st === 'chk' ? APP_ST.chk : APP_ST.ok) : (APP_ST[a.st] || APP_ST.url);
+  let st = a.url ? (a.st === 'chk' ? APP_ST.chk : APP_ST.ok) : (APP_ST[a.st] || APP_ST.url);
+  if (a.url && HEALTH[a.id] === 'ok') st = {t:'정상 응답', c:'ok'}; else if (a.url && HEALTH[a.id] === 'down') st = {t:'응답 없음', c:'crit'};
   const ini = esc(a.name.replace(/[^가-힣A-Za-z]/g,'').slice(0,1));
   const inner = `<div class="ic">${ini}</div><div class="n">${esc(a.name)}</div><div class="dsc">${esc(a.desc||'')}${editable&&a.repo?`<br><span class="mono">${esc(a.repo)}</span>`:''}</div>
     <div class="st row" style="gap:6px"><span class="chip ${st.c}">${st.t}</span>${a.url?`<span class="faint small">${icon('ext','').replace('<svg','<svg style="width:13px;height:13px;vertical-align:-2px"')}</span>`:''}</div>
@@ -818,6 +827,7 @@ function centerPanel() {
   const day = e => `<span class="mono">${e.date.getMonth()+1}/${e.date.getDate()}</span> ${DOW[e.date.getDay()]}`;
   return `<section class="panel"><div class="panel-h"><h2>휴가 · 생일</h2><a class="btn ghost sm" href="#apps">연동 설정</a></div>
     <div class="panel-b" style="display:flex;flex-direction:column;gap:12px">
+      ${hOk&&hugaStaleDays()>30?`<div class="note warn small">휴가 데이터가 ${hugaStaleDays()}일 전 기준이에요. 휴가 앱에서 <b>공유 저장</b>을 한 번 눌러 주세요.</div>`:''}
       ${hOk?`<div><div class="eyebrow" style="margin-bottom:6px">7일 안 휴가</div>${lv.length?lv.map(e=>`<div class="row small" style="gap:8px"><span class="dotcat" style="background:var(--cat-leave)"></span>${day(e)} · ${esc(e.title)}</div>`).join(''):'<div class="small faint">예정된 휴가가 없어요</div>'}</div>
       ${bal.length?`<div class="row small" style="gap:6px">${bal.slice(0,4).map(b=>`<span class="chip ${b.left!=null&&b.left<3?'warn':'acc'}">${esc(b.name)} 연차 ${b.left!=null?`잔여 ${b.left}일`:`사용 ${b.used}일`}</span>`).join('')}</div>`:''}`:''}
       ${bOk?`<div><div class="eyebrow" style="margin-bottom:6px">30일 안 생일</div>${bd.length?bd.slice(0,5).map(e=>`<div class="row small" style="gap:8px"><span class="dotcat" style="background:var(--cat-bday)"></span>${day(e)} · ${esc(e.p.name)} <span class="faint">${esc(e.p.dept||'')}</span>${ymd(e.date)===ymd(t)?'<span class="chip warn">오늘</span>':''}</div>`).join(''):'<div class="small faint">없어요</div>'}</div>`:''}
@@ -937,7 +947,7 @@ function exportIcs() {
   const d8 = d => ymd(d).replace(/-/g,'');
   const stamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
   const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GRCIL//Work Hub//KO','CALSCALE:GREGORIAN','X-WR-CALNAME:구로IL 행정 마감'];
-  occ.forEach(o => lines.push('BEGIN:VEVENT', `UID:${o.key}@grcil-hub`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${d8(o.date)}`, `DTEND;VALUE=DATE:${d8(addDays(o.date,1))}`,
+  occ.forEach(o => lines.push('BEGIN:VEVENT', `UID:${o.key}@il-hub`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${d8(o.date)}`, `DTEND;VALUE=DATE:${d8(addDays(o.date,1))}`,
     `SUMMARY:${e('[' + CATS[o.rule.cat].name + '] ' + o.rule.title)}`, `DESCRIPTION:${e(o.rule.note || '')}`, 'BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:-P2D',`DESCRIPTION:${e(o.rule.title)}`,'END:VALARM','END:VEVENT'));
   lines.push('END:VCALENDAR');
   const txt = lines.join('\r\n');
@@ -1071,6 +1081,7 @@ function setSheet(slot, wb, name) {
   const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header:1, raw:true, defval:''});
   const f = B.files[slot]; f.sheet = name; f.rows = rows; f.hdr = detectHeader(rows);
   B.map[slot] = autoMap(rows[f.hdr] || [], MODES[B.mode].fields);
+  if (recallMap(slot)) toast('지난번에 지정한 열 설정을 불러왔어요');
 }
 function items(slot) {
   const f = B.files[slot], mp = B.map[slot] || {}; if (!f) return [];
@@ -1210,7 +1221,7 @@ function bindSlot(v, k) {
   drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('over'); handle(e.dataTransfer.files[0]); });
   const sh = $(`[data-sheet="${k}"]`, v); if (sh) sh.onchange = () => { setSheet(k, B.files[k].wb, sh.value); render(); };
   const hd = $(`[data-hdr="${k}"]`, v); if (hd) hd.onchange = () => { const f = B.files[k]; f.hdr = Number(hd.value); B.map[k] = autoMap(f.rows[f.hdr] || [], MODES[B.mode].fields); render(); };
-  $$(`[data-map^="${k}:"]`, v).forEach(s => s.onchange = () => { const fl = s.dataset.map.split(':')[1]; (B.map[k] ||= {})[fl] = s.value === '' ? null : Number(s.value); render(); });
+  $$(`[data-map^="${k}:"]`, v).forEach(s => s.onchange = () => { const fl = s.dataset.map.split(':')[1]; (B.map[k] ||= {})[fl] = s.value === '' ? null : Number(s.value); rememberMap(k); render(); });
 }
 function missingReq(slot) {
   const mp = B.map[slot] || {}; return MODES[B.mode].fields.filter(f => FIELD[f].req && mp[f] == null).map(f => FIELD[f].label);
@@ -1508,6 +1519,108 @@ function pasteStaff() {
     }});
 }
 
+/* ================= 개선: 빠른 검색 · 주간 보고 · 앱 점검 · 매핑 기억 · 오프라인 ================= */
+
+/* ---------- 1. 빠른 검색 (Ctrl+K) ---------- */
+function searchIndex() {
+  const out = [];
+  ROUTES.forEach(r => out.push({k:'화면', t:r.label, go:() => go(r.id)}));
+  S.apps.forEach(a => out.push({k:'앱', t:a.name, s:a.desc, go:() => { if (a.url) window.open(a.url, '_blank', 'noopener'); else go('apps'); }}));
+  S.rules.forEach(r => out.push({k:'마감', t:r.title, s:ruleText(r), go:() => { go('calendar'); setTimeout(() => editRule(r.id), 60); }}));
+  S.routines.forEach(rt => { out.push({k:'루틴', t:rt.name, s:rt.when, go:() => go('routine')}); rt.steps.forEach(st => out.push({k:'루틴 단계', t:st.t, s:rt.name, go:() => go(st.link || 'routine')})); });
+  S.staff.forEach(p => out.push({k:'직원', t:p.name, s:`${p.dept} ${p.pos}`, go:() => { D.type = 'emp'; D.staffIds = [p.id]; go('docs'); }}));
+  Object.entries(DOCT).forEach(([k, o]) => out.push({k:'문서', t:o.name, go:() => { D.type = k; go('docs'); }}));
+  Object.values(MODES).forEach((m, i) => out.push({k:'진우 연결', t:m.title, go:() => { B.mode = Object.keys(MODES)[i]; go('bridge'); }}));
+  out.push({k:'기능', t:'주간 업무 보고 만들기', go:weeklyReport});
+  out.push({k:'기능', t:'NAS 캘린더용 .ics 내보내기', go:exportIcs});
+  return out;
+}
+function openSearch() {
+  const idx = searchIndex(); let sel = 0, hits = [];
+  sheet({title:'빠른 검색', body:`<input class="inp" id="q" placeholder="앱·마감·루틴·직원·문서 이름 (예: 급여, 휴가, 재직)" autocomplete="off"><div id="qr" style="display:flex;flex-direction:column;max-height:50vh;overflow:auto;margin:0 -16px"></div><div class="faint small">↑↓ 이동 · Enter 열기 · Esc 닫기</div>`,
+    onMount: el => {
+      const q = $('#q', el), qr = $('#qr', el);
+      const draw = () => {
+        const w = q.value.trim().toLowerCase().split(/\s+/).filter(Boolean);
+        hits = (w.length ? idx.filter(x => w.every(t => (x.t + ' ' + (x.s||'') + ' ' + x.k).toLowerCase().includes(t))) : idx.filter(x => x.k === '화면' || x.k === '앱' || x.k === '기능')).slice(0, 40);
+        sel = Math.min(sel, Math.max(0, hits.length - 1));
+        qr.innerHTML = hits.length ? hits.map((x, i) => `<button class="qi" data-i="${i}" style="display:flex;gap:10px;align-items:center;text-align:left;border:0;background:${i===sel?'var(--accent-soft)':'transparent'};padding:9px 16px;cursor:pointer;width:100%"><span class="chip" style="min-width:64px;justify-content:center">${esc(x.k)}</span><span style="min-width:0"><b>${esc(x.t)}</b>${x.s?`<span class="faint small"> · ${esc(x.s)}</span>`:''}</span></button>`).join('') : '<div class="empty">찾는 항목이 없어요</div>';
+      };
+      const pick = i => { const x = hits[i]; if (!x) return; closeSheet(); x.go(); };
+      q.oninput = () => { sel = 0; draw(); };
+      q.onkeydown = e => {
+        if (e.key === 'ArrowDown') { e.preventDefault(); sel = Math.min(sel + 1, hits.length - 1); draw(); $(`[data-i="${sel}"]`, qr)?.scrollIntoView({block:'nearest'}); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); sel = Math.max(sel - 1, 0); draw(); $(`[data-i="${sel}"]`, qr)?.scrollIntoView({block:'nearest'}); }
+        else if (e.key === 'Enter') { e.preventDefault(); pick(sel); }
+      };
+      qr.onclick = e => { const b = e.target.closest('[data-i]'); if (b) pick(Number(b.dataset.i)); };
+      draw();
+    }});
+}
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openSearch(); }
+  else if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName || '') && !$('.sheet')) { e.preventDefault(); openSearch(); }
+});
+
+/* ---------- 2. 주간 업무 보고 자동 작성 ---------- */
+function weekRange(d = today()) { const mon = addDays(d, -((d.getDay() + 6) % 7)); return [mon, addDays(mon, 6)]; }
+function weeklyReport() {
+  const [mon, sun] = weekRange(), [nMon, nSun] = [addDays(mon, 7), addDays(sun, 7)];
+  const f = d => `${d.getMonth()+1}/${d.getDate()}(${DOW[d.getDay()]})`;
+  const occ = occurrences(mon, sun), next = occurrences(nMon, nSun);
+  const done = occ.filter(o => o.done), open = occ.filter(o => !o.done);
+  const lv = leaveEvents(mon, nSun);
+  const me = S.staff[0] || {};
+  const lines = [
+    `[주간 업무 보고] ${mon.getFullYear()}.${mon.getMonth()+1}.${mon.getDate()} ~ ${sun.getMonth()+1}.${sun.getDate()}  ${me.dept||''} ${me.pos||''} ${me.name||''}`.trim(),
+    '', '■ 이번 주 완료',
+    ...(done.length ? done.map(o => `  - ${f(o.date)} ${o.rule.title}`) : ['  - (완료 표시한 마감 없음)']),
+    '', '■ 이번 주 미완료 · 진행 중',
+    ...(open.length ? open.map(o => `  - ${f(o.date)} ${o.rule.title}${o.date < today() ? ' (기한 지남)' : ''}`) : ['  - 없음']),
+    '', '■ 루틴 진행',
+    ...S.routines.filter(r => r.freq !== 'adhoc').map(r => { const st = routineState(r); return `  - ${r.name} ${st.done}/${st.total}${st.done === st.total ? ' 완료' : ''}`; }),
+    '', '■ 다음 주 예정',
+    ...(next.length ? next.map(o => `  - ${f(o.date)} ${o.rule.title}`) : ['  - 없음']),
+    ...(lv.length ? ['', '■ 휴가 (연동)', ...lv.map(e => `  - ${f(e.date)} ${e.title}`)] : []),
+  ];
+  const txt = lines.join('\n');
+  sheet({title:'주간 업무 보고', wide:true, body:`<div class="note small">캘린더의 완료 표시와 루틴 체크로 자동 작성했어요. 필요한 부분만 고쳐서 복사하세요.</div><textarea class="inp mono" id="wr" rows="18">${esc(txt)}</textarea>`,
+    foot:`<button class="btn" data-close>닫기</button><button class="btn primary" id="wr-c">${icon('copy')}복사</button>`,
+    onMount: el => { $('#wr-c', el).onclick = () => copyText($('#wr', el).value, '주간 보고를 복사했어요'); }});
+}
+
+/* ---------- 3. 앱 연결 상태 자동 점검 ---------- */
+const HEALTH = {};
+async function checkApps() {
+  if (ENV === 'artifact') return;
+  await Promise.all(S.apps.filter(a => a.url).map(async a => {
+    try {
+      const u = new URL(a.url, location.href), same = u.origin === location.origin;
+      const ctl = new AbortController(), tm = setTimeout(() => ctl.abort(), 8000);
+      const r = await fetch(u.href, same ? {cache:'no-store', signal:ctl.signal} : {mode:'no-cors', cache:'no-store', signal:ctl.signal});
+      clearTimeout(tm);
+      HEALTH[a.id] = same ? (r.ok ? 'ok' : 'down') : 'ok';
+    } catch (e) { HEALTH[a.id] = 'down'; }
+  }));
+}
+
+/* ---------- 4. 휴가 데이터 기준일 경고 ---------- */
+function hugaStaleDays() {
+  const u = CONN.huga.data?.updatedAt; if (!u) return 0;
+  const d = new Date(u.replace(' ', 'T')); if (isNaN(d)) return 0;
+  return Math.floor((today() - d) / 864e5);
+}
+
+/* ---------- 5. 진우 연결: 열 지정 기억 ---------- */
+function mapSig(slot) { const f = B.files[slot]; return f ? B.mode + ':' + (f.rows[f.hdr] || []).map(String).join('|') : ''; }
+function rememberMap(slot) { const sig = mapSig(slot); if (!sig) return; S.mapPresets = S.mapPresets || {}; S.mapPresets[sig] = B.map[slot]; save(); }
+function recallMap(slot) { const p = (S.mapPresets || {})[mapSig(slot)]; if (p) B.map[slot] = clone(p); return !!p; }
+
+/* ---------- 6. 오프라인·홈 화면 앱 (GitHub 배포판) ---------- */
+if (ENV === 'web' && location.protocol === 'https:' && 'serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+
 /* ================= settings & backup ================= */
 VIEWS.settings = v => {
   const st = S.settings, o = st.org;
@@ -1566,7 +1679,7 @@ VIEWS.settings = v => {
 /* ================= boot ================= */
 S = load();
 render();
-loadConnectors().then(() => { if (['home','calendar','apps'].includes(current())) render(); });
+loadConnectors().then(() => { if (['home','calendar','apps'].includes(current())) render(); return checkApps(); }).then(() => { if (['home','apps'].includes(current())) render(); });
 
 </script>
 </body>
