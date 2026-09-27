@@ -24,6 +24,7 @@ const ICON = {
   apps:'<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   hand:'<path d="M4 7h9a3 3 0 0 1 0 6H9"/><path d="m7 10-3-3 3-3"/><path d="M20 17h-9a3 3 0 0 1 0-6"/><path d="m17 20 3-3-3-3"/>',
+  won:'<path d="M4 7l3 11 5-11 5 11 3-11M3 11h18M3 14h18"/>',
   check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
   edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
@@ -39,7 +40,7 @@ const icon = (k, cls='') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none"
 let S;
 function load() {
   let saved = null;
-  try { saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('grcil-hub-v1') || 'null'); } catch (e) {} // 이전 이름 데이터 이어받기
+  try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
   const def = defaults();
   if (!saved) return def;
   // merge shallowly so new default keys appear after updates
@@ -119,18 +120,22 @@ const ROUTES = [
   {id:'bridge', label:'진우 연결', icon:'bridge', hidden:true},
   {id:'docs', label:'문서', icon:'doc', hidden:true},
   {id:'routine', label:'업무', icon:'list', hidden:true},
+  {id:'budget', label:'예산', icon:'won'},
   {id:'apps', label:'앱', icon:'apps'},
+  {id:'embed', label:'앱 화면', icon:'apps', hidden:true},
   {id:'settings', label:'설정·백업', icon:'gear', sideOnly:true},
 ];
 const VIEWS = {};
 VIEWS.tools = v => { let t = 'bridge'; try { t = localStorage.getItem('il-hub-tool') || 'bridge'; } catch (e) {} location.replace('#' + (TOOL_IDS.includes(t) ? t : 'bridge')); };
 function go(id) { if (location.hash.slice(1) !== id) location.hash = id; else render(); }
-function current() { const h = location.hash.slice(1); return ROUTES.some(r => r.id === h) ? h : 'home'; }
+function current() { const h = location.hash.slice(1).split('/')[0]; return ROUTES.some(r => r.id === h) ? h : 'home'; }
 const TOOL_IDS = ['bridge', 'docs'];
-function navOn(r, cur) { return r.id === cur || (r.id === 'tools' && TOOL_IDS.includes(cur)) || (r.id === 'handover' && cur === 'routine'); }
+function navOn(r, cur) { return r.id === cur || (r.id === 'tools' && TOOL_IDS.includes(cur)) || (r.id === 'handover' && cur === 'routine') || (r.id === 'apps' && cur === 'embed'); }
 function renderNav() {
   const cur = current(), od = overdueCount();
-  $('#nav-side').innerHTML = ROUTES.filter(r=>!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?`<span class="badge">${od}</span>`:''}</a>`).join('');
+  const eid = cur === 'embed' ? (typeof EMB !== 'undefined' ? embedId() || EMB.cur : '') : '';
+  $('#nav-side').innerHTML = ROUTES.filter(r=>!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?`<span class="badge">${od}</span>`:''}</a>`
+    + (r.id === 'apps' && typeof embApps === 'function' ? `<div class="nav-sub">${embApps().map(a => `<a href="#embed/${a.id}" ${eid===a.id?'aria-current="page"':''}>${esc(a.name)}</a>`).join('')}</div>` : '')).join('');
   $('#nav-tab').innerHTML = ROUTES.filter(r=>!r.sideOnly&&!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?'<i class="dot"></i>':''}</a>`).join('');
   $('#side-foot').innerHTML = `${ENV==='artifact'?'Claude 아티팩트판':'웹 배포판'} · 데이터는 이 기기 브라우저에 저장<br><a href="#settings">백업하기</a>`;
 }
@@ -140,6 +145,8 @@ function render() {
   const old = $('#view'), v = old.cloneNode(false); old.replaceWith(v); // fresh node → no stacked listeners
   v.dataset.view = cur;
   if (TOOL_IDS.includes(cur)) { try { localStorage.setItem('il-hub-tool', cur); } catch (e) {} }
+  const eh = $('#embed-host'); if (eh) eh.hidden = cur !== 'embed';
+  document.querySelector('.main').classList.toggle('embedding', cur === 'embed');
   VIEWS[cur](v);
   if (TOOL_IDS.includes(cur)) v.insertAdjacentHTML('afterbegin', `<div class="seg tool-seg" role="group" aria-label="도구">${[['bridge','진우 연결'],['docs','문서 작성']].map(([k,n]) => `<a href="#${k}" aria-pressed="${cur===k}" class="segl">${n}</a>`).join('')}</div>`);
   if (render.last !== cur) window.scrollTo(0, 0);

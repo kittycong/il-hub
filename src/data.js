@@ -26,8 +26,8 @@ function defaults() {
     settings: {
       payday: 25,
       since: ymd(today()),   // 이 날짜 이전 마감은 '지난 마감'으로 치지 않음
-      docPrefix: '구로IL',
-      org: {name:'구로장애인자립생활센터', rep:'', addr:'서울특별시 구로구', tel:''},
+      docPrefix: '',
+      org: {name:'', rep:'', addr:'', tel:''},
       approvers: ['담당','팀장','사무국장','소장','대표'],
       nasRoot: '',
     },
@@ -102,7 +102,7 @@ function defaults() {
     ],
     checks: {},
     staff: [
-      {id:'s1', name:'김휘원', birth:'', dept:'사무행정팀', pos:'간사', hired:'2025-04-02', left:'', duty:'인사·급여, 후원자 관리, 문서 처리'},
+      {id:'s1', name:'김*원', birth:'', dept:'사무행정팀', pos:'간사', hired:'2025-04-02', left:'', duty:'인사·급여, 후원자 관리, 문서 처리'},
       {id:'s2', name:'홍길동 (예시)', birth:'1990-05-12', dept:'권익옹호팀', pos:'팀장', hired:'2021-03-02', left:'', duty:'권익옹호 사업 총괄'},
       {id:'s3', name:'김예시 (예시)', birth:'1995-11-03', dept:'자립지원팀', pos:'활동가', hired:'2023-07-01', left:'2025-12-31', duty:'자립생활 기술훈련 운영'},
     ],

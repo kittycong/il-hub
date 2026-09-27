@@ -15,7 +15,8 @@ function dfDefaults() {
     draft:{date:t, title:'2026년 2차 추가경정예산(안) 보고', body:'1. 관련: 2026년 1차 추가경정예산\n2. 후원 재원의 수입 변동에 따라 2026년 2차 추가경정예산(안)을 아래와 같이 보고하오니 검토 후 결재하여 주시기 바랍니다.\n\n  가. 변경 사유: 개인 CMS 정기후원 감소분 반영\n  나. 변경 내역: 붙임 참조\n  다. 시행: 결재 후 진우정보시스템 추경예산 입력', attach:'2026년 2차 추경예산(안) 1부.  끝.'},
   };
 }
-function nextDocNo() { const y = today().getFullYear(); return `${S.settings.docPrefix} 제${y}-${String((S.docSeq[y] || 0) + 1).padStart(4, '0')}호`; }
+function docPre() { const p = (S.settings.docPrefix || '').trim(); return p ? p + ' ' : ''; }
+function nextDocNo() { const y = today().getFullYear(); return `${docPre()}제${y}-${String((S.docSeq[y] || 0) + 1).padStart(4, '0')}호`; }
 function korWon(n) {
   n = Math.floor(Math.abs(Number(n) || 0)); if (!n) return '영';
   const dg = ['','일','이','삼','사','오','육','칠','팔','구'], su = ['','십','백','천'], big = ['','만','억','조'];
@@ -29,7 +30,7 @@ function korWon(n) {
   return out;
 }
 const fmtK = s => { if (!s) return ''; const d = parseYmd(s); return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`; };
-function orgSeal() { const o = S.settings.org; return `<div class="issuer">${esc(o.name)}<br>센터장 ${esc(o.rep || '○○○')} <span class="seal">${esc(o.name.replace(/장애인자립생활센터/, '').slice(0,4) || '직인')}<br>직인</span></div>`; }
+function orgSeal() { const o = S.settings.org; return `<div class="issuer">${esc(o.name)}<br>센터장 ${esc(o.rep || '○○○')} <span class="seal">${esc(o.name.replace(/(장애인)?자립생활센터$|센터$/, '').slice(0,4) || '직인')}<br>직인</span></div>`; }
 function apprTable() { const a = S.settings.approvers; return `<table class="appr"><tr><td class="lab" rowspan="2">결 재</td>${a.map(x=>`<td>${esc(x)}</td>`).join('')}</tr><tr>${a.map(()=>'<td></td>').join('')}</tr></table>`; }
 
 function docHtml(type, f, st, no) {
@@ -123,7 +124,7 @@ VIEWS.docs = v => {
     if (D.type === 'emp' || D.type === 'career') {
       const sel = S.staff.filter(s => D.staffIds.includes(s.id));
       const base = S.docSeq[today().getFullYear()] || 0, y = today().getFullYear();
-      html = sel.length ? sel.map((s, i) => docHtml(D.type, f, s, `${S.settings.docPrefix} 제${y}-${String(base + 1 + i).padStart(4, '0')}호`)).join('') : '<div class="empty">직원을 한 명 이상 골라 주세요</div>';
+      html = sel.length ? sel.map((s, i) => docHtml(D.type, f, s, `${docPre()}제${y}-${String(base + 1 + i).padStart(4, '0')}호`)).join('') : '<div class="empty">직원을 한 명 이상 골라 주세요</div>';
     } else html = docHtml(D.type, f, null, nextDocNo());
     pv.innerHTML = `<div class="a4-scale">${html}</div>`;
     fitA4(pv);
@@ -149,7 +150,7 @@ VIEWS.docs = v => {
     const y = today().getFullYear();
     const targets = (D.type === 'emp' || D.type === 'career') ? S.staff.filter(s => D.staffIds.includes(s.id)).map(s => s.name) : [f.title || (f.item ? f.item + ' 구매' : '') || (f.kind ? f.kind + ' · ' + (f.purpose || '') : '') || DOCT[D.type].name];
     if (!targets.length) { toast('대상을 먼저 골라 주세요'); return; }
-    targets.forEach(nm => { S.docSeq[y] = (S.docSeq[y] || 0) + 1; S.docLog.push({no:`${S.settings.docPrefix} 제${y}-${String(S.docSeq[y]).padStart(4,'0')}호`, type:DOCT[D.type].name, name:nm, purpose:f.purpose||'', date:f.issue||f.date}); });
+    targets.forEach(nm => { S.docSeq[y] = (S.docSeq[y] || 0) + 1; S.docLog.push({no:`${docPre()}제${y}-${String(S.docSeq[y]).padStart(4,'0')}호`, type:DOCT[D.type].name, name:nm, purpose:f.purpose||'', date:f.issue||f.date}); });
     save(); render(); toast(`${targets.length}건을 발급대장에 기록했어요`);
   };
   $('#log-copy', v).onclick = () => copyText([['문서번호','종류','대상·제목','용도','발급일'], ...S.docLog.map(r => [r.no, r.type, r.name, r.purpose||'', r.date])].map(r => r.join('\t')).join('\n'), '발급대장을 복사했어요');

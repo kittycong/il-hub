@@ -3,13 +3,15 @@
 /* ---------- 1. 빠른 검색 (Ctrl+K) ---------- */
 function searchIndex() {
   const out = [];
-  ROUTES.filter(r => r.id !== 'routine' && r.id !== 'tools').forEach(r => out.push({k:'화면', t:r.label, go:() => go(r.id)}));
-  S.apps.forEach(a => out.push({k:'앱', t:a.name, s:a.desc, go:() => { if (a.url) window.open(a.url, '_blank', 'noopener'); else go('apps'); }}));
+  ROUTES.filter(r => !['routine','tools','embed'].includes(r.id)).forEach(r => out.push({k:'화면', t:r.label, go:() => go(r.id)}));
+  S.apps.forEach(a => out.push({k:'앱', t:a.name, s:a.desc, go:() => { if (a.url && a.embed !== false) location.hash = 'embed/' + a.id; else if (a.url) window.open(a.url, '_blank', 'noopener'); else go('apps'); }}));
   S.rules.forEach(r => out.push({k:'마감', t:r.title, s:ruleText(r), go:() => { go('calendar'); setTimeout(() => editRule(r.id), 60); }}));
   S.staff.forEach(p => out.push({k:'직원', t:p.name, s:`${p.dept} ${p.pos}`, go:() => { D.type = 'emp'; D.staffIds = [p.id]; go('docs'); }}));
   Object.entries(DOCT).forEach(([k, o]) => out.push({k:'문서', t:o.name, go:() => { D.type = k; go('docs'); }}));
   Object.values(MODES).forEach((m, i) => out.push({k:'진우 연결', t:m.title, go:() => { B.mode = Object.keys(MODES)[i]; go('bridge'); }}));
   sops().forEach(s => { out.push({k:'업무', t:s.title, s:s.when, go:() => { HO.open = s.id; go('handover'); }}); s.sections.forEach(sec => sec.steps.forEach(t => out.push({k:'절차', t, s:s.title, go:() => { HO.open = s.id; go('handover'); }}))); });
+  (S.budget?.funds || []).forEach(f => out.push({k:'예산', t:f.name, s:f.owner || '재원', go:() => { BG.fund = f.id; BG.tab = 'acct'; go('budget'); }}));
+  [...new Set((S.budget?.lines || []).map(l => l.proj).filter(Boolean))].forEach(p => out.push({k:'사업', t:p, s:'사업별 사용액', go:() => { BG.tab = 'proj'; go('budget'); }}));
   out.push({k:'기능', t:'인수인계 질문 목록', go:() => { HO.open = null; go('handover'); }});
   out.push({k:'기능', t:'주간 업무 보고 만들기', go:weeklyReport});
   out.push({k:'기능', t:'NAS 캘린더용 .ics 내보내기', go:exportIcs});

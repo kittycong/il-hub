@@ -10,7 +10,7 @@
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon.svg">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
-<title>구로IL 업무허브</title>
+<title>업무허브 김*원</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -87,7 +87,7 @@ a{color:var(--accent)}
   .shell{grid-template-columns:1fr}
   .side{display:none}
   .main{padding-block:16px 96px}
-  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
+  .tabbar{display:grid;grid-template-columns:repeat(6,1fr);position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px))}
   .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;white-space:nowrap;color:var(--ink-3);text-decoration:none;padding:4px 0;position:relative}
   .tabbar a[aria-current="page"]{color:var(--accent);font-weight:600}
   .tabbar svg{width:22px;height:22px}
@@ -142,6 +142,78 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 .seg button{border:0;background:transparent;padding:6px 12px;border-radius:7px;cursor:pointer;color:var(--ink-2);font-weight:500;font-size:13px}
 .seg a.segl{padding:6px 12px;border-radius:7px;color:var(--ink-2);font-weight:500;font-size:13px;text-decoration:none}
 .seg a.segl[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.path-row{display:grid;grid-template-columns:minmax(120px,1fr) minmax(0,2.2fr) auto;gap:8px;align-items:center}
+@media (max-width:620px){.path-row{grid-template-columns:1fr;padding-bottom:10px;border-bottom:1px solid var(--line)}}
+.st-ph{display:flex;gap:6px;align-items:center;margin-left:auto;flex:0 0 auto}
+.st-ph img{width:44px;height:32px;object-fit:cover;border-radius:5px;border:1px solid var(--line);cursor:zoom-in;display:block}
+.st-ph .n{font-size:11px;color:var(--ink-3)}
+.st-ph .addph{opacity:.35;border:0;background:transparent;color:var(--ink-3);cursor:pointer;padding:4px;border-radius:6px}
+.steps li:hover .addph,.st-ph .addph:focus-visible{opacity:1}
+@media (hover:none){.st-ph .addph{opacity:.6}}
+.st-ph .addph svg,.chip svg{width:14px;height:14px;vertical-align:-2px}
+.step-paths{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.step-paths button{font-size:11px;height:20px;padding:0 7px;border:0;cursor:pointer}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.sp-item{display:flex;flex-direction:column;gap:6px}
+.sp-item img{width:100%;max-height:200px;object-fit:contain;background:var(--sunk);border-radius:8px;border:1px solid var(--line);cursor:zoom-in}
+.drop{display:flex;gap:12px;align-items:center;border:1.5px dashed var(--line-strong);border-radius:10px;padding:14px 16px;cursor:pointer;color:var(--ink-2)}
+.drop.on,.drop:hover{border-color:var(--accent);background:var(--accent-soft,var(--sunk))}
+.drop svg{width:22px;height:22px;flex:0 0 auto}
+.lb{position:fixed;inset:0;z-index:80;background:rgba(8,12,10,.88);display:flex;flex-direction:column;color:#fff}
+.lb-bar{display:flex;gap:10px;align-items:center;padding:10px 14px}
+.lb-bar .faint{color:#bbb}
+.lb-body{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;padding:8px}
+.lb-body img{max-width:100%;max-height:100%;background:#fff;border-radius:4px;cursor:zoom-in}
+.lb.zoom .lb-body{align-items:flex-start;justify-content:flex-start}
+.lb.zoom .lb-body img{max-width:none;max-height:none;cursor:zoom-out}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:50%;width:44px;height:44px;cursor:pointer;display:grid;place-items:center}
+.lb-nav svg{width:22px;height:22px}.lb-nav.l{left:10px}.lb-nav.r{right:10px}
+.run{position:fixed;inset:0;z-index:45;background:var(--ground);display:flex;flex-direction:column}
+.run-top{display:flex;gap:10px;align-items:center;padding:12px 16px}
+.run-body{flex:1;overflow:auto;padding:18px 16px;display:flex;flex-direction:column;gap:14px;max-width:980px;width:100%;margin:0 auto}
+.run-no{font-size:13px;color:var(--ink-3)}
+.run-tx{font:600 clamp(18px,2.4vw,24px)/1.5 var(--f-display,inherit);color:var(--ink)}
+.run-ph{display:flex;flex-direction:column;gap:12px}
+.run-ph figure{margin:0;display:flex;flex-direction:column;gap:4px}
+.run-ph img{max-width:100%;border-radius:8px;border:1px solid var(--line);cursor:zoom-in;align-self:flex-start;background:#fff}
+.run-foot{display:flex;gap:8px;align-items:center;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--surface)}
+.run-foot .btn{min-height:44px}
+.bg-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.bg-kv{display:flex;flex-direction:column;gap:4px}
+.bg-kv>div{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.bg-kv span{font-size:12.5px;color:var(--ink-3);min-width:56px}.bg-kv b{margin-left:auto;font-size:16px;font-variant-numeric:tabular-nums;white-space:nowrap}.bg-kv em{font-style:normal;width:100%;text-align:right}
+.bg-kv>div:last-child b{font-size:19px}
+.bg-card.empty-f .panel-b{padding-top:10px;padding-bottom:12px}
+.neg{color:var(--stamp)!important}
+.bgbar{position:relative;flex:1;min-width:80px;height:8px;background:var(--sunk);border-radius:99px}
+.bgbar i{position:absolute;left:0;top:0;bottom:0;background:var(--accent);border-radius:99px}
+.bgbar b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink-2);border-radius:2px}
+.moncells{display:grid;grid-template-columns:repeat(12,10px);gap:2px}
+.moncells i{height:14px;background:var(--accent);border-radius:2px}
+.tbl tr.bg-g td{background:var(--sunk)}.tbl tr.bg-h td{color:var(--ink-2)}
+.bg-tbl th:first-child,.bg-tbl td:first-child{position:sticky;left:0;z-index:1;background:var(--surface)}
+.bg-tbl th:first-child{z-index:2;background:var(--sunk)}.tbl tr.bg-g td:first-child{background:var(--sunk)}
+@media (max-width:620px){.bg-tbl td.wrap{min-width:130px!important;max-width:150px}}
+.bg-tbl td.wrap{white-space:normal;min-width:180px}
+.bg-plan .inp{min-width:84px;padding:5px 7px;font-size:13px}.bg-plan .inp.num{min-width:110px;text-align:right}
+.bg-plan td{padding:4px 5px}
+.nav-sub{display:flex;flex-direction:column;margin:-2px 0 4px 34px;border-left:1px solid var(--line)}
+.nav-sub a{font-size:12.5px!important;padding:5px 10px!important;min-height:0!important;color:var(--ink-3)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:0 6px 6px 0!important}
+.nav-sub a[aria-current="page"]{color:var(--accent)!important;font-weight:600;background:var(--accent-soft)!important}
+.app .newtab{position:absolute;top:10px;right:10px;width:28px;height:28px;display:grid;place-items:center;border-radius:7px;color:var(--ink-3)}
+.app .newtab:hover{background:var(--sunk);color:var(--ink)}.app .newtab svg{width:15px;height:15px}
+.main.embedding{padding-bottom:0}
+.main.embedding .page{gap:8px}
+.emb-bar{display:flex;gap:8px;align-items:center}
+.emb-chips{display:flex;gap:6px;overflow-x:auto;flex:1;min-width:0;scrollbar-width:none;padding:2px}
+.emb-chips::-webkit-scrollbar{display:none}
+.emb-chip{flex:0 0 auto;padding:6px 12px;border-radius:99px;background:var(--sunk);color:var(--ink-2);text-decoration:none;font-size:13px;font-weight:500;white-space:nowrap}
+.emb-chip[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+.emb-note{color:var(--ink-3);padding:2px 2px 0}.emb-note.warn{color:var(--warn)}
+#embed-host{margin-top:8px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+#embed-host iframe{width:100%;height:100%;border:0;display:block}
+#embed-host:fullscreen{border-radius:0}
+@media (max-width:860px){.emb-bar{flex-wrap:wrap}.emb-chips{flex:1 1 100%}.emb-bar>.row{margin-left:auto}.emb-bar #emb-full{display:none}.emb-note{font-size:11.5px}#embed-host{margin-inline:-16px;border-radius:0;border-inline:0}}
 .tool-seg{margin-bottom:4px;align-self:flex-start}
 .chip.vfy{background:transparent;border:1px dashed var(--warn,#b7791f);color:var(--warn,#b7791f);height:18px;padding:0 6px;font-size:11px}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
@@ -166,6 +238,7 @@ table.tbl{border-collapse:collapse;width:100%;font-size:13px}
 .sheet-back{position:fixed;inset:0;background:rgba(10,20,16,.42);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
 .sheet{background:var(--surface);border-radius:12px;width:min(560px,100%);max-height:calc(100% - 32px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .sheet .panel-b{display:flex;flex-direction:column;gap:12px}
+.sheet{display:flex;flex-direction:column;overflow:hidden}.sheet>.panel-b{overflow:auto;min-height:0;flex:1 1 auto}.sheet>.panel-h,.sheet>.sheet-foot{flex:0 0 auto}
 .sheet-foot{display:flex;justify-content:flex-end;gap:8px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
 
 /* ---------- home ---------- */
@@ -199,6 +272,7 @@ a.app:hover{border-color:var(--accent);box-shadow:var(--shadow)}
 .app .dsc{font-size:12px;color:var(--ink-3);line-height:1.4}
 .app .st{margin-top:auto}
 .app .edit{position:absolute;top:8px;right:8px}
+.app .edit + .newtab{right:44px;top:8px}
 
 .prog{height:6px;border-radius:99px;background:var(--sunk);overflow:hidden}
 .prog i{display:block;height:100%;background:var(--accent);border-radius:99px}
@@ -297,12 +371,12 @@ tr.entered td.t{text-decoration:line-through}
 <body>
 <div class="shell">
   <aside class="side">
-    <div class="brand"><b>구로IL 업무허브</b><span>사무행정팀 · 김휘원</span></div>
+    <div class="brand"><b>업무허브</b><span>김*원</span></div>
     <button class="btn" id="side-search" style="justify-content:flex-start;color:var(--ink-3)" onclick="openSearch()">검색 <span class="mono small" style="margin-left:auto">Ctrl K</span></button>
     <nav class="nav" id="nav-side"></nav>
     <div class="side-foot" id="side-foot"></div>
   </aside>
-  <main class="main"><div class="page" id="view"></div></main>
+  <main class="main"><div class="page" id="view"></div><div id="embed-host" hidden></div></main>
   <nav class="tabbar" id="nav-tab"></nav>
 </div>
 <div id="layer"></div>
@@ -334,6 +408,7 @@ const ICON = {
   apps:'<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
   gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>',
   hand:'<path d="M4 7h9a3 3 0 0 1 0 6H9"/><path d="m7 10-3-3 3-3"/><path d="M20 17h-9a3 3 0 0 1 0-6"/><path d="m17 20 3-3-3-3"/>',
+  won:'<path d="M4 7l3 11 5-11 5 11 3-11M3 11h18M3 14h18"/>',
   check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
   plus:'<path d="M12 5v14M5 12h14"/>',
   edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',
@@ -349,7 +424,7 @@ const icon = (k, cls='') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none"
 let S;
 function load() {
   let saved = null;
-  try { saved = JSON.parse(localStorage.getItem(KEY) || localStorage.getItem('grcil-hub-v1') || 'null'); } catch (e) {} // 이전 이름 데이터 이어받기
+  try { saved = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
   const def = defaults();
   if (!saved) return def;
   // merge shallowly so new default keys appear after updates
@@ -429,18 +504,22 @@ const ROUTES = [
   {id:'bridge', label:'진우 연결', icon:'bridge', hidden:true},
   {id:'docs', label:'문서', icon:'doc', hidden:true},
   {id:'routine', label:'업무', icon:'list', hidden:true},
+  {id:'budget', label:'예산', icon:'won'},
   {id:'apps', label:'앱', icon:'apps'},
+  {id:'embed', label:'앱 화면', icon:'apps', hidden:true},
   {id:'settings', label:'설정·백업', icon:'gear', sideOnly:true},
 ];
 const VIEWS = {};
 VIEWS.tools = v => { let t = 'bridge'; try { t = localStorage.getItem('il-hub-tool') || 'bridge'; } catch (e) {} location.replace('#' + (TOOL_IDS.includes(t) ? t : 'bridge')); };
 function go(id) { if (location.hash.slice(1) !== id) location.hash = id; else render(); }
-function current() { const h = location.hash.slice(1); return ROUTES.some(r => r.id === h) ? h : 'home'; }
+function current() { const h = location.hash.slice(1).split('/')[0]; return ROUTES.some(r => r.id === h) ? h : 'home'; }
 const TOOL_IDS = ['bridge', 'docs'];
-function navOn(r, cur) { return r.id === cur || (r.id === 'tools' && TOOL_IDS.includes(cur)) || (r.id === 'handover' && cur === 'routine'); }
+function navOn(r, cur) { return r.id === cur || (r.id === 'tools' && TOOL_IDS.includes(cur)) || (r.id === 'handover' && cur === 'routine') || (r.id === 'apps' && cur === 'embed'); }
 function renderNav() {
   const cur = current(), od = overdueCount();
-  $('#nav-side').innerHTML = ROUTES.filter(r=>!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?`<span class="badge">${od}</span>`:''}</a>`).join('');
+  const eid = cur === 'embed' ? (typeof EMB !== 'undefined' ? embedId() || EMB.cur : '') : '';
+  $('#nav-side').innerHTML = ROUTES.filter(r=>!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?`<span class="badge">${od}</span>`:''}</a>`
+    + (r.id === 'apps' && typeof embApps === 'function' ? `<div class="nav-sub">${embApps().map(a => `<a href="#embed/${a.id}" ${eid===a.id?'aria-current="page"':''}>${esc(a.name)}</a>`).join('')}</div>` : '')).join('');
   $('#nav-tab').innerHTML = ROUTES.filter(r=>!r.sideOnly&&!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?'<i class="dot"></i>':''}</a>`).join('');
   $('#side-foot').innerHTML = `${ENV==='artifact'?'Claude 아티팩트판':'웹 배포판'} · 데이터는 이 기기 브라우저에 저장<br><a href="#settings">백업하기</a>`;
 }
@@ -450,6 +529,8 @@ function render() {
   const old = $('#view'), v = old.cloneNode(false); old.replaceWith(v); // fresh node → no stacked listeners
   v.dataset.view = cur;
   if (TOOL_IDS.includes(cur)) { try { localStorage.setItem('il-hub-tool', cur); } catch (e) {} }
+  const eh = $('#embed-host'); if (eh) eh.hidden = cur !== 'embed';
+  document.querySelector('.main').classList.toggle('embedding', cur === 'embed');
   VIEWS[cur](v);
   if (TOOL_IDS.includes(cur)) v.insertAdjacentHTML('afterbegin', `<div class="seg tool-seg" role="group" aria-label="도구">${[['bridge','진우 연결'],['docs','문서 작성']].map(([k,n]) => `<a href="#${k}" aria-pressed="${cur===k}" class="segl">${n}</a>`).join('')}</div>`);
   if (render.last !== cur) window.scrollTo(0, 0);
@@ -525,7 +606,7 @@ const HO_SOPS = [
    warn:['서울시 부담금 인원 한도 있음 — 잦은 입퇴사로 급여 부족·보험료 잔액 생기면 구청 보고']},
   {h:'6. 이체', steps:[
    '결재 완료 후 기업은행 대량이체로 후원·활동지원 급여 각각 예약이체 (급여일 오전 9시, 인증서 3번)',
-   '이체 엑셀은 급여이체 폴더 기존 파일 참고 (적요 "구로장애인자립생활센"까지 — 글자수 제한)',
+   '이체 엑셀은 급여이체 폴더 기존 파일 참고 (적요는 기관명 앞부분까지만 — 글자수 제한)',
    '보탬e [집행이체관리(93003)] 재원별 예약이체 (서울시 인증서 2번 / 나머지 1번)',
    '사회보험(근로자·사용자분)은 예수금 통장, 퇴직적립금은 퇴직적립금 통장으로 각 재원 통장에서 이체',
    '급여날 출근하자마자 보탬e 급여 송금 확인 · 보탬e로 받은 보험료·퇴직금도 예수금·퇴직 통장으로'],
@@ -680,7 +761,7 @@ const HO_SOPS = [
  systems:['kiss','nas'],
  paths:[['키스오피스 거래명세서 스캔','사무행정실\\총무\\키스오피스\\거래명세서'],['내부기안대장','문서대장\\2026내부기안대장']],
  sections:[
-  {h:'구매', steps:['재원별 기안 3건 (PAS·서울시·구로구) → 결재','세부내역서 + 재원별 카드 챙겨 키스오피스 결제 (사무용품만, 재원별 금액 비슷하게)','전달 거래처원장 받아 대표 스캔본 전달, 원본 편철, 스캔본 저장'], warn:['시비·구비 수용비는 남기지 않기 — 사업팀 수용비 사용 계획 먼저 확인','2026 수용비 보조금 분기 2,000,000원 (연 8,000,000원)']},
+  {h:'구매', steps:['재원별 기안 3건 (PAS·서울시·구비) → 결재','세부내역서 + 재원별 카드 챙겨 키스오피스 결제 (사무용품만, 재원별 금액 비슷하게)','전달 거래처원장 받아 대표 스캔본 전달, 원본 편철, 스캔본 저장'], warn:['시비·구비 수용비는 남기지 않기 — 사업팀 수용비 사용 계획 먼저 확인','2026 수용비 보조금 분기 2,000,000원 (연 8,000,000원)']},
   {h:'증빙', steps:['영수증 복사본 옆에 원본 붙이기','사진 넣어 물품검수조서 작성','PAS 담당에게 전달'], warn:[]},
  ], rules:['r11','y11']},
 
@@ -707,7 +788,7 @@ const HO_RULES = [
 /* ===== 조승민 간사 폴더(구글 드라이브) 학습분 — 2026.9.24 =====
    출처: 업무인수인계서_확인표, 행정 인수인계(전전임), 인사관리, 구비 운영비 집행, 업무일지, 교부신청서, 공문·예산·비품·지도점검 폴더 구조
    공개 사이트이므로 동료 이름은 가림 표기, 연락처·비밀번호·계좌번호 제외 */
-const HO_OWNER = {contract:'노○○ 간사', crime:'최○○ 간사'}; // 확인표상 인수자. 나머지는 본인(김휘원)
+const HO_OWNER = {contract:'노○○ 간사', crime:'최○○ 간사'}; // 확인표상 인수자. 나머지는 본인
 HO_SOPS.push(
 {id:'crime', cat:'hr', freq:'adhoc', title:'범죄경력·장애인학대 관련 조회', when:'입사 시 · 연 1회 조회대상자 명단 구청 제출',
  systems:['nas'], paths:[['서식','서식\\범죄경력조회 서식 · 장애인학대관련등조회요청서동의서']],
@@ -748,7 +829,7 @@ HO_SOPS.push(
 {id:'grant', cat:'fin', freq:'yearly', title:'서울시 IL 보조금 교부·정산 (분기)', when:'분기마다 교부신청 · 분기 정산·실적보고 · 1월 연간 정산',
  systems:['botem','excel'], paths:[['교부 관련','서울시\\교부 관련 (분기 교부신청서, 정산 및 실적보고서)'],['서울시 인건비','서울시\\★2026년 서울시 인건비.xlsx']],
  sections:[
-  {h:'분기 교부신청', steps:['교부신청서: 사업 내용 요약(기본·선택사업), 분기 총사업비·월별 금액','항목별 인건비·운영비·사업비 금액 기재 (천원 단위)','계좌입금의뢰서: 서울시 보탬이 예치계좌 · 구로구청장 귀하','직인 날인 후 제출'], warn:[]},
+  {h:'분기 교부신청', steps:['교부신청서: 사업 내용 요약(기본·선택사업), 분기 총사업비·월별 금액','항목별 인건비·운영비·사업비 금액 기재 (천원 단위)','계좌입금의뢰서: 서울시 보탬이 예치계좌 · 구청장 귀하','직인 날인 후 제출'], warn:[]},
   {h:'분기 정산·실적보고', steps:['「IL센터 운영 보조금 정산 및 실적보고서(누적)」 엑셀 갱신','사업팀 실적 받아 반영 → 제출'], warn:[]},
   {h:'연간 정산·반납', steps:['보조금 정산 1월 10일 이전 제출 (사업팀과 공유)','예수금 정산 반납, 서울시 예금이자 반납, 퇴직반환금 반납 처리','기타 재원 정산은 2월 운영위원회 전까지'], warn:[]},
  ], rules:['q1','q2','y15','y17']},
@@ -863,8 +944,8 @@ function defaults() {
     settings: {
       payday: 25,
       since: ymd(today()),   // 이 날짜 이전 마감은 '지난 마감'으로 치지 않음
-      docPrefix: '구로IL',
-      org: {name:'구로장애인자립생활센터', rep:'', addr:'서울특별시 구로구', tel:''},
+      docPrefix: '',
+      org: {name:'', rep:'', addr:'', tel:''},
       approvers: ['담당','팀장','사무국장','소장','대표'],
       nasRoot: '',
     },
@@ -939,7 +1020,7 @@ function defaults() {
     ],
     checks: {},
     staff: [
-      {id:'s1', name:'김휘원', birth:'', dept:'사무행정팀', pos:'간사', hired:'2025-04-02', left:'', duty:'인사·급여, 후원자 관리, 문서 처리'},
+      {id:'s1', name:'김*원', birth:'', dept:'사무행정팀', pos:'간사', hired:'2025-04-02', left:'', duty:'인사·급여, 후원자 관리, 문서 처리'},
       {id:'s2', name:'홍길동 (예시)', birth:'1990-05-12', dept:'권익옹호팀', pos:'팀장', hired:'2021-03-02', left:'', duty:'권익옹호 사업 총괄'},
       {id:'s3', name:'김예시 (예시)', birth:'1995-11-03', dept:'자립지원팀', pos:'활동가', hired:'2023-07-01', left:'2025-12-31', duty:'자립생활 기술훈련 운영'},
     ],
@@ -1162,6 +1243,7 @@ VIEWS.home = v => {
 
     <div style="display:flex;flex-direction:column;gap:16px">
       ${hoMonthPanel()}
+      ${budgetHomePanel()}
       ${hoDailyPanel()}
       ${centerPanel()}
       <section class="panel">
@@ -1183,9 +1265,9 @@ function appCard(a, editable = false) {
   if (a.url && HEALTH[a.id] === 'ok') st = {t:'정상 응답', c:'ok'}; else if (a.url && HEALTH[a.id] === 'down') st = {t:'응답 없음', c:'crit'};
   const ini = esc(a.name.replace(/[^가-힣A-Za-z]/g,'').slice(0,1));
   const inner = `<div class="ic">${ini}</div><div class="n">${esc(a.name)}</div><div class="dsc">${esc(a.desc||'')}${editable&&a.repo?`<br><span class="mono">${esc(a.repo)}</span>`:''}</div>
-    <div class="st row" style="gap:6px"><span class="chip ${st.c}">${st.t}</span>${a.url?`<span class="faint small">${icon('ext','').replace('<svg','<svg style="width:13px;height:13px;vertical-align:-2px"')}</span>`:''}</div>
+    <div class="st row" style="gap:6px"><span class="chip ${st.c}">${st.t}</span>${a.url?`<span class="faint small">허브에서 열기</span>`:''}</div>
     ${editable?`<button class="btn ghost sm edit" data-edit-app="${a.id}" aria-label="${esc(a.name)} 편집">${icon('edit')}</button>`:''}`;
-  return a.url ? `<a class="app" href="${esc(a.url)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="app" ${editable?'':`data-goapps`}>${inner}</div>`;
+  return a.url ? `<a class="app" href="#embed/${a.id}" title="허브 안에서 열기">${inner}<span class="newtab" data-newtab="${esc(a.url)}" role="button" tabindex="0" title="새 탭으로 열기" aria-label="${esc(a.name)} 새 탭으로 열기">${icon('ext')}</span></a>` : `<div class="app" ${editable?'':`data-goapps`}>${inner}</div>`;
 }
 VIEWS.apps = v => {
   v.innerHTML = `
@@ -1194,7 +1276,7 @@ VIEWS.apps = v => {
   <div class="apps">${S.apps.map(a => appCard(a, true)).join('')}</div>
   ${connPanel()}
   <section class="panel"><div class="panel-h"><h2>연결 방식</h2></div><div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
-    <div class="note"><b>웹앱 (GitHub Pages)</b> — 카드를 누르면 새 탭으로 열립니다. 휴대폰에서는 이 허브를 홈 화면에 추가하면 앱처럼 쓸 수 있어요.</div>
+    <div class="note"><b>웹앱</b> — 카드를 누르면 <b>허브 안에서</b> 그 앱 화면이 그대로 열려요 (왼쪽 메뉴 "앱" 아래 목록, 휴대폰은 위쪽 탭으로 전환). 다른 메뉴에 갔다 와도 입력 중이던 화면이 유지돼요. 모서리 ↗ 버튼은 새 탭. 같은 주소(kittycong.github.io) 앱은 저장 내용도 원래 앱과 같아요. 휴대폰에서는 이 허브를 홈 화면에 추가하면 앱처럼 쓸 수 있어요.</div>
     <div class="note"><b>진우정보시스템</b> — PC 설치형이라 링크로 열 수 없어요. 대신 <a href="#bridge">진우 연결</a>에서 진우 장부를 엑셀로 내려받아 수기 엑셀과 대조하고, 입력할 목록을 정리합니다.</div>
     <div class="note"><b>시놀로지 NAS 캘린더</b> — <a href="#calendar">캘린더</a>에서 .ics 파일을 내보내 NAS 캘린더의 "가져오기"로 넣으면 마감이 센터 공유 일정에 들어갑니다.</div>
   </div></section>`;
@@ -1210,11 +1292,13 @@ function editApp(id) {
     <label class="f">GitHub 저장소 이름<input class="inp" id="ap-repo" value="${esc(a.repo||'')}" placeholder="예: guro_huga"></label>
     <label class="f">설명<input class="inp" id="ap-desc" value="${esc(a.desc)}"></label>
     <label class="f">상태<select class="inp" id="ap-st">${Object.entries(APP_ST).map(([k,o])=>`<option value="${k}" ${a.st===k?'selected':''}>${o.t}</option>`).join('')}</select></label>
+    <label class="row small"><input type="checkbox" id="ap-emb" ${a.embed===false?'':'checked'}> 허브 안에서 열기 (끄면 새 탭으로만)</label>
+    <div class="faint small">특정 메뉴 주소가 따로 있으면(예: 문서앱의 휴가신청 화면 주소) 그 주소로 앱을 하나 더 추가해 두면 바로 그 화면이 열려요.</div>
     <div id="ap-confirm"></div>`,
     foot: `${id?'<button class="btn danger" id="ap-del">삭제</button><span class="grow"></span>':''}<button class="btn" data-close>취소</button><button class="btn primary" id="ap-save">저장</button>`,
     onMount: el => {
       $('#ap-save', el).onclick = () => {
-        a.name = $('#ap-name', el).value.trim() || '이름 없는 앱'; a.url = $('#ap-url', el).value.trim(); a.desc = $('#ap-desc', el).value.trim(); a.repo = $('#ap-repo', el).value.trim(); a.st = $('#ap-st', el).value;
+        a.name = $('#ap-name', el).value.trim() || '이름 없는 앱'; a.url = $('#ap-url', el).value.trim(); a.desc = $('#ap-desc', el).value.trim(); a.repo = $('#ap-repo', el).value.trim(); a.st = $('#ap-st', el).value; a.embed = $('#ap-emb', el).checked ? undefined : false;
         if (a.url && !/^https?:\/\//.test(a.url)) a.url = 'https://' + a.url;
         if (!id) S.apps.push(a); save(); closeSheet(); render(); toast('저장했어요');
       };
@@ -1226,6 +1310,8 @@ function editApp(id) {
     }});
 }
 document.addEventListener('click', e => { if (e.target.closest('[data-goapps]')) go('apps'); });
+document.addEventListener('click', e => { const t = e.target.closest('[data-newtab]'); if (!t) return; e.preventDefault(); e.stopPropagation(); window.open(t.dataset.newtab, '_blank', 'noopener'); }, true);
+document.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('[data-newtab]'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); window.open(t.dataset.newtab, '_blank', 'noopener'); } }, true);
 
 function centerPanel() {
   const t = today(), wk = addDays(t, 6);
@@ -1358,13 +1444,13 @@ function exportIcs() {
   const e = s => String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
   const d8 = d => ymd(d).replace(/-/g,'');
   const stamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
-  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GRCIL//Work Hub//KO','CALSCALE:GREGORIAN','X-WR-CALNAME:구로IL 행정 마감'];
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//il-hub//Work Hub//KO','CALSCALE:GREGORIAN','X-WR-CALNAME:업무허브 행정 마감'];
   occ.forEach(o => lines.push('BEGIN:VEVENT', `UID:${o.key}@il-hub`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${d8(o.date)}`, `DTEND;VALUE=DATE:${d8(addDays(o.date,1))}`,
     `SUMMARY:${e('[' + CATS[o.rule.cat].name + '] ' + o.rule.title)}`, `DESCRIPTION:${e(o.rule.note || '')}`, 'BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:-P2D',`DESCRIPTION:${e(o.rule.title)}`,'END:VALARM','END:VEVENT'));
   lines.push('END:VCALENDAR');
   const txt = lines.join('\r\n');
-  if (CAN_FILE) { download(`구로IL_마감_${ymd(t)}.ics`, txt, 'text/calendar'); toast(`${occ.length}건을 .ics로 내보냈어요`); }
-  else sheet({title:'NAS 캘린더용 .ics', body:`<div class="note">여기서는 파일 저장이 막혀 있어요. 아래 내용을 복사해 메모장에 붙여 넣고 <b>구로IL_마감.ics</b>로 저장한 뒤, 시놀로지 캘린더 → 가져오기로 넣어 주세요. (GitHub 배포본에서는 바로 파일로 받아져요)</div><textarea class="inp mono" rows="10" readonly id="ics-t">${esc(txt)}</textarea>`,
+  if (CAN_FILE) { download(`업무허브_마감_${ymd(t)}.ics`, txt, 'text/calendar'); toast(`${occ.length}건을 .ics로 내보냈어요`); }
+  else sheet({title:'NAS 캘린더용 .ics', body:`<div class="note">여기서는 파일 저장이 막혀 있어요. 아래 내용을 복사해 메모장에 붙여 넣고 <b>업무허브_마감.ics</b>로 저장한 뒤, 시놀로지 캘린더 → 가져오기로 넣어 주세요. (GitHub 배포본에서는 바로 파일로 받아져요)</div><textarea class="inp mono" rows="10" readonly id="ics-t">${esc(txt)}</textarea>`,
     foot:`<button class="btn" data-close>닫기</button><button class="btn primary" id="ics-c">${icon('copy')}${occ.length}건 복사</button>`, onMount: el => { $('#ics-c', el).onclick = () => copyText(txt, '.ics 내용을 복사했어요'); }});
 }
 
@@ -1714,7 +1800,8 @@ function dfDefaults() {
     draft:{date:t, title:'2026년 2차 추가경정예산(안) 보고', body:'1. 관련: 2026년 1차 추가경정예산\n2. 후원 재원의 수입 변동에 따라 2026년 2차 추가경정예산(안)을 아래와 같이 보고하오니 검토 후 결재하여 주시기 바랍니다.\n\n  가. 변경 사유: 개인 CMS 정기후원 감소분 반영\n  나. 변경 내역: 붙임 참조\n  다. 시행: 결재 후 진우정보시스템 추경예산 입력', attach:'2026년 2차 추경예산(안) 1부.  끝.'},
   };
 }
-function nextDocNo() { const y = today().getFullYear(); return `${S.settings.docPrefix} 제${y}-${String((S.docSeq[y] || 0) + 1).padStart(4, '0')}호`; }
+function docPre() { const p = (S.settings.docPrefix || '').trim(); return p ? p + ' ' : ''; }
+function nextDocNo() { const y = today().getFullYear(); return `${docPre()}제${y}-${String((S.docSeq[y] || 0) + 1).padStart(4, '0')}호`; }
 function korWon(n) {
   n = Math.floor(Math.abs(Number(n) || 0)); if (!n) return '영';
   const dg = ['','일','이','삼','사','오','육','칠','팔','구'], su = ['','십','백','천'], big = ['','만','억','조'];
@@ -1728,7 +1815,7 @@ function korWon(n) {
   return out;
 }
 const fmtK = s => { if (!s) return ''; const d = parseYmd(s); return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일`; };
-function orgSeal() { const o = S.settings.org; return `<div class="issuer">${esc(o.name)}<br>센터장 ${esc(o.rep || '○○○')} <span class="seal">${esc(o.name.replace(/장애인자립생활센터/, '').slice(0,4) || '직인')}<br>직인</span></div>`; }
+function orgSeal() { const o = S.settings.org; return `<div class="issuer">${esc(o.name)}<br>센터장 ${esc(o.rep || '○○○')} <span class="seal">${esc(o.name.replace(/(장애인)?자립생활센터$|센터$/, '').slice(0,4) || '직인')}<br>직인</span></div>`; }
 function apprTable() { const a = S.settings.approvers; return `<table class="appr"><tr><td class="lab" rowspan="2">결 재</td>${a.map(x=>`<td>${esc(x)}</td>`).join('')}</tr><tr>${a.map(()=>'<td></td>').join('')}</tr></table>`; }
 
 function docHtml(type, f, st, no) {
@@ -1822,7 +1909,7 @@ VIEWS.docs = v => {
     if (D.type === 'emp' || D.type === 'career') {
       const sel = S.staff.filter(s => D.staffIds.includes(s.id));
       const base = S.docSeq[today().getFullYear()] || 0, y = today().getFullYear();
-      html = sel.length ? sel.map((s, i) => docHtml(D.type, f, s, `${S.settings.docPrefix} 제${y}-${String(base + 1 + i).padStart(4, '0')}호`)).join('') : '<div class="empty">직원을 한 명 이상 골라 주세요</div>';
+      html = sel.length ? sel.map((s, i) => docHtml(D.type, f, s, `${docPre()}제${y}-${String(base + 1 + i).padStart(4, '0')}호`)).join('') : '<div class="empty">직원을 한 명 이상 골라 주세요</div>';
     } else html = docHtml(D.type, f, null, nextDocNo());
     pv.innerHTML = `<div class="a4-scale">${html}</div>`;
     fitA4(pv);
@@ -1848,7 +1935,7 @@ VIEWS.docs = v => {
     const y = today().getFullYear();
     const targets = (D.type === 'emp' || D.type === 'career') ? S.staff.filter(s => D.staffIds.includes(s.id)).map(s => s.name) : [f.title || (f.item ? f.item + ' 구매' : '') || (f.kind ? f.kind + ' · ' + (f.purpose || '') : '') || DOCT[D.type].name];
     if (!targets.length) { toast('대상을 먼저 골라 주세요'); return; }
-    targets.forEach(nm => { S.docSeq[y] = (S.docSeq[y] || 0) + 1; S.docLog.push({no:`${S.settings.docPrefix} 제${y}-${String(S.docSeq[y]).padStart(4,'0')}호`, type:DOCT[D.type].name, name:nm, purpose:f.purpose||'', date:f.issue||f.date}); });
+    targets.forEach(nm => { S.docSeq[y] = (S.docSeq[y] || 0) + 1; S.docLog.push({no:`${docPre()}제${y}-${String(S.docSeq[y]).padStart(4,'0')}호`, type:DOCT[D.type].name, name:nm, purpose:f.purpose||'', date:f.issue||f.date}); });
     save(); render(); toast(`${targets.length}건을 발급대장에 기록했어요`);
   };
   $('#log-copy', v).onclick = () => copyText([['문서번호','종류','대상·제목','용도','발급일'], ...S.docLog.map(r => [r.no, r.type, r.name, r.purpose||'', r.date])].map(r => r.join('\t')).join('\n'), '발급대장을 복사했어요');
@@ -1921,10 +2008,10 @@ Object.assign(DOCT, {
 function dfDefaults2() {
   const t = ymd(today()), tm = ymd(addDays(today(), 1));
   return {
-    trip:{kind:'출장신청서', writer:'', travelers:'', purpose:'구로구 장애인 자립생활 지원 협력기관 방문', purpose2:'', start:tm, end:'', date:t, tstart:'10:00', tend:'12:00', place:'구로구청 (02-860-2114)', content:'', cost:'교통비 (대중교통)', etc:''},
+    trip:{kind:'출장신청서', writer:'', travelers:'', purpose:'관내 장애인 자립생활 지원 협력기관 방문', purpose2:'', start:tm, end:'', date:t, tstart:'10:00', tend:'12:00', place:'구청', content:'', cost:'교통비 (대중교통)', etc:''},
     purchase:{gr:'GR-', date:t, pay:'카드결제', item:'사무용품', spec:'A4용지 80g 외', qty:1, recv:tm, preset:0, fund:FUND_PRESETS[0].fund, subj:FUND_PRESETS[0].subj, short:FUND_PRESETS[0].short, q1n:'키스오피스', q1:184000, q2n:'오피스디포', q2:192000, q3n:'알파문구', q3:198000, winner:'키스오피스', price:184000, ship:0, note:''},
     fixed:{gr:'GR-', open:'비공개', title:'2026년 10월 임차료 및 관리비 지출', body:'사무실 임차료 및 관리비를 아래와 같이 지출하고자 합니다.', what:'10월 임차료·관리비', period:'2026.01.01 ~ 2026.12.31', date:t, recv:t, pay:'계좌이체', payee:'(건물 관리 주체)', preset:1, fund:FUND_PRESETS[1].fund, subj:FUND_PRESETS[1].subj, total:1200000, attach:'붙임 1부', note:''},
-    outgoing:{kind:'일반 발신공문', no:'', date:t, to:'구로구청장 (장애인복지과장)', via:'', title:'2026년 운영비 정산 자료 제출', body:'1. 귀 기관의 무궁한 발전을 기원합니다.\n2. 2026년 운영비 보조금 정산 자료를 아래와 같이 제출합니다.', items:'정산 기간: 2026. 1. 1. ~ 2026. 12. 31.\n제출 자료: 정산서 1부, 증빙 사본 1부', attach:'2026년 운영비 정산서 1부.'},
+    outgoing:{kind:'일반 발신공문', no:'', date:t, to:'구청장 (장애인복지과장)', via:'', title:'2026년 운영비 정산 자료 제출', body:'1. 귀 기관의 무궁한 발전을 기원합니다.\n2. 2026년 운영비 보조금 정산 자료를 아래와 같이 제출합니다.', items:'정산 기간: 2026. 1. 1. ~ 2026. 12. 31.\n제출 자료: 정산서 1부, 증빙 사본 1부', attach:'2026년 운영비 정산서 1부.'},
     worklog:{date:t, content:'', note:''},
     leave:{staff:'s1', type:'연차', date:t, start:tm, end:tm, reason:'개인 사유', succDept:'사무행정팀', succName:'', remain:''},
   };
@@ -2052,7 +2139,7 @@ function docappPanel() {
   return `<section class="panel no-print"><div class="panel-h"><div><h2>문서 웹앱 메뉴</h2><div class="faint small">chulchang-munseo · 허브에 같은 양식이 있으면 바로 작성, 나머지는 웹앱에서</div></div><a class="btn sm" href="${DOCAPP_URL}" target="_blank" rel="noopener">${icon('ext')}웹앱 열기</a></div>
     <div class="panel-b" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">${Object.entries(groups).map(([g, list]) => `<div><div class="eyebrow" style="margin-bottom:6px">${esc(g)}</div>${list.map(([n, k]) => k
       ? `<button class="btn ghost sm" data-hubdoc="${k}" style="width:100%;justify-content:space-between">${esc(n)}<span class="chip ok" style="height:18px">허브에서 작성</span></button>`
-      : `<a class="btn ghost sm" href="${DOCAPP_URL}" target="_blank" rel="noopener" style="width:100%;justify-content:space-between">${esc(n)}<span class="faint small">웹앱 →</span></a>`).join('')}</div>`).join('')}</div></section>`;
+      : `<a class="btn ghost sm" href="#embed/${(S.apps.find(x => x.url === DOCAPP_URL) || {id:'a4'}).id}" style="width:100%;justify-content:space-between">${esc(n)}<span class="faint small">허브에서 열기 →</span></a>`).join('')}</div>`).join('')}</div></section>`;
 }
 
 const WORKLOG_BASE = ['민원 상담, 전화 응대 및 방문 민원 안내','공문서 수신·발신, 문서관리 및 부서 간 업무협조','내부 결재서류 검토·보완'];
@@ -2066,6 +2153,615 @@ function worklogAuto(date) {
   return [...new Set(out)].join('\n');
 }
 document.addEventListener('click', e => { if (e.target.id === 'wl-auto') { D.f.worklog.content = worklogAuto(D.f.worklog.date); render(); toast('오늘 완료한 일로 채웠어요'); } });
+
+/* ================= 단계별 사진 (이 기기 IndexedDB에만 저장) ================= */
+const PH = {db: null, map: {}, ready: false, count: 0};
+const phKey = (sop, k) => sop + '|' + k;
+function phOpen() {
+  return new Promise(res => {
+    try {
+      const rq = indexedDB.open('il-hub-photos', 1);
+      rq.onupgradeneeded = () => { const s = rq.result.createObjectStore('p', {keyPath: 'id'}); s.createIndex('key', 'key'); };
+      rq.onsuccess = () => res(rq.result); rq.onerror = () => res(null);
+    } catch (e) { res(null); }
+  });
+}
+function phTx(mode, fn) {
+  return new Promise(res => {
+    if (!PH.db) { res(null); return; }
+    try { const tx = PH.db.transaction('p', mode), st = tx.objectStore('p'); const r = fn(st); tx.oncomplete = () => res(r && r.result !== undefined ? r.result : true); tx.onerror = () => res(null); }
+    catch (e) { res(null); }
+  });
+}
+async function loadPhotos() {
+  PH.db = PH.db || await phOpen();
+  const all = (await phTx('readonly', st => st.getAll())) || [];
+  PH.map = {}; all.sort((a, b) => (a.ord || 0) - (b.ord || 0)).forEach(p => (PH.map[p.key] ||= []).push(p));
+  PH.count = all.length; PH.ready = true;
+}
+function photosOf(sop, k) { return PH.map[phKey(sop, k)] || []; }
+function photosOfSop(sop) { return Object.entries(PH.map).filter(([key]) => key.startsWith(sop + '|')).reduce((a, [, v]) => a + v.length, 0); }
+async function photoAdd(sop, k, data, cap = '', src = '직접 추가') {
+  const p = {id: uid() + Date.now().toString(36), key: phKey(sop, k), sop, k, data, cap, src, ord: Date.now()};
+  if (!PH.db) { (PH.map[p.key] ||= []).push(p); PH.count++; toast('이 브라우저는 사진 저장이 막혀 있어요. 새로고침하면 사라져요'); return p; }
+  await phTx('readwrite', st => st.put(p)); await loadPhotos(); return p;
+}
+async function photoUpdate(p) { await phTx('readwrite', st => st.put(p)); await loadPhotos(); }
+async function photoDel(id) { await phTx('readwrite', st => st.delete(id)); await loadPhotos(); }
+async function photoClear() { await phTx('readwrite', st => st.clear()); await loadPhotos(); }
+
+/* 큰 사진은 줄여서 저장 (긴 변 1600px, JPEG) */
+function shrinkImage(file) {
+  return new Promise((res, rej) => {
+    const fr = new FileReader();
+    fr.onload = () => { const im = new Image(); im.onload = () => {
+      const m = 1600, r = Math.min(1, m / Math.max(im.width, im.height)), c = document.createElement('canvas');
+      c.width = Math.round(im.width * r); c.height = Math.round(im.height * r);
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+      res(c.toDataURL('image/jpeg', 0.84)); }; im.onerror = rej; im.src = fr.result; };
+    fr.onerror = rej; fr.readAsDataURL(file);
+  });
+}
+
+/* 사진 팩: {type:'il-hub-photos', items:[{sop,k,cap,src,data}]} */
+async function importPack(txt) {
+  let d; try { d = typeof txt === 'string' ? JSON.parse(txt) : txt; } catch (e) { toast('사진 팩 형식이 아니에요'); return 0; }
+  if (!d || d.type !== 'il-hub-photos' || !Array.isArray(d.items)) { toast('사진 팩 형식이 아니에요'); return 0; }
+  if (!PH.db) { toast('이 브라우저는 사진 저장이 막혀 있어요 (GitHub 배포본에서 해 주세요)'); return 0; }
+  const have = new Set(Object.values(PH.map).flat().map(p => p.key + '#' + p.data.length + '#' + p.data.slice(-40)));
+  let n = 0, ord = Date.now();
+  await phTx('readwrite', st => { d.items.forEach(it => { if (!it.sop || it.k == null || !/^data:image\//.test(it.data || '')) return;
+    const key = phKey(it.sop, it.k); if (have.has(key + '#' + it.data.length + '#' + it.data.slice(-40))) return;
+    st.put({id: uid() + (ord++).toString(36), key, sop: it.sop, k: String(it.k), data: it.data, cap: it.cap || '', src: it.src || '사진 팩', ord}); n++; }); });
+  await loadPhotos(); return n;
+}
+function exportPack() {
+  const items = Object.values(PH.map).flat().map(({sop, k, cap, src, data}) => ({sop, k, cap, src, data}));
+  return JSON.stringify({type: 'il-hub-photos', v: 1, made: ymd(today()), note: '업무 단계 사진. 공개 저장소에 올리지 마세요.', items});
+}
+function pickPackFile(after) {
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.json,application/json'; inp.hidden = true; document.body.appendChild(inp);
+  inp.onchange = () => { const f = inp.files[0]; inp.remove(); if (!f) return; const r = new FileReader();
+    r.onload = async () => { const n = await importPack(r.result); if (n || n === 0) { toast(n ? `사진 ${n}장을 넣었어요` : '새로 넣을 사진이 없어요 (이미 들어 있음)'); after && after(); } };
+    r.readAsText(f); };
+  inp.click();
+}
+
+/* 크게 보기 */
+function lightbox(list, i = 0) {
+  const L = document.createElement('div'); L.className = 'lb'; L.setAttribute('role', 'dialog'); L.setAttribute('aria-modal', 'true');
+  const draw = () => { const p = list[i];
+    L.innerHTML = `<div class="lb-bar"><span class="small">${list.length > 1 ? `${i + 1}/${list.length} · ` : ''}${esc(p.cap || '')}</span><span class="grow"></span><span class="faint small">누르면 확대</span><button class="btn sm" data-x>닫기</button></div>
+      <div class="lb-body"><img src="${p.data}" alt="${esc(p.cap || '단계 사진')}"></div>
+      ${list.length > 1 ? `<button class="lb-nav l" data-p aria-label="이전 사진">${icon('left')}</button><button class="lb-nav r" data-n aria-label="다음 사진">${icon('right')}</button>` : ''}`; };
+  const close = () => { L.remove(); document.removeEventListener('keydown', key, true); };
+  const key = e => { if (e.key === 'Escape') { e.stopPropagation(); close(); } else if (e.key === 'ArrowRight' && list.length > 1) { i = (i + 1) % list.length; draw(); } else if (e.key === 'ArrowLeft' && list.length > 1) { i = (i - 1 + list.length) % list.length; draw(); } };
+  L.addEventListener('click', e => {
+    if (e.target.closest('[data-x]') || e.target === L) return close();
+    if (e.target.closest('[data-n]')) { i = (i + 1) % list.length; return draw(); }
+    if (e.target.closest('[data-p]')) { i = (i - 1 + list.length) % list.length; return draw(); }
+    if (e.target.tagName === 'IMG') L.classList.toggle('zoom');
+  });
+  document.addEventListener('keydown', key, true); draw(); document.body.appendChild(L);
+}
+
+/* 단계 사진 관리 시트 */
+function stepPhotos(s, k, text, after) {
+  const draw = el => {
+    const list = photosOf(s.id, k);
+    $('#sp-list', el).innerHTML = list.length ? list.map((p, i) => `<div class="sp-item"><img src="${p.data}" data-view="${i}" alt="">
+      <input class="inp" data-cap="${p.id}" value="${esc(p.cap || '')}" placeholder="설명 (예: 빨간 네모 칸 수정)"><div class="row small" style="gap:6px"><span class="faint grow">${esc(p.src || '')}</span><button class="btn ghost sm" data-del="${p.id}">삭제</button></div></div>`).join('')
+      : '<div class="empty">아직 사진이 없어요</div>';
+  };
+  sheet({title: '단계 사진', wide: true, body: `
+    <div class="small"><b>${esc(s.title)}</b> · ${esc(text)}</div>
+    <div id="sp-list" class="sp-grid"></div>
+    <div class="drop" id="sp-drop" tabindex="0">${icon('plus')}<div><b>사진 추가</b> — 눌러서 고르기 (휴대폰은 카메라 가능)<br><span class="faint small">PC: 화면 캡처(Win+Shift+S) 후 여기를 누르고 Ctrl+V</span></div></div>
+    <input type="file" id="sp-file" accept="image/*" multiple hidden>
+    <div class="note small">사진은 <b>이 기기 브라우저에만</b> 저장되고 GitHub(공개 사이트)에는 올라가지 않아요. 계좌번호·주민번호가 보이는 화면은 가리고 찍어 주세요.</div>`,
+    foot: `<button class="btn" data-close>닫기</button>`,
+    onMount: el => {
+      draw(el);
+      const add = async files => { let n = 0; for (const f of files) { if (!/^image\//.test(f.type)) continue; try { await photoAdd(s.id, k, await shrinkImage(f)); n++; } catch (e) {} }
+        if (n) { toast(`사진 ${n}장을 넣었어요`); draw(el); after && after(); } };
+      $('#sp-drop', el).onclick = () => $('#sp-file', el).click();
+      $('#sp-drop', el).onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#sp-file', el).click(); } };
+      $('#sp-file', el).onchange = e => add([...e.target.files]);
+      const dz = $('#sp-drop', el);
+      dz.ondragover = e => { e.preventDefault(); dz.classList.add('on'); }; dz.ondragleave = () => dz.classList.remove('on');
+      dz.ondrop = e => { e.preventDefault(); dz.classList.remove('on'); add([...e.dataTransfer.files]); };
+      el.addEventListener('paste', e => { const fs = [...(e.clipboardData?.items || [])].filter(x => x.kind === 'file').map(x => x.getAsFile()).filter(Boolean); if (fs.length) { e.preventDefault(); add(fs); } });
+      el.addEventListener('click', async e => {
+        const v = e.target.closest('[data-view]'); if (v) return lightbox(photosOf(s.id, k), Number(v.dataset.view));
+        const d = e.target.closest('[data-del]'); if (!d) return;
+        if (!d.dataset.armed) { d.dataset.armed = 1; d.textContent = '한 번 더'; return; }
+        await photoDel(d.dataset.del); draw(el); after && after(); toast('사진을 지웠어요');
+      });
+      el.addEventListener('change', async e => { const c = e.target.closest('[data-cap]'); if (!c) return; const p = photosOf(s.id, k).find(x => x.id === c.dataset.cap); if (p) { p.cap = c.value.trim(); await photoUpdate(p); toast('설명을 저장했어요'); } });
+    }});
+}
+
+/* 단계 문장에 나오는 파일 위치 찾기 (경로 이름의 핵심 단어로) */
+function stepPathHits(s, text) {
+  const generic = ['엑셀', '파일', '폴더', '서식', '자료', '위치'];
+  return (s.paths || []).filter(([l]) => { const w = l.replace(/\(.*?\)/g, '').split(/[\s·]+/).filter(x => x.length >= 2 && !generic.includes(x));
+    if (!w.length) return false; const best = w.reduce((a, b) => b.length >= a.length ? b : a); return text.includes(best); });
+}
+
+/* 한 단계씩 실행 모드 */
+function runMode(s, start = 0) {
+  const st = hoState(), steps = s.sections.flatMap((sec, si) => sec.steps.map((t, i) => ({t, k: `${si}.${i}`, sec, si})));
+  if (!steps.length) return;
+  const r0 = hoRun(s); let i = start || Math.max(0, steps.findIndex(x => !r0.arr[x.k])); if (i < 0) i = 0;
+  const L = document.createElement('div'); L.className = 'run'; L.setAttribute('role', 'dialog'); L.setAttribute('aria-modal', 'true'); L.setAttribute('aria-label', s.title + ' 실행');
+  const done = () => hoRun(s).arr;
+  const draw = () => {
+    const x = steps[i], arr = done(), n = steps.filter(y => arr[y.k]).length, ph = photosOf(s.id, x.k), hits = stepPathHits(s, x.t), on = !!arr[x.k];
+    L.innerHTML = `
+      <div class="run-top"><div style="min-width:0"><div class="faint small">${esc(s.title)} · ${esc(hoPeriod(s))}</div><b>${esc(x.sec.h)}</b></div><span class="grow"></span><span class="num small">${n}/${steps.length}</span><button class="btn sm" data-x>닫기</button></div>
+      <div class="prog" style="margin:0 16px"><i style="width:${n / steps.length * 100}%"></i></div>
+      <div class="run-body">
+        <div class="run-no">단계 ${i + 1} / ${steps.length}${on ? ' · <span class="chip ok">완료</span>' : ''}</div>
+        <div class="run-tx">${esc(x.t)}</div>
+        ${hits.length ? `<div class="row" style="gap:6px">${hits.map(([l, p]) => `<button class="chip acc" data-cp="${esc(fullPath(p))}" title="${esc(fullPath(p))}" style="cursor:pointer;border:0">${icon('copy')}${esc(l)} 경로 복사</button>`).join('')}</div>` : ''}
+        ${ph.length ? `<div class="run-ph">${ph.map((p, j) => `<figure><img src="${p.data}" data-view="${j}" alt="${esc(p.cap || '')}">${p.cap ? `<figcaption class="small muted">${esc(p.cap)}</figcaption>` : ''}</figure>`).join('')}</div>` : `<button class="btn ghost sm" data-addph style="align-self:flex-start">${icon('plus')}이 단계 사진 추가</button>`}
+        ${x.si !== (steps[i - 1] || {}).si || i === 0 ? (x.sec.warn || []).map(w => `<div class="note warn small">주의 · ${esc(w)}</div>`).join('') : (x.sec.warn || []).length ? `<div class="faint small">이 묶음 주의사항 ${x.sec.warn.length}개 (첫 단계에 표시)</div>` : ''}
+      </div>
+      <div class="run-foot"><button class="btn" data-prev ${i ? '' : 'disabled'}>${icon('left')}이전</button><span class="grow"></span>
+        <button class="btn" data-skip>${i < steps.length - 1 ? '건너뛰기' : '끝'}</button>
+        <button class="btn primary" data-ok>${on ? '완료 취소' : (i < steps.length - 1 ? '완료 → 다음' : '완료')}</button></div>`;
+  };
+  const close = () => { L.remove(); document.removeEventListener('keydown', key, true); render(); };
+  const toggle = () => { const x = steps[i]; const arr = st.checks[r0.key] = Object.assign({}, st.checks[r0.key]); arr[x.k] = !arr[x.k];
+    if (arr[x.k]) { st.log = st.log || {}; const d = ymd(today()); st.log[d] = [...new Set([...(st.log[d] || []), s.title])]; } save(); return arr[x.k]; };
+  const next = () => { if (i < steps.length - 1) { i++; draw(); L.querySelector('.run-body').scrollTop = 0; } else { toast(`${s.title} ${Object.values(done()).filter(Boolean).length}/${steps.length} 단계`); close(); } };
+  const key = e => { if (document.querySelector('.lb') || $('#layer').innerHTML) return; if (e.key === 'Escape') { e.stopPropagation(); close(); }
+    else if (e.key === 'ArrowRight') { i < steps.length - 1 && (i++, draw()); } else if (e.key === 'ArrowLeft') { i > 0 && (i--, draw()); }
+    else if (e.key === 'Enter' && !e.target.closest('input,textarea,button')) { e.preventDefault(); toggle() ? next() : draw(); } };
+  L.addEventListener('click', e => {
+    if (e.target.closest('[data-x]')) return close();
+    if (e.target.closest('[data-prev]')) { if (i) { i--; draw(); } return; }
+    if (e.target.closest('[data-skip]')) return next();
+    if (e.target.closest('[data-ok]')) { toggle() ? next() : draw(); return; }
+    const v = e.target.closest('[data-view]'); if (v) return lightbox(photosOf(s.id, steps[i].k), Number(v.dataset.view));
+    const cp = e.target.closest('[data-cp]'); if (cp) return copyText(cp.dataset.cp, '경로를 복사했어요');
+    if (e.target.closest('[data-addph]')) stepPhotos(s, steps[i].k, steps[i].t, () => draw());
+  });
+  document.addEventListener('keydown', key, true); draw(); document.body.appendChild(L);
+}
+
+/* ================= 예산 · 재원별 잔액 · 계정별 · 사업별 =================
+   데이터: S.budget = {year, funds:[{id,name,owner,mine}], lines:[{id,y,fund,type,gwan,hang,mok,proj,owner,kw,base,sup1,sup2}],
+                       ledgers:{'fund|year':{file,up,from,to,rows:[[mmdd,acct,proj,dr,cr,memo]]}}, alias:{'fund|y|계정':lineMokKey}}
+   모든 데이터는 이 기기 브라우저에만 저장 (공개 사이트에는 없음) */
+const BG = {tab:'fund', fund:'', type:'out', mine:false, projFund:'all', open:{}};
+const BG_TYPES = {out:'세출', in:'세입'};
+const IN_RE = /수입|보조금|후원금|전입|이월금|이자|수익|잡수입|입금|세입|자부담\s*수입|환급/;
+function bgState() {
+  const y = today().getFullYear();
+  S.budget = S.budget || {};
+  const b = S.budget;
+  b.year = b.year || y; b.funds = b.funds || [
+    {id:'f1', name:'서울시 보조 (IL센터지원)', owner:'', mine:true}, {id:'f2', name:'구비 보조', owner:'', mine:true},
+    {id:'f3', name:'활동지원', owner:'', mine:false}, {id:'f4', name:'주택 (코디)', owner:'', mine:false},
+    {id:'f5', name:'PAS', owner:'', mine:false}, {id:'f6', name:'후원금', owner:'', mine:false}, {id:'f7', name:'자부담·자율재원', owner:'', mine:false}];
+  b.lines = b.lines || []; b.ledgers = b.ledgers || {}; b.alias = b.alias || {};
+  if (!BG.fund || !b.funds.some(f => f.id === BG.fund)) BG.fund = (b.funds[0] || {}).id || '';
+  return b;
+}
+const bnorm = s => String(s || '').replace(/\[[^\]]*\]|\([^)]*\)|계정과목|계정명|계정|과목|세목|[:：]/g, '').replace(/^[\s\d.\-]+/, '').replace(/[\s·.\-_/]/g, '').trim();
+const curBudget = l => Number(l.sup2) || Number(l.sup1) || Number(l.base) || 0;
+const pct = (a, b) => b ? Math.round(a / b * 1000) / 10 : 0;
+const fundName = id => (bgState().funds.find(f => f.id === id) || {}).name || '(재원 없음)';
+
+/* ---------- 원장 파싱 (진우 총계정별원장 · 계정별원장) ---------- */
+const LFIELD = {
+  date:{label:'일자', re:/일\s*자|날짜|거래일|전표일|결의일/},
+  desc:{label:'적요', re:/적\s*요|내\s*용|내역/},
+  dr:{label:'차변 (지출)', re:/차\s*변|지출|출금|금액/},
+  cr:{label:'대변 (수입)', re:/대\s*변|수입|입금/},
+  acct:{label:'계정·목 (열이 있으면)', re:/계정|과목|세\s*목|^목$/},
+  proj:{label:'사업명 (열이 있으면)', re:/사업|프로젝트|단위/},
+};
+function ledgerHeader(rows) {
+  for (let i = 0; i < Math.min(rows.length, 40); i++) {
+    const c = rows[i].map(x => String(x || '').trim());
+    const hit = ['date', 'desc', 'dr', 'cr'].filter(k => c.some(x => x && x.length < 12 && LFIELD[k].re.test(x))).length;
+    if (hit >= 3) return i;
+  }
+  return -1;
+}
+function ledgerAutoMap(h) {
+  const m = {}, used = new Set();
+  ['date', 'desc', 'cr', 'dr', 'acct', 'proj'].forEach(k => { const i = h.findIndex((x, j) => !used.has(j) && String(x || '').trim().length < 14 && LFIELD[k].re.test(String(x || ''))); if (i >= 0) { m[k] = i; used.add(i); } });
+  return m;
+}
+/* 계정이 열이 아니라 "구획 제목 줄"로 나오는 원장 대응: 날짜·금액 없는 줄의 글자를 계정으로 */
+function parseLedger(rows, hdr, mp, y = bgState().year) {
+  const dt = v => { const d = toYmd(v); if (d) return d; const m = String(v ?? '').trim().match(/^(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})일?$/); return m && Number(m[1]) <= 12 ? `${y}-${pad(m[1])}-${pad(m[2])}` : null; };
+  let acct = ''; const out = []; let min = '9999', max = '0000';
+  rows.slice(hdr + 1).forEach(r => {
+    const get = k => mp[k] != null ? r[mp[k]] : '';
+    const date = dt(get('date')), dr = toNum(get('dr')), cr = toNum(get('cr'));
+    const texts = r.map(x => (x instanceof Date ? '' : String(x ?? '').trim())).filter(Boolean);
+    const line = texts.join(' ');
+    if (!date) {
+      if (!dr && !cr && texts.length && texts.length <= 4 && !SKIP_RE.test(line)) {
+        const t = texts.find(x => /계정|과목|\[\d+\]|^\d{3,}\s*\S/.test(x)) || (texts.length <= 2 ? texts[0] : '');
+        if (t && !LFIELD.date.re.test(t)) acct = t.replace(/^.*?(계정과목|계정명|계정)\s*[:：]?\s*/, '').trim();
+      }
+      return;
+    }
+    const desc = String(get('desc') ?? '').trim();
+    if (SKIP_RE.test(desc) || (!dr && !cr)) return;
+    const a = mp.acct != null && String(get('acct')).trim() ? String(get('acct')).trim() : acct;
+    const md = date.slice(5, 7) + date.slice(8, 10); if (md < min) min = md; if (md > max) max = md;
+    out.push([md, a || '(계정 없음)', mp.proj != null ? String(get('proj') ?? '').trim() : '', dr, cr, desc.slice(0, 60), date.slice(0, 4)]);
+  });
+  return {rows: out, from: min, to: max};
+}
+
+/* ---------- 집계 ---------- */
+function linesOf(fund, y = bgState().year) { return bgState().lines.filter(l => l.fund === fund && Number(l.y) === Number(y)); }
+function matchLine(fund, y, acct, proj, memo) {
+  const b = bgState(), n = bnorm(acct), al = b.alias[`${fund}|${y}|${n}`];
+  const cands = linesOf(fund, y).filter(l => bnorm(l.mok) === (al || n));
+  if (!cands.length) return null;
+  if (cands.length === 1) return cands[0];
+  const pj = bnorm(proj), m = String(memo || '');
+  const byProj = cands.find(l => l.proj && pj && (bnorm(l.proj) === pj || pj.includes(bnorm(l.proj)) || bnorm(l.proj).includes(pj)));
+  if (byProj) return byProj;
+  const byKw = cands.find(l => l.proj && [l.proj, ...String(l.kw || '').split(',')].map(x => x.trim()).filter(x => x.length >= 2).some(k => m.includes(k)));
+  if (byKw) return byKw;
+  return cands.find(l => !l.proj) || {unassigned: true, mok: cands[0].mok, type: cands[0].type, gwan: cands[0].gwan, hang: cands[0].hang, fund, y};
+}
+/* 결과: {byLine:{id:{amt,mon[12],rows[]}}, unmatched:{acct:{n,dr,cr,rows}}, unassigned:{mok:{amt,rows}}, lastMon} */
+function computeFund(fund, y = bgState().year) {
+  const b = bgState(), L = b.ledgers[`${fund}|${y}`], res = {byLine:{}, unmatched:{}, unassigned:{}, lastMon: 0, has: !!L};
+  if (!L) return res;
+  res.lastMon = Number(String(L.to || '').slice(0, 2)) || 0;
+  L.rows.forEach(r => {
+    const [md, acct, proj, dr, cr, memo] = r, mon = Number(md.slice(0, 2)) - 1;
+    const l = matchLine(fund, y, acct, proj, memo);
+    if (!l) { const u = res.unmatched[acct] ||= {n: 0, dr: 0, cr: 0, rows: []}; u.n++; u.dr += dr; u.cr += cr; u.rows.push(r); return; }
+    const amt = l.type === 'in' ? cr - dr : dr - cr;
+    if (l.unassigned) { const u = res.unassigned[l.mok] ||= {amt: 0, rows: [], type: l.type}; u.amt += amt; u.rows.push(r); return; }
+    const x = res.byLine[l.id] ||= {amt: 0, mon: Array(12).fill(0), rows: []};
+    x.amt += amt; if (mon >= 0 && mon < 12) x.mon[mon] += amt; x.rows.push(r);
+  });
+  return res;
+}
+function fundSummary(fund, y) {
+  const c = computeFund(fund, y), ls = linesOf(fund, y), sum = {out:{base:0, cur:0, used:0}, in:{base:0, cur:0, used:0}};
+  ls.forEach(l => { const s = sum[l.type] || sum.out; s.base += Number(l.base) || 0; s.cur += curBudget(l); s.used += (c.byLine[l.id] || {}).amt || 0; });
+  Object.values(c.unassigned).forEach(u => { (sum[u.type] || sum.out).used += u.amt; });
+  const um = Object.values(c.unmatched).reduce((a, u) => a + u.n, 0);
+  return {c, ls, sum, um};
+}
+function paceNote(rate, lastMon) {
+  if (!lastMon) return '';
+  const el = Math.round(lastMon / 12 * 100);
+  if (rate > 100) return `<span class="chip crit">초과</span>`;
+  if (rate - el > 15) return `<span class="chip warn" title="경과 ${el}% 대비">빠름</span>`;
+  if (el - rate > 30) return `<span class="chip" title="경과 ${el}% 대비">느림</span>`;
+  return '';
+}
+const bar = (r, lastMon) => `<div class="bgbar" title="집행률 ${r}%${lastMon ? ` · 경과 ${Math.round(lastMon / 12 * 100)}%` : ''}"><i style="width:${Math.min(100, r)}%;${r > 100 ? 'background:var(--stamp)' : ''}"></i>${lastMon ? `<b style="left:${lastMon / 12 * 100}%"></b>` : ''}</div>`;
+
+/* ---------- 화면 ---------- */
+VIEWS.budget = v => {
+  const b = bgState(), y = b.year;
+  const tabs = [['fund', '재원별 잔액'], ['acct', '계정별 세부'], ['proj', '사업별 사용액'], ['plan', '예산 입력'], ['unm', '미분류']];
+  const umTotal = b.funds.reduce((a, f) => a + fundSummary(f.id, y).um, 0);
+  v.innerHTML = `
+  <div class="page-head"><div><h1>예산 · 잔액</h1><p>연초 예산(본예산·추경)과 진우 <b>총계정별원장</b> 엑셀을 맞춰 재원별·계정별·사업별 집행액과 잔액을 봅니다. 파일은 이 기기 안에서만 읽어요.</p></div>
+    <div class="row"><select class="inp" id="bg-y" style="width:auto">${[y - 1, y, y + 1].map(x => `<option ${x === y ? 'selected' : ''}>${x}</option>`).join('')}</select>
+    <button class="btn primary" id="bg-up">${icon('plus')}원장 올리기</button></div></div>
+  <div class="seg" role="group" aria-label="보기">${tabs.map(([k, n]) => `<button aria-pressed="${BG.tab === k}" data-bt="${k}">${n}${k === 'unm' && umTotal ? ` <span class="chip warn" style="height:18px;padding:0 6px">${umTotal}</span>` : ''}</button>`).join('')}</div>
+  <div id="bg-body"></div>`;
+  $('#bg-y', v).onchange = e => { b.year = Number(e.target.value); save(); render(); };
+  $('#bg-up', v).onclick = () => uploadLedger(BG.tab === 'fund' ? '' : BG.fund);
+  $$('[data-bt]', v).forEach(x => x.onclick = () => { BG.tab = x.dataset.bt; render(); });
+  const body = $('#bg-body', v);
+  ({fund: bgFundView, acct: bgAcctView, proj: bgProjView, plan: bgPlanView, unm: bgUnmView})[BG.tab](body, b, y);
+};
+function fundSelect(b, extra = '') {
+  return `<select class="inp" id="bg-f" style="width:auto;min-width:200px">${extra}${b.funds.map(f => `<option value="${f.id}" ${BG.fund === f.id ? 'selected' : ''}>${esc(f.name)}${f.owner ? ' · ' + esc(f.owner) : ''}</option>`).join('')}</select>`;
+}
+function bindFundSelect(el) { const s = $('#bg-f', el); if (s) s.onchange = e => { BG.fund = e.target.value; render(); }; }
+
+function bgFundView(el, b, y) {
+  const funds = b.funds.filter(f => !BG.mine || f.mine);
+  const anyPlan = b.lines.some(l => Number(l.y) === y);
+  el.innerHTML = `
+  ${!anyPlan ? `<div class="note">아직 ${y}년 예산이 없어요. <b>예산 입력</b> 탭에서 엑셀 예산서를 붙여 넣거나, <button class="btn sm" id="bg-demo">예시 데이터로 둘러보기</button></div>` : ''}
+  <div class="row"><label class="row small"><input type="checkbox" id="bg-mine" ${BG.mine ? 'checked' : ''}> 내 담당 재원만</label><span class="grow"></span><button class="btn ghost sm" id="bg-funds">${icon('edit')}재원·담당자 편집</button>${b.lines.some(l => l.demo) ? '<button class="btn ghost sm" id="bg-undemo">예시 지우기</button>' : ''}<button class="btn ghost sm" id="bg-xls">${icon('down')}엑셀로 내보내기</button></div>
+  <div class="bg-cards">${funds.map(f => { const s = fundSummary(f.id, y), o = s.sum.out, i = s.sum.in, r = pct(o.used, o.cur), L = b.ledgers[`${f.id}|${y}`];
+    if (!s.ls.length && !L) return `<section class="panel bg-card empty-f"><div class="panel-h"><div style="min-width:0"><h3>${esc(f.name)}</h3><div class="faint small">${f.owner ? '담당 ' + esc(f.owner) : '담당 미지정'} · ${y}년 예산·원장 없음</div></div></div>
+      <div class="panel-b row" style="gap:6px"><button class="btn sm" data-go-plan="${f.id}">예산 입력</button><button class="btn ghost sm" data-up="${f.id}">원장 올리기</button></div></section>`;
+    return `<section class="panel bg-card"><div class="panel-h"><div style="min-width:0"><h3>${esc(f.name)}</h3><div class="faint small">${f.owner ? '담당 ' + esc(f.owner) : '담당 미지정'}${f.mine ? ' · <span class="chip acc" style="height:18px;padding:0 6px">내 담당</span>' : ''}</div></div>
+      <button class="btn ghost sm" data-go-acct="${f.id}">계정별</button></div>
+      <div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
+        <div class="bg-kv"><div><span>세출 예산</span><b class="num">${won(o.cur)}</b>${o.cur !== o.base ? `<em class="faint small">본예산 ${won(o.base)}</em>` : ''}</div><div><span>집행</span><b class="num">${won(o.used)}</b></div><div><span>잔액</span><b class="num ${o.cur - o.used < 0 ? 'neg' : ''}">${won(o.cur - o.used)}</b></div></div>
+        <div class="row small" style="gap:8px">${bar(r, s.c.lastMon)}<span class="num">${r}%</span>${paceNote(r, s.c.lastMon)}</div>
+        ${i.cur || i.used ? `<div class="small muted">세입 ${won(i.used)} / 예산 ${won(i.cur)} (${pct(i.used, i.cur)}%)</div>` : ''}
+        <div class="small faint">${L && L.demo ? '<span class="chip warn" style="height:18px;padding:0 6px">예시</span> ' : ''}${L ? `원장 ${L.from.slice(0, 2)}/${L.from.slice(2)}~${L.to.slice(0, 2)}/${L.to.slice(2)} · ${L.rows.length}건 · ${esc(L.up)} 올림` : '원장 없음'}${s.um ? ` · <a href="#budget" data-go-unm>미분류 ${s.um}건</a>` : ''}</div>
+        <div class="row" style="gap:6px"><button class="btn sm" data-up="${f.id}">${L ? '원장 다시 올리기' : '원장 올리기'}</button>${linesOf(f.id, y).length ? '' : `<button class="btn ghost sm" data-go-plan="${f.id}">예산 입력</button>`}</div>
+      </div></section>`; }).join('')}</div>
+  <div class="note small">막대의 세로선은 원장 마지막 달 기준 <b>경과율</b>이에요 (예: 9월까지면 75%). 집행률이 경과율보다 15%p 넘게 빠르면 "빠름", 30%p 넘게 느리면 "느림"으로 표시해요.</div>`;
+  const d = $('#bg-demo', el); if (d) d.onclick = () => { loadBudgetDemo(); render(); toast('예시 데이터를 넣었어요 (예시 재원에만)'); };
+  $('#bg-mine', el).onchange = e => { BG.mine = e.target.checked; render(); };
+  $('#bg-funds', el).onclick = editFunds;
+  $('#bg-xls', el).onclick = () => exportBudgetXlsx(y);
+  const ud = $('#bg-undemo', el); if (ud) ud.onclick = () => { b.lines = b.lines.filter(l => !l.demo); Object.keys(b.ledgers).forEach(k => { if (b.ledgers[k].demo) delete b.ledgers[k]; }); save(); render(); toast('예시 데이터를 지웠어요'); };
+  el.addEventListener('click', e => {
+    const a = e.target.closest('[data-go-acct]'); if (a) { BG.fund = a.dataset.goAcct; BG.tab = 'acct'; render(); return; }
+    const p = e.target.closest('[data-go-plan]'); if (p) { BG.fund = p.dataset.goPlan; BG.tab = 'plan'; render(); return; }
+    if (e.target.closest('[data-go-unm]')) { e.preventDefault(); BG.tab = 'unm'; render(); return; }
+    const u = e.target.closest('[data-up]'); if (u) uploadLedger(u.dataset.up);
+  });
+}
+
+function bgAcctView(el, b, y) {
+  const s = fundSummary(BG.fund, y), c = s.c, lm = c.lastMon;
+  const ls = s.ls.filter(l => l.type === BG.type);
+  const groups = {};
+  ls.forEach(l => { ((groups[l.gwan || '(관 없음)'] ||= {})[l.hang || '(항 없음)'] ||= []).push(l); });
+  const tot = ls => ls.reduce((a, l) => { const u = (c.byLine[l.id] || {}).amt || 0; a.base += Number(l.base) || 0; a.cur += curBudget(l); a.used += u; return a; }, {base: 0, cur: 0, used: 0});
+  const row = (label, t, cls, extra = '', mon) => { const r = pct(t.used, t.cur);
+    return `<tr class="${cls}" ${extra}><td class="wrap">${label}</td><td class="r">${won(t.base)}</td><td class="r">${t.cur !== t.base ? `${won(t.cur)}<div class="faint small">${t.cur > t.base ? '+' : ''}${won(t.cur - t.base)}</div>` : won(t.cur)}</td><td class="r">${won(t.used)}</td><td class="r ${t.cur - t.used < 0 ? 'neg' : ''}"><b>${won(t.cur - t.used)}</b></td><td class="r">${r}% ${paceNote(r, lm)}</td>${mon ? `<td>${monCells(mon)}</td>` : '<td></td>'}</tr>`; };
+  const unas = Object.entries(c.unassigned).filter(([, u]) => u.type === BG.type);
+  let html = '';
+  Object.entries(groups).forEach(([g, hs]) => {
+    const gl = Object.values(hs).flat(); html += row(`<b>${esc(g)}</b>`, tot(gl), 'bg-g');
+    Object.entries(hs).forEach(([h, arr]) => {
+      html += row(`<span style="padding-left:12px">${esc(h)}</span>`, tot(arr), 'bg-h');
+      arr.forEach(l => { const x = c.byLine[l.id]; html += row(`<span style="padding-left:26px">${esc(l.mok)}</span>${l.proj ? ` <span class="chip acc">${esc(l.proj)}</span>` : ''}`, tot([l]), 'bg-l', `data-line="${l.id}" style="cursor:pointer"`, x ? x.mon : Array(12).fill(0)); });
+    });
+  });
+  const T = tot(ls);
+  el.innerHTML = `
+  <div class="row">${fundSelect(b)}<div class="seg" role="group">${Object.entries(BG_TYPES).map(([k, n]) => `<button aria-pressed="${BG.type === k}" data-ty="${k}">${n}</button>`).join('')}</div><span class="grow"></span>
+    <span class="faint small">${c.has ? `원장 ${lm}월까지 · 경과 ${Math.round(lm / 12 * 100)}%` : '원장 없음'}</span><button class="btn sm" data-up="${BG.fund}">원장 올리기</button></div>
+  ${ls.length ? `<div class="tbl-wrap"><table class="tbl bg-tbl"><thead><tr><th>관 · 항 · 목</th><th class="r">본예산 (연초)</th><th class="r">현재 예산 (추경)</th><th class="r">집행 누계</th><th class="r">잔액</th><th class="r">집행률</th><th>월별 집행 1~12월</th></tr></thead>
+    <tbody>${html}${unas.map(([m, u]) => `<tr class="bg-l"><td class="wrap"><span style="padding-left:26px">${esc(m)}</span> <span class="chip warn">사업 미지정</span></td><td></td><td></td><td class="r">${won(u.amt)}</td><td></td><td></td><td class="small faint">사업별 예산이 나뉜 목인데 적요로 사업을 못 찾았어요 → 사업별 탭</td></tr>`).join('')}</tbody>
+    <tfoot><tr class="bg-g"><td><b>${BG_TYPES[BG.type]} 합계</b></td><td class="r">${won(T.base)}</td><td class="r">${won(T.cur)}</td><td class="r">${won(T.used + unas.reduce((a, [, u]) => a + u.amt, 0))}</td><td class="r"><b>${won(T.cur - T.used - unas.reduce((a, [, u]) => a + u.amt, 0))}</b></td><td class="r">${pct(T.used + unas.reduce((a, [, u]) => a + u.amt, 0), T.cur)}%</td><td></td></tr></tfoot></table></div>
+    <div class="faint small">줄을 누르면 해당 계정의 원장 내역이 나와요.</div>`
+  : `<div class="empty">${esc(fundName(BG.fund))} ${y}년 ${BG_TYPES[BG.type]} 예산이 없어요. <a href="#budget" data-go-plan>예산 입력</a>에서 넣어 주세요.</div>`}`;
+  bindFundSelect(el);
+  $$('[data-ty]', el).forEach(x => x.onclick = () => { BG.type = x.dataset.ty; render(); });
+  el.addEventListener('click', e => {
+    const u = e.target.closest('[data-up]'); if (u) return uploadLedger(u.dataset.up);
+    if (e.target.closest('[data-go-plan]')) { e.preventDefault(); BG.tab = 'plan'; render(); return; }
+    const tr = e.target.closest('[data-line]'); if (tr) lineDetail(tr.dataset.line, c);
+  });
+}
+function monCells(mon) { const mx = Math.max(...mon.map(Math.abs), 1);
+  return `<div class="moncells">${mon.map((m, i) => `<i title="${i + 1}월 ${won(m)}" style="opacity:${m ? 0.25 + 0.75 * Math.abs(m) / mx : 0.08}"></i>`).join('')}</div>`; }
+function lineDetail(id, c) {
+  const l = bgState().lines.find(x => x.id === id); if (!l) return; const x = c.byLine[id] || {amt: 0, mon: Array(12).fill(0), rows: []};
+  sheet({title: `${l.mok}${l.proj ? ' · ' + l.proj : ''}`, wide: true, body: `
+    <div class="bg-kv"><div><span>현재 예산</span><b class="num">${won(curBudget(l))}</b></div><div><span>집행</span><b class="num">${won(x.amt)}</b></div><div><span>잔액</span><b class="num">${won(curBudget(l) - x.amt)}</b></div></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr>${x.mon.map((_, i) => `<th class="r">${i + 1}월</th>`).join('')}</tr></thead><tbody><tr>${x.mon.map(m => `<td class="r">${m ? won(m) : '·'}</td>`).join('')}</tr></tbody></table></div>
+    <div class="tbl-wrap" style="max-height:50vh;overflow:auto"><table class="tbl"><thead><tr><th>일자</th><th>적요</th><th>사업</th><th class="r">금액</th></tr></thead><tbody>
+    ${x.rows.length ? x.rows.map(r => `<tr><td class="mono small">${r[0].slice(0, 2)}/${r[0].slice(2)}</td><td class="wrap">${esc(r[5])}</td><td class="small">${esc(r[2])}</td><td class="r">${won(l.type === 'in' ? r[4] - r[3] : r[3] - r[4])}</td></tr>`).join('') : '<tr><td colspan="4" class="faint">원장 내역 없음</td></tr>'}</tbody></table></div>`,
+    foot: `<button class="btn" data-close>닫기</button>`});
+}
+
+function bgProjView(el, b, y) {
+  const fs = BG.projFund === 'all' ? b.funds.map(f => f.id) : [BG.projFund];
+  const rows = [];
+  fs.forEach(fid => { const c = computeFund(fid, y); const byP = {};
+    linesOf(fid, y).filter(l => l.proj && l.type === 'out').forEach(l => { const p = byP[l.proj] ||= {fund: fid, proj: l.proj, owner: l.owner || '', cur: 0, base: 0, used: 0, lines: []};
+      p.cur += curBudget(l); p.base += Number(l.base) || 0; p.used += (c.byLine[l.id] || {}).amt || 0; p.lines.push(l); if (l.owner && !p.owner) p.owner = l.owner; });
+    Object.values(byP).forEach(p => { p.lastMon = c.lastMon; p.c = c; rows.push(p); });
+    Object.entries(c.unassigned).forEach(([m, u]) => { if (u.type === 'out') rows.push({fund: fid, proj: null, mok: m, used: u.amt, rows: u.rows}); });
+  });
+  el.innerHTML = `
+  <div class="row"><select class="inp" id="bg-pf" style="width:auto"><option value="all">모든 재원</option>${b.funds.map(f => `<option value="${f.id}" ${BG.projFund === f.id ? 'selected' : ''}>${esc(f.name)}</option>`).join('')}</select><span class="grow"></span><span class="faint small">예산 입력에서 목마다 "사업명"을 적은 줄이 여기로 모여요</span></div>
+  ${rows.length ? `<div class="tbl-wrap"><table class="tbl bg-tbl"><thead><tr><th>사업명</th><th class="r">잔액</th><th class="r">집행률</th><th class="r">사용액</th><th class="r">예산</th><th>재원</th><th>담당</th></tr></thead><tbody>
+    ${rows.map((p, i) => p.proj ? `<tr data-pj="${i}" style="cursor:pointer" class="bg-g"><td class="wrap"><b>${esc(p.proj)}</b> <span class="faint small">${p.lines.length}개 목</span></td><td class="r ${p.cur - p.used < 0 ? 'neg' : ''}"><b>${won(p.cur - p.used)}</b></td><td class="r">${pct(p.used, p.cur)}% ${paceNote(pct(p.used, p.cur), p.lastMon)}</td><td class="r">${won(p.used)}</td><td class="r">${won(p.cur)}</td><td class="small">${esc(fundName(p.fund))}</td><td class="small">${esc(p.owner)}</td></tr>
+      ${BG.open[p.fund + p.proj] ? p.lines.map(l => { const u = (p.c.byLine[l.id] || {}).amt || 0; return `<tr class="bg-l"><td style="padding-left:26px">${esc(l.mok)}</td><td class="r">${won(curBudget(l) - u)}</td><td class="r">${pct(u, curBudget(l))}%</td><td class="r">${won(u)}</td><td class="r">${won(curBudget(l))}</td><td></td><td></td></tr>`; }).join('') : ''}`
+      : `<tr><td class="wrap"><span class="chip warn">사업 미지정</span> ${esc(p.mok)}</td><td colspan="2" class="small"><button class="btn ghost sm" data-unas="${i}">내역 보고 사업 정하기</button></td><td class="r">${won(p.used)}</td><td></td><td class="small">${esc(fundName(p.fund))}</td><td></td></tr>`).join('')}</tbody></table></div>
+    <div class="note small">사업 구분 방법: ① 원장에 <b>사업명 열</b>이 있으면 그걸로 ② 없으면 <b>적요</b>에 사업명이나 예산 입력의 "적요 키워드"가 들어 있는지로 나눠요. 못 찾은 건 "사업 미지정"으로 남아요.</div>`
+  : `<div class="empty">사업명이 들어간 예산 줄이 없어요. 예산 입력에서 목마다 "사업명"을 적어 주세요.</div>`}`;
+  $('#bg-pf', el).onchange = e => { BG.projFund = e.target.value; render(); };
+  el.addEventListener('click', e => {
+    const u = e.target.closest('[data-unas]'); if (u) { const p = rows[Number(u.dataset.unas)]; return assignSheet(p); }
+    const t = e.target.closest('[data-pj]'); if (t) { const p = rows[Number(t.dataset.pj)]; BG.open[p.fund + p.proj] = !BG.open[p.fund + p.proj]; render(); }
+  });
+}
+function assignSheet(p) {
+  const ls = linesOf(p.fund, bgState().year).filter(l => bnorm(l.mok) === bnorm(p.mok) && l.proj);
+  sheet({title: `사업 미지정 · ${p.mok}`, wide: true, body: `
+    <div class="note small">적요에 들어 있는 단어를 사업의 <b>적요 키워드</b>로 넣으면 다음부터 자동으로 나뉘어요. (예: "자조모임", "동료상담")</div>
+    ${ls.map(l => `<label class="f">${esc(l.proj)} 적요 키워드 (쉼표로)<input class="inp" data-kw="${l.id}" value="${esc(l.kw || '')}"></label>`).join('')}
+    <div class="tbl-wrap" style="max-height:40vh;overflow:auto"><table class="tbl"><thead><tr><th>일자</th><th>적요</th><th class="r">금액</th></tr></thead><tbody>${p.rows.map(r => `<tr><td class="mono small">${r[0].slice(0, 2)}/${r[0].slice(2)}</td><td class="wrap">${esc(r[5])}</td><td class="r">${won(r[3] - r[4])}</td></tr>`).join('')}</tbody></table></div>`,
+    foot: `<button class="btn" data-close>취소</button><button class="btn primary" id="kw-save">저장</button>`,
+    onMount: el => { $('#kw-save', el).onclick = () => { $$('[data-kw]', el).forEach(i => { const l = bgState().lines.find(x => x.id === i.dataset.kw); if (l) l.kw = i.value.trim(); }); save(); closeSheet(); render(); toast('키워드를 저장했어요'); }; }});
+}
+
+function bgUnmView(el, b, y) {
+  const list = [];
+  b.funds.forEach(f => { const c = computeFund(f.id, y); Object.entries(c.unmatched).forEach(([a, u]) => list.push({fund: f.id, acct: a, ...u})); });
+  el.innerHTML = list.length ? `
+    <div class="note small">원장에는 있는데 예산에 같은 이름의 목이 없는 계정이에요. 예산의 어느 목인지 고르면 다음부터 자동으로 맞춰요. (이름이 달라도 연결 가능)</div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>재원</th><th>원장 계정</th><th class="r">건수</th><th class="r">차변</th><th class="r">대변</th><th>예산 목에 연결</th></tr></thead><tbody>
+    ${list.map((u, i) => { const opts = linesOf(u.fund, y).filter((l, j, a) => a.findIndex(z => bnorm(z.mok) === bnorm(l.mok)) === j);
+      return `<tr><td class="small">${esc(fundName(u.fund))}</td><td class="wrap">${esc(u.acct)}</td><td class="r">${u.n}</td><td class="r">${won(u.dr)}</td><td class="r">${won(u.cr)}</td>
+      <td><div class="row" style="gap:4px"><select class="inp" data-map="${i}" style="width:auto;max-width:220px"><option value="">선택</option>${opts.map(l => `<option value="${esc(bnorm(l.mok))}">${BG_TYPES[l.type]} · ${esc(l.mok)}</option>`).join('')}</select><button class="btn ghost sm" data-addline="${i}">예산에 새 목 추가</button></div></td></tr>`; }).join('')}</tbody></table></div>`
+    : `<div class="empty">미분류 계정이 없어요</div>`;
+  el.addEventListener('change', e => { const s = e.target.closest('[data-map]'); if (!s || !s.value) return; const u = list[Number(s.dataset.map)]; b.alias[`${u.fund}|${y}|${bnorm(u.acct)}`] = s.value; save(); render(); toast('연결했어요'); });
+  el.addEventListener('click', e => { const a = e.target.closest('[data-addline]'); if (!a) return; const u = list[Number(a.dataset.addline)];
+    const type = u.cr > u.dr || IN_RE.test(u.acct) ? 'in' : 'out';
+    b.lines.push({id: uid(), y, fund: u.fund, type, gwan: '', hang: '', mok: u.acct.replace(/^[\[\(]?\d+[\]\)]?\s*/, ''), proj: '', owner: '', kw: '', base: 0, sup1: 0, sup2: 0}); save(); render(); toast('예산에 목을 추가했어요 (금액은 예산 입력에서)'); });
+}
+
+/* ---------- 예산 입력 ---------- */
+function bgPlanView(el, b, y) {
+  const ls = linesOf(BG.fund, y);
+  const inp = (l, k, cls = '', ph = '') => `<input class="inp ${cls}" data-l="${l.id}" data-k="${k}" value="${esc(l[k] ?? '')}" placeholder="${ph}">`;
+  el.innerHTML = `
+  <div class="row">${fundSelect(b)}<span class="grow"></span><button class="btn" id="pl-paste">${icon('copy')}엑셀에서 붙여넣기</button><button class="btn" id="pl-add">${icon('plus')}줄 추가</button></div>
+  <div class="note small">본예산 = 연초 계획, 1차·2차 추경 = <b>추경 후 전체 금액</b>(증감액 아님). 현재 예산은 가장 최근 추경 금액으로 계산해요. 한 목을 여러 사업으로 나눠 쓰면 줄을 나눠 <b>사업명</b>을 적고, 적요로 구분할 단어가 있으면 <b>적요 키워드</b>에 적어 주세요.</div>
+  ${ls.length ? `<div class="tbl-wrap"><table class="tbl bg-plan"><thead><tr><th>구분</th><th>관</th><th>항</th><th>목 (진우 계정명)</th><th>사업명</th><th>사업 담당</th><th>적요 키워드</th><th class="r">본예산</th><th class="r">1차 추경</th><th class="r">2차 추경</th><th></th></tr></thead><tbody>
+    ${ls.map(l => `<tr><td><select class="inp" data-l="${l.id}" data-k="type">${Object.entries(BG_TYPES).map(([k, n]) => `<option value="${k}" ${l.type === k ? 'selected' : ''}>${n}</option>`).join('')}</select></td>
+      <td>${inp(l, 'gwan')}</td><td>${inp(l, 'hang')}</td><td>${inp(l, 'mok')}</td><td>${inp(l, 'proj', '', '없으면 비움')}</td><td>${inp(l, 'owner')}</td><td>${inp(l, 'kw', '', '예: 자조모임')}</td>
+      <td>${inp(l, 'base', 'num r')}</td><td>${inp(l, 'sup1', 'num r')}</td><td>${inp(l, 'sup2', 'num r')}</td><td><button class="btn ghost sm" data-del="${l.id}" aria-label="삭제">삭제</button></td></tr>`).join('')}</tbody></table></div>
+    <div class="row"><span class="faint small grow">입력하면 바로 저장돼요 · ${ls.length}줄</span><button class="btn ghost sm" id="pl-copy">${y + 1}년으로 복사</button><button class="btn danger sm" id="pl-clr">이 재원 ${y}년 예산 지우기</button></div>`
+  : `<div class="empty">${esc(fundName(BG.fund))} ${y}년 예산이 없어요. 진우 예산서(엑셀)에서 표를 복사해 "엑셀에서 붙여넣기"로 넣으면 가장 빨라요.</div>`}`;
+  bindFundSelect(el);
+  $('#pl-add', el).onclick = () => { b.lines.push({id: uid(), y, fund: BG.fund, type: 'out', gwan: '', hang: '', mok: '', proj: '', owner: '', kw: '', base: 0, sup1: 0, sup2: 0}); save(); render(); };
+  $('#pl-paste', el).onclick = () => pastePlan(b, y);
+  el.addEventListener('change', e => { const t = e.target.closest('[data-l]'); if (!t) return; const l = b.lines.find(x => x.id === t.dataset.l); if (!l) return;
+    const k = t.dataset.k; l[k] = ['base', 'sup1', 'sup2'].includes(k) ? toNum(t.value) : t.value.trim(); if (['base', 'sup1', 'sup2'].includes(k)) t.value = l[k] ? won(l[k]) : ''; save(); });
+  $$('.bg-plan input.num', el).forEach(i => { if (i.value && i.value !== '0') i.value = won(i.value); else if (i.value === '0') i.value = ''; });
+  el.addEventListener('click', e => { const d = e.target.closest('[data-del]'); if (!d) return; if (!d.dataset.armed) { d.dataset.armed = 1; d.textContent = '한 번 더'; return; } b.lines = b.lines.filter(x => x.id !== d.dataset.del); save(); render(); });
+  const cp = $('#pl-copy', el); if (cp) cp.onclick = () => { const n = ls.map(l => Object.assign({}, l, {id: uid(), y: y + 1, base: curBudget(l), sup1: 0, sup2: 0})); b.lines.push(...n); save(); toast(`${n.length}줄을 ${y + 1}년 본예산으로 복사했어요`); };
+  const cl = $('#pl-clr', el); if (cl) cl.onclick = () => { if (!cl.dataset.armed) { cl.dataset.armed = 1; cl.textContent = '한 번 더 누르면 지움'; return; } b.lines = b.lines.filter(l => !(l.fund === BG.fund && Number(l.y) === y)); save(); render(); };
+}
+function pastePlan(b, y) {
+  sheet({title: '예산서 붙여넣기', wide: true, body: `
+    <div class="note small">엑셀에서 <b>제목 줄까지 포함해</b> 표를 복사해 붙여 넣으세요. 열 이름으로 알아봐요: <b>구분(세입/세출) · 관 · 항 · 목 · 사업명 · 본예산 · 1차 추경 · 2차 추경</b> (없는 열은 빼도 돼요). 관·항이 위 칸에만 적힌 병합 표도 아래로 채워 읽어요.</div>
+    <label class="f">재원<select class="inp" id="pp-f">${b.funds.map(f => `<option value="${f.id}" ${BG.fund === f.id ? 'selected' : ''}>${esc(f.name)}</option>`).join('')}</select></label>
+    <label class="f">구분 열이 없을 때<select class="inp" id="pp-t"><option value="out">모두 세출</option><option value="in">모두 세입</option></select></label>
+    <textarea class="inp mono" id="pp-x" rows="10" placeholder="관	항	목	사업명	본예산	1차추경&#10;사무비	인건비	급여		120,000,000	125,000,000"></textarea>
+    <div id="pp-prev" class="small"></div>`,
+    foot: `<button class="btn" data-close>취소</button><button class="btn primary" id="pp-ok">넣기</button>`,
+    onMount: el => {
+      const parse = () => {
+        const rows = $('#pp-x', el).value.split(/\r?\n/).map(r => r.split('\t')).filter(r => r.some(c => c.trim()));
+        if (rows.length < 2) return [];
+        const h = rows[0].map(c => c.replace(/\s/g, ''));
+        const ix = re => h.findIndex(c => re.test(c));
+        const I = {type: ix(/구분|세입세출/), gwan: ix(/^관/), hang: ix(/^항/), mok: ix(/^목|계정|세목/), proj: ix(/사업/), base: ix(/본예산|당초|예산액|^예산$|금액/), sup1: ix(/1차|추경1/), sup2: ix(/2차|추경2/)};
+        if (I.sup1 < 0) I.sup1 = ix(/추경/);
+        const def = $('#pp-t', el).value; let g = '', hg = '';
+        return rows.slice(1).map(r => { const v = k => I[k] >= 0 ? String(r[I[k]] || '').trim() : '';
+          if (v('gwan')) g = v('gwan'); if (v('hang')) hg = v('hang');
+          const mok = v('mok'); if (!mok || SKIP_RE.test(mok) || /합계|총계|계$/.test(mok)) return null;
+          const t = v('type'); const type = /세입|수입/.test(t) ? 'in' : /세출|지출/.test(t) ? 'out' : def;
+          return {id: uid(), y, fund: $('#pp-f', el).value, type, gwan: g, hang: hg, mok, proj: v('proj'), owner: '', kw: '', base: toNum(v('base')), sup1: toNum(v('sup1')), sup2: toNum(v('sup2'))}; }).filter(Boolean);
+      };
+      const prev = () => { const p = parse(); $('#pp-prev', el).innerHTML = p.length ? `${p.length}줄 인식 · 본예산 합계 ${won(p.reduce((a, l) => a + l.base, 0))}원 · 예: ${esc(p[0].gwan)} › ${esc(p[0].hang)} › <b>${esc(p[0].mok)}</b> ${won(curBudget(p[0]))}` : '<span class="faint">아직 인식된 줄이 없어요 (제목 줄 포함해서 붙여 넣기)</span>'; };
+      $('#pp-x', el).oninput = prev; $('#pp-t', el).onchange = prev; prev();
+      $('#pp-ok', el).onclick = () => { const p = parse(); if (!p.length) { toast('인식된 줄이 없어요'); return; } b.lines.push(...p); BG.fund = p[0].fund; save(); closeSheet(); render(); toast(`예산 ${p.length}줄을 넣었어요`); };
+    }});
+}
+function editFunds() {
+  const b = bgState();
+  sheet({title: '재원 · 담당자', wide: true, body: `
+    <div class="note small">담당자 이름은 이 기기에만 저장돼요. "내 담당"을 체크하면 재원별 화면에서 내 것만 모아 볼 수 있어요.</div>
+    <div id="fu" style="display:flex;flex-direction:column;gap:8px">${b.funds.map(f => `<div class="path-row" data-fid="${f.id}"><input class="inp" data-fn value="${esc(f.name)}" placeholder="재원 이름"><input class="inp" data-fo value="${esc(f.owner || '')}" placeholder="담당자"><div class="row" style="gap:6px"><label class="row small"><input type="checkbox" data-fm ${f.mine ? 'checked' : ''}> 내 담당</label><button class="btn ghost sm" data-fdel>삭제</button></div></div>`).join('')}</div>
+    <button class="btn sm" id="fu-add" style="align-self:flex-start">${icon('plus')}재원 추가</button>`,
+    foot: `<button class="btn" data-close>취소</button><button class="btn primary" id="fu-save">저장</button>`,
+    onMount: el => {
+      $('#fu-add', el).onclick = () => $('#fu', el).insertAdjacentHTML('beforeend', `<div class="path-row" data-fid="f${uid()}"><input class="inp" data-fn placeholder="재원 이름"><input class="inp" data-fo placeholder="담당자"><div class="row" style="gap:6px"><label class="row small"><input type="checkbox" data-fm> 내 담당</label><button class="btn ghost sm" data-fdel>삭제</button></div></div>`);
+      el.addEventListener('click', e => { const d = e.target.closest('[data-fdel]'); if (!d) return; const r = d.closest('[data-fid]'); const used = b.lines.some(l => l.fund === r.dataset.fid);
+        if (used && !d.dataset.armed) { d.dataset.armed = 1; d.textContent = '예산 있음 · 한 번 더'; return; } r.remove(); });
+      $('#fu-save', el).onclick = () => {
+        const nf = $$('[data-fid]', el).map(r => ({id: r.dataset.fid, name: $('[data-fn]', r).value.trim(), owner: $('[data-fo]', r).value.trim(), mine: $('[data-fm]', r).checked})).filter(f => f.name);
+        const keep = new Set(nf.map(f => f.id)); b.funds = nf; b.lines = b.lines.filter(l => keep.has(l.fund));
+        Object.keys(b.ledgers).forEach(k => { if (!keep.has(k.split('|')[0])) delete b.ledgers[k]; }); save(); closeSheet(); render(); toast('저장했어요');
+      };
+    }});
+}
+
+/* ---------- 원장 올리기 ---------- */
+function uploadLedger(fund) {
+  const b = bgState(); let wb = null, rows = [], hdr = -1, mp = {};
+  sheet({title: '진우 총계정별원장 올리기', wide: true, body: `
+    <div class="note small">진우 <b>회계 → 장부 → 총계정별원장</b>(또는 계정별원장)을 재원(회계단위)별로 엑셀 저장해서 올리세요. 같은 재원·연도로 다시 올리면 새 파일로 바뀌어요. 월계·누계·이월 줄은 빼고 읽어요.</div>
+    <div class="form-grid"><label class="f">재원<select class="inp" id="lu-f">${b.funds.map(f => `<option value="${f.id}" ${(fund || BG.fund) === f.id ? 'selected' : ''}>${esc(f.name)}</option>`).join('')}</select></label>
+      <label class="f">연도<input class="inp" id="lu-y" type="number" value="${b.year}"></label></div>
+    <label class="f">엑셀 파일<input type="file" id="lu-file" accept=".xlsx,.xls,.csv"></label>
+    <div id="lu-map"></div><div id="lu-prev" class="small"></div>`,
+    foot: `<button class="btn" data-close>취소</button><button class="btn primary" id="lu-ok" disabled>저장</button>`,
+    onMount: el => {
+      const drawMap = () => {
+        const h = rows[hdr] || [];
+        $('#lu-map', el).innerHTML = hdr < 0 ? '<div class="note warn small">제목 줄(일자·적요·차변·대변)을 못 찾았어요. 다른 시트를 고르거나 진우에서 엑셀 저장 형식을 확인해 주세요.</div>' : `
+          ${wb.SheetNames.length > 1 ? `<label class="f">시트<select class="inp" id="lu-sh">${wb.SheetNames.map(n => `<option>${esc(n)}</option>`).join('')}</select></label>` : ''}
+          <div class="form-grid">${Object.entries(LFIELD).map(([k, f]) => `<label class="f">${f.label}<select class="inp" data-m="${k}"><option value="">없음</option>${h.map((c, i) => `<option value="${i}" ${mp[k] === i ? 'selected' : ''}>${XLSXcol(i)} · ${esc(String(c).slice(0, 14))}</option>`).join('')}</select></label>`).join('')}</div>`;
+        $$('[data-m]', el).forEach(s => s.onchange = () => { mp[s.dataset.m] = s.value === '' ? undefined : Number(s.value); prev(); });
+        const sh = $('#lu-sh', el); if (sh) sh.onchange = () => pick(sh.value);
+        prev();
+      };
+      const prev = () => {
+        if (hdr < 0 || mp.date == null || (mp.dr == null && mp.cr == null)) { $('#lu-prev', el).innerHTML = ''; $('#lu-ok', el).disabled = true; return; }
+        const p = parseLedger(rows, hdr, mp, Number($('#lu-y', el).value)), accts = [...new Set(p.rows.map(r => r[1]))];
+        const y = Number($('#lu-y', el).value), fid = $('#lu-f', el).value, n = accts.filter(a => matchLine(fid, y, a, '', '')).length;
+        const yrs = [...new Set(p.rows.map(r => r[6]))];
+        $('#lu-prev', el).innerHTML = p.rows.length ? `<div class="note small"><b>${p.rows.length}건</b> · ${p.from.slice(0, 2)}/${p.from.slice(2)} ~ ${p.to.slice(0, 2)}/${p.to.slice(2)} · 계정 ${accts.length}개 (예산 목과 맞음 ${n}개${accts.length - n ? ` · 미분류 ${accts.length - n}개는 저장 후 "미분류"에서 연결` : ''})${yrs.length && !yrs.includes(String(y)) ? `<br><b style="color:var(--stamp)">파일의 연도(${yrs.join(', ')})가 선택한 연도와 달라요</b>` : ''}<br>계정 예: ${accts.slice(0, 6).map(esc).join(' · ')}</div>` : '<div class="note warn small">읽은 거래가 없어요. 일자·차변·대변 열 지정을 확인해 주세요.</div>';
+        $('#lu-ok', el).disabled = !p.rows.length;
+      };
+      const pick = name => { rows = XLSX.utils.sheet_to_json(wb.Sheets[name], {header: 1, raw: true, defval: ''}); hdr = ledgerHeader(rows); mp = hdr >= 0 ? ledgerAutoMap(rows[hdr]) : {};
+        const pre = (S.mapPresets || {})['ledger:' + (rows[hdr] || []).join('|')]; if (pre) mp = clone(pre); drawMap(); };
+      $('#lu-file', el).onchange = async e => { const f = e.target.files[0]; if (!f) return; try { wb = await readWorkbook(f); pick(wb.SheetNames[0]); } catch (err) { toast(err.message || '파일을 읽지 못했어요'); } };
+      $('#lu-f', el).onchange = prev; $('#lu-y', el).onchange = prev;
+      $('#lu-ok', el).onclick = () => {
+        const fid = $('#lu-f', el).value, y = Number($('#lu-y', el).value), p = parseLedger(rows, hdr, mp, y);
+        b.ledgers[`${fid}|${y}`] = {file: ($('#lu-file', el).files[0] || {}).name || '', up: ymd(today()), from: p.from, to: p.to, rows: p.rows.map(r => r.slice(0, 6))};
+        S.mapPresets = S.mapPresets || {}; S.mapPresets['ledger:' + (rows[hdr] || []).join('|')] = clone(mp);
+        b.year = y; BG.fund = fid; save(); closeSheet(); render(); toast(`${fundName(fid)} 원장 ${p.rows.length}건을 반영했어요`);
+      };
+    }});
+}
+
+/* ---------- 엑셀 내보내기 ---------- */
+function exportBudgetXlsx(y) {
+  if (!window.XLSX) { toast('엑셀 모듈을 불러오지 못했어요'); return; }
+  const b = bgState(), wb = XLSX.utils.book_new();
+  const sum = [['재원', '담당', '세출 본예산', '세출 현재예산', '집행', '잔액', '집행률(%)', '세입 예산', '세입 실적', '원장 기간']];
+  b.funds.forEach(f => { const s = fundSummary(f.id, y), L = b.ledgers[`${f.id}|${y}`]; sum.push([f.name, f.owner || '', s.sum.out.base, s.sum.out.cur, s.sum.out.used, s.sum.out.cur - s.sum.out.used, pct(s.sum.out.used, s.sum.out.cur), s.sum.in.cur, s.sum.in.used, L ? `${L.from}~${L.to}` : '']); });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sum), '재원별');
+  const det = [['재원', '구분', '관', '항', '목', '사업명', '본예산', '현재예산', '집행', '잔액', '집행률(%)', ...Array.from({length: 12}, (_, i) => `${i + 1}월`)]];
+  b.funds.forEach(f => { const c = computeFund(f.id, y); linesOf(f.id, y).forEach(l => { const x = c.byLine[l.id] || {amt: 0, mon: Array(12).fill(0)};
+    det.push([f.name, BG_TYPES[l.type], l.gwan, l.hang, l.mok, l.proj, Number(l.base) || 0, curBudget(l), x.amt, curBudget(l) - x.amt, pct(x.amt, curBudget(l)), ...x.mon]); }); });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(det), '계정별');
+  const out = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
+  download(`예산집행_${y}_${ymd(today())}.xlsx`, new Blob([out], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+}
+
+/* ---------- 예시 데이터 (둘러보기용) ---------- */
+function loadBudgetDemo() {
+  const b = bgState(), y = b.year, f = b.funds[0].id;
+  if (b.lines.some(l => l.fund === f && Number(l.y) === y)) return;
+  const L = (type, gwan, hang, mok, proj, base, sup1, kw = '') => ({id: uid(), y, fund: f, type, gwan, hang, mok, proj, owner: proj ? '담당자' : '', kw, base, sup1, sup2: 0, demo: true});
+  b.lines.push(
+    L('in', '보조금수입', '보조금수입', '시도보조금', '', 180000000, 185000000),
+    L('out', '사무비', '인건비', '급여', '', 120000000, 124000000), L('out', '사무비', '인건비', '제수당', '', 12000000, 12000000),
+    L('out', '사무비', '업무추진비', '회의비', '', 2400000, 2400000), L('out', '사무비', '운영비', '수용비및수수료', '', 8000000, 8000000),
+    L('out', '사무비', '운영비', '공공요금', '', 3600000, 3600000),
+    L('out', '사업비', '운영비', '사업운영비', '동료상담', 9000000, 9000000, '동료상담,상담'), L('out', '사업비', '운영비', '사업운영비', '자조모임', 6000000, 6500000, '자조모임'),
+    L('out', '사업비', '운영비', '사업운영비', '권익옹호', 5000000, 5000000, '권익,옹호'));
+  const rows = []; const add = (m, d, a, memo, dr, cr = 0) => rows.push([pad(m) + pad(d), a, '', dr, cr, memo]);
+  for (let m = 1; m <= 9; m++) {
+    add(m, 10, '[4111] 시도보조금', `${m}월 보조금 입금`, 0, 15000000);
+    add(m, 25, '[5111] 급여', `${m}월 급여`, 10200000); add(m, 25, '[5121] 제수당', `${m}월 제수당`, 950000);
+    add(m, 12, '[5211] 수용비및수수료', '사무용품 구입', 520000 + m * 13000); add(m, 20, '[5231] 공공요금', `${m}월 전기·통신`, 290000);
+    if (m % 2) add(m, 15, '[5311] 사업운영비', `동료상담 ${m}월 활동비`, 610000);
+    if (m % 3 === 0) add(m, 18, '[5311] 사업운영비', `자조모임 간식·교통`, 880000);
+    if (m === 4 || m === 8) add(m, 22, '[5311] 사업운영비', '권익옹호 캠페인 물품', 1200000);
+    if (m === 6) add(m, 5, '[5311] 사업운영비', '홍보물 제작', 350000);
+    if (m === 7) add(m, 3, '[5141] 퇴직적립금', '퇴직적립', 3000000);
+  }
+  b.ledgers[`${f}|${y}`] = {file: '예시_총계정별원장.xlsx', up: ymd(today()), from: '0110', to: '0925', rows, demo: true};
+  save();
+}
+
+/* 오늘 화면: 내 담당 재원 잔액 */
+function budgetHomePanel() {
+  if (!S.budget) return '';
+  const b = bgState(), y = b.year, fs = b.funds.filter(f => f.mine && linesOf(f.id, y).length);
+  if (!fs.length) return '';
+  return `<section class="panel"><div class="panel-h"><h2>내 담당 재원 · ${y}</h2><a class="btn ghost sm" href="#budget">예산</a></div>
+    <div class="panel-b" style="display:flex;flex-direction:column;gap:12px">${fs.map(f => { const s = fundSummary(f.id, y), o = s.sum.out, r = pct(o.used, o.cur);
+      return `<a href="#budget" data-bgf="${f.id}" style="text-decoration:none;color:inherit;display:flex;flex-direction:column;gap:6px">
+        <div class="row"><b>${esc(f.name)}</b><span class="grow"></span><span class="small muted">잔액</span><b class="num ${o.cur - o.used < 0 ? 'neg' : ''}">${won(o.cur - o.used)}</b></div>
+        <div class="row small" style="gap:8px">${bar(r, s.c.lastMon)}<span class="num">${r}%</span>${paceNote(r, s.c.lastMon)}</div></a>`; }).join('')}</div></section>`;
+}
+document.addEventListener('click', e => { const a = e.target.closest('[data-bgf]'); if (a) { BG.fund = a.dataset.bgf; BG.tab = 'acct'; } });
 
 /* ================= 업무 (인수인계 절차 + 이번 달 할 일) ================= */
 const HO_ST = {new:{t:'미숙지', c:''}, learn:{t:'실습 중', c:'warn'}, ok:{t:'혼자 가능', c:'ok'}};
@@ -2094,7 +2790,7 @@ function sopCard(s, st) {
   const r = hoRun(s), ss = HO_ST[st.status[s.id] || 'new'], c = HO_CATS[s.cat] || HO_CATS.gen;
   return `<button class="app" data-open="${s.id}" style="text-align:left;cursor:pointer;font:inherit">
     <div class="row" style="gap:6px"><span class="dotcat" style="background:${c.color}"></span><span class="faint small">${c.name} · ${HO_FREQ[s.freq]}</span><span class="grow"></span>${s.custom?'<span class="chip acc">내 절차</span>':s.edited?'<span class="chip acc">수정함</span>':''}<span class="chip ${ss.c}">${ss.t}</span></div>
-    <div class="n">${esc(s.title)}</div><div class="dsc">${esc(s.when)}</div>${HO_OWNER[s.id]?`<span class="chip" style="align-self:flex-start">인수: ${esc(HO_OWNER[s.id])}</span>`:''}
+    <div class="n">${esc(s.title)}</div><div class="dsc">${esc(s.when)}${photosOfSop(s.id)?` · 사진 ${photosOfSop(s.id)}장`:''}</div>${HO_OWNER[s.id]?`<span class="chip" style="align-self:flex-start">인수: ${esc(HO_OWNER[s.id])}</span>`:''}
     <div class="st" style="width:100%"><div class="row small" style="gap:6px"><span class="faint">${esc(hoPeriod(s))} 진행</span><span class="grow"></span><span class="num">${r.done}/${r.total}</span>${r.total&&r.done===r.total?'<span class="chip ok">완료</span>':''}</div><div class="prog" style="margin-top:4px"><i style="width:${r.total?r.done/r.total*100:0}%"></i></div></div>
   </button>`;
 }
@@ -2118,7 +2814,7 @@ function editSop(id) {
       <label class="f">주기<select class="inp" id="so-f">${Object.entries(HO_FREQ).map(([k,n])=>`<option value="${k}" ${base.freq===k?'selected':''}>${n}</option>`).join('')}</select></label>`:''}
     </div>
     <label class="f">절차<textarea class="inp mono" id="so-x" rows="14">${esc(sopToText(base))}</textarea></label>
-    <div class="note small"><b>## 제목</b> 줄은 단계 묶음, <b>- </b>로 시작하면 체크 단계, <b>! </b>로 시작하면 주의 문구예요. 단계 순서를 바꾸면 이번 기간 체크는 새로 해야 할 수 있어요.</div>`,
+    <div class="note small"><b>## 제목</b> 줄은 단계 묶음, <b>- </b>로 시작하면 체크 단계, <b>! </b>로 시작하면 주의 문구예요. 단계 순서를 바꾸거나 중간에 끼워 넣으면 이번 기간 체크와 단계 사진이 옆 단계로 밀릴 수 있어요 (끝에 추가하는 건 괜찮아요).</div>`,
     foot: `${id && (base.custom || base.edited) ? `<button class="btn danger" id="so-del">${base.custom?'삭제':'원래대로'}</button><span class="grow"></span>` : ''}<button class="btn" data-close>취소</button><button class="btn primary" id="so-save">저장</button>`,
     onMount: el => {
       $('#so-save', el).onclick = () => {
@@ -2128,7 +2824,7 @@ function editSop(id) {
         if (isCustom) {
           S.hoCustom = S.hoCustom || []; patch.cat = $('#so-c', el).value; patch.freq = $('#so-f', el).value;
           const ex = S.hoCustom.find(x => x.id === base.id); ex ? Object.assign(ex, patch) : S.hoCustom.push(Object.assign({id: base.id}, patch));
-        } else { S.hoEdit = S.hoEdit || {}; S.hoEdit[id] = patch; }
+        } else { S.hoEdit = S.hoEdit || {}; S.hoEdit[id] = Object.assign({}, S.hoEdit[id], patch); }
         save(); closeSheet(); HO.open = base.id; render(); toast('저장했어요');
       };
       const del = $('#so-del', el);
@@ -2139,7 +2835,46 @@ function editSop(id) {
       };
     }});
 }
-function fullPath(p) { const r = (S.settings.nasRoot || '').replace(/\\+$/, ''); return r ? r + '\\' + p : '공용서버\\' + p; }
+function fullPath(p) {
+  if (/^(\\\\|[A-Za-z]:[\\/]|https?:\/\/|\/)/.test(p)) return p; // 이미 전체 경로(\\NAS, C:\, 주소)면 그대로
+  const r = (S.settings.nasRoot || '').replace(/\\+$/, ''); return r ? r + '\\' + p : '공용서버\\' + p;
+}
+function savePatch(s, patch) {
+  if (s.custom) { const ex = (S.hoCustom || []).find(x => x.id === s.id); if (ex) Object.assign(ex, patch); }
+  else { S.hoEdit = S.hoEdit || {}; S.hoEdit[s.id] = Object.assign({}, S.hoEdit[s.id], patch); }
+  save();
+}
+function editPaths(id) {
+  const s = sopById(id); let rows = (s.paths || []).map(x => [x[0], x[1]]); if (!rows.length) rows = [['', '']];
+  const row = ([l, p], i) => `<div class="path-row" data-i="${i}">
+    <input class="inp" data-pl placeholder="이름 (예: 급여대장 폴더)" value="${esc(l)}">
+    <input class="inp mono" data-pp placeholder="경로 (예: 회계\\2026\\급여 또는 \\\\NAS\\공유\\...)" value="${esc(p)}">
+    <div class="row" style="gap:4px"><button class="btn ghost sm" data-up="${i}" aria-label="위로" ${i?'':'disabled'}>↑</button><button class="btn ghost sm" data-rm="${i}" aria-label="삭제">삭제</button></div></div>`;
+  sheet({title: `파일 위치 · ${s.title}`, wide: true, body: `
+    <div class="note small">경로를 <b>폴더 이름부터</b> 적으면 설정의 공용서버 주소(${esc(S.settings.nasRoot || '미입력')}) 뒤에 붙고, <b>\\\\NAS…</b>·<b>C:\\…</b>처럼 전체 경로로 적으면 그대로 써요. 이 기기 브라우저에만 저장돼 공개 사이트에는 올라가지 않아요.</div>
+    <div id="pr" style="display:flex;flex-direction:column;gap:10px"></div>
+    <button class="btn sm" id="pr-add" style="align-self:flex-start">${icon('plus')}위치 추가</button>`,
+    foot: `${s.edited && (S.hoEdit[s.id] || {}).paths ? '<button class="btn danger" id="pr-reset">원래 위치로</button><span class="grow"></span>' : ''}<button class="btn" data-close>취소</button><button class="btn primary" id="pr-save">저장</button>`,
+    onMount: el => {
+      const read = () => $$('.path-row', el).map(r => [$('[data-pl]', r).value.trim(), $('[data-pp]', r).value.trim()]);
+      const draw = () => { $('#pr', el).innerHTML = rows.map(row).join(''); };
+      draw();
+      $('#pr-add', el).onclick = () => { rows = read(); rows.push(['', '']); draw(); $$('[data-pl]', el).slice(-1)[0].focus(); };
+      $('#pr', el).addEventListener('click', e => {
+        const rm = e.target.closest('[data-rm]'), up = e.target.closest('[data-up]'); if (!rm && !up) return;
+        rows = read(); const i = Number((rm || up).dataset.rm ?? (rm || up).dataset.up);
+        if (rm) rows.splice(i, 1); else if (i > 0) [rows[i-1], rows[i]] = [rows[i], rows[i-1]];
+        if (!rows.length) rows = [['', '']]; draw();
+      });
+      $('#pr-save', el).onclick = () => {
+        const paths = read().filter(([l, p]) => p).map(([l, p]) => [l || p.split(/[\\/]/).filter(Boolean).pop() || '위치', p.replace(/^["']|["']$/g, '')]);
+        savePatch(s, {paths}); closeSheet(); render(); toast(`파일 위치 ${paths.length}개를 저장했어요`);
+      };
+      const rs = $('#pr-reset', el);
+      if (rs) rs.onclick = () => { if (!rs.dataset.armed) { rs.dataset.armed = 1; rs.textContent = '한 번 더'; return; }
+        delete S.hoEdit[s.id].paths; if (!Object.keys(S.hoEdit[s.id]).length) delete S.hoEdit[s.id]; save(); closeSheet(); render(); toast('원래 파일 위치로 되돌렸어요'); };
+    }});
+}
 
 VIEWS.handover = v => {
   const st = hoState();
@@ -2153,6 +2888,7 @@ VIEWS.handover = v => {
   v.innerHTML = `
   <div class="page-head"><div><h1>업무</h1><p>인계 문서·인수인계 확인표를 업무별 절차로 정리했어요. 단계마다 체크하며 실행하고, 모르는 건 질문 메모에 적어 두세요. 절차는 직접 고칠 수 있어요.</p></div>
     <div class="row"><button class="btn" id="ho-q">${icon('copy')}질문 목록 복사 (${qN})</button><button class="btn primary" id="ho-add">${icon('plus')}새 절차</button></div></div>
+  ${PH.ready && !PH.count ? `<div class="note small row" style="gap:8px"><span class="grow">단계마다 화면 사진을 붙여 두면 일할 때 바로 확인할 수 있어요. 받은 <b>사진 팩(.json)</b>이 있으면 넣어 주세요.</span><button class="btn sm" id="ho-pack">사진 팩 넣기</button></div>` : ''}
   <div class="seg" role="group" aria-label="보기">${[['month',`이번 달 할 일 ${mDone}/${ms.length}`],['all',`전체 절차 ${all.length}`]].map(([k,n]) => `<button aria-pressed="${HO.tab===k}" data-tab="${k}">${n}</button>`).join('')}</div>
   ${HO.tab === 'month' ? `
   ${daily.length ? `<div class="eyebrow">매일</div><div class="apps" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">${daily.map(s => sopCard(s, st)).join('')}</div>` : ''}
@@ -2173,6 +2909,7 @@ VIEWS.handover = v => {
   $$('[data-hc]', v).forEach(b => b.onclick = () => { HO.cat = b.dataset.hc; render(); });
   $$('[data-open]', v).forEach(b => b.onclick = () => { HO.open = b.dataset.open; render(); window.scrollTo(0, 0); });
   $('#ho-add', v).onclick = () => editSop(null);
+  const pk = $('#ho-pack', v); if (pk) pk.onclick = () => pickPackFile(render);
   $('#ho-q', v).onclick = () => {
     const qs = all.filter(s => st.notes[s.id]?.trim()).map(s => `■ ${s.title}\n${st.notes[s.id].trim().split('\n').map(l => '  - ' + l.replace(/^[-•]\s*/, '')).join('\n')}`);
     if (!qs.length) { toast('아직 적은 질문이 없어요. 업무를 열어 질문 메모에 적어 주세요'); return; }
@@ -2192,12 +2929,14 @@ function hoDetail(v, s) {
   <div class="ho-layout">
     <section class="panel">
       <div class="panel-h"><div><h2>실행 체크리스트</h2><div class="faint small">${esc(hoPeriod(s))} · ${r.done}/${r.total} 단계</div></div>
-        <div class="row" style="gap:4px">${s.freq==='adhoc'?'<button class="btn ghost sm" id="ho-new">새 건 시작</button>':''}<button class="btn ghost sm" id="ho-reset">체크 초기화</button></div></div>
+        <div class="row" style="gap:4px"><button class="btn primary sm" id="ho-run">${icon('right')}한 단계씩</button>${s.freq==='adhoc'?'<button class="btn ghost sm" id="ho-new">새 건 시작</button>':''}<button class="btn ghost sm" id="ho-reset">체크 초기화</button></div></div>
       <div style="padding:10px 16px 0"><div class="prog"><i style="width:${r.total?r.done/r.total*100:0}%"></i></div></div>
       ${s.sections.map((sec, si) => `
         <div style="padding:14px 16px 4px"><b>${esc(sec.h)}</b></div>
         <ul class="steps">${sec.steps.map((t, i) => { const k = `${si}.${i}`, on = !!r.arr[k];
-          return `<li class="${on?'on':''}"><button class="check" aria-pressed="${on}" data-k="${k}" aria-label="${esc(t)}">${on?icon('check'):''}</button><span class="tx">${esc(t)}</span></li>`; }).join('')}</ul>
+          const ph = photosOf(s.id, k), hits = stepPathHits(s, t);
+          return `<li class="${on?'on':''}"><button class="check" aria-pressed="${on}" data-k="${k}" aria-label="${esc(t)}">${on?icon('check'):''}</button><div style="min-width:0;flex:1"><span class="tx">${esc(t)}</span>${hits.length?`<div class="step-paths">${hits.map(([l,p]) => `<button class="chip acc" data-cp="${esc(fullPath(p))}" title="${esc(fullPath(p))}">${icon('copy')}${esc(l)}</button>`).join('')}</div>`:''}</div>
+            <span class="st-ph">${ph.length?`<img src="${ph[0].data}" alt="단계 사진" data-ph="${k}">${ph.length>1?`<span class="n">+${ph.length-1}</span>`:''}`:''}<button class="addph" data-addph="${k}" aria-label="사진 ${ph.length?'관리':'추가'}" title="사진 ${ph.length?'관리':'추가'}">${ph.length?icon('edit'):icon('plus')}</button></span></li>`; }).join('')}</ul>
         ${(sec.warn||[]).map(w => `<div class="note warn small" style="margin:6px 16px">주의 · ${esc(w)}</div>`).join('')}`).join('')}
       <div style="height:12px"></div>
     </section>
@@ -2205,19 +2944,23 @@ function hoDetail(v, s) {
       <section class="panel"><div class="panel-h"><h3>질문 메모</h3><span class="faint small" id="ho-saved"></span></div>
         <div class="panel-b"><textarea class="inp" id="ho-note" rows="6" placeholder="전임자에게 물어볼 것, 실제로 해 보니 다른 점을 적어 두세요">${esc(st.notes[s.id] || '')}</textarea></div></section>
       ${(s.systems||[]).length?`<section class="panel"><div class="panel-h"><h3>사용 시스템</h3></div><div class="panel-b row" style="gap:6px">${s.systems.map(k => `<span class="chip">${esc(SYS[k] || k)}</span>`).join('')}</div></section>`:''}
-      ${(s.paths||[]).length ? `<section class="panel"><div class="panel-h"><h3>파일 위치</h3><span class="faint small">누르면 복사</span></div>
-        <div class="panel-b" style="display:flex;flex-direction:column;gap:10px">${s.paths.map(([l, p]) => `<div><div class="small muted">${esc(l)}</div><span class="mono small copyc" data-cp="${esc(fullPath(p))}" style="word-break:break-all">${esc(fullPath(p))}</span></div>`).join('')}</div></section>` : ''}
+      <section class="panel"><div class="panel-h"><h3>파일 위치</h3><button class="btn ghost sm" id="ho-paths">${icon((s.paths||[]).length?'edit':'plus')}${(s.paths||[]).length?'수정':'추가'}</button></div>
+        ${(s.paths||[]).length ? `<div class="panel-b" style="display:flex;flex-direction:column;gap:10px">${s.paths.map(([l, p]) => `<div><div class="small muted">${esc(l)}</div><span class="mono small copyc" data-cp="${esc(fullPath(p))}" style="word-break:break-all" title="누르면 복사">${esc(fullPath(p))}</span></div>`).join('')}<div class="faint small">경로를 누르면 복사돼요 → 탐색기 주소창에 붙여넣기</div></div>` : `<div class="panel-b small muted">아직 등록된 위치가 없어요. 이 업무 파일이 있는 폴더를 추가해 두세요.</div>`}</section>
       ${linked.length ? `<section class="panel"><div class="panel-h"><h3>관련 마감</h3><a class="btn ghost sm" href="#calendar">캘린더</a></div>
         <ul class="dl">${linked.map(rule => { const o = nextOf(rule); return o ? deadlineItem(o, false) : ''; }).join('')}</ul></section>` : ''}
     </div>
   </div>`;
   $('#ho-back', v).onclick = () => { HO.open = null; render(); };
   $('#ho-edit', v).onclick = () => editSop(s.id);
+  $('#ho-paths', v).onclick = () => editPaths(s.id);
+  $('#ho-run', v).onclick = () => runMode(s);
   $$('[data-st]', v).forEach(b => b.onclick = () => { st.status[s.id] = b.dataset.st; save(); render(); toast(`"${HO_ST[b.dataset.st].t}"로 표시했어요`); });
   v.addEventListener('click', e => {
     const c = e.target.closest('[data-k]');
     if (c) { const arr = st.checks[r.key] = Object.assign({}, st.checks[r.key]); arr[c.dataset.k] = !arr[c.dataset.k]; if (arr[c.dataset.k]) { st.log = st.log || {}; const d = ymd(today()); st.log[d] = [...new Set([...(st.log[d] || []), s.title])]; } save(); render(); return; }
     const cp = e.target.closest('[data-cp]'); if (cp) { copyText(cp.dataset.cp, '경로를 복사했어요'); return; }
+    const pv = e.target.closest('[data-ph]'); if (pv) { lightbox(photosOf(s.id, pv.dataset.ph)); return; }
+    const ap = e.target.closest('[data-addph]'); if (ap) { const [si, i] = ap.dataset.addph.split('.').map(Number); stepPhotos(s, ap.dataset.addph, s.sections[si].steps[i], () => render()); return; }
     const d = e.target.closest('[data-done]'); if (d) { toggleDone(d.dataset.done); render(); }
   });
   let tm; $('#ho-note', v).oninput = e => { clearTimeout(tm); tm = setTimeout(() => { st.notes[s.id] = e.target.value; save(); const x = $('#ho-saved'); if (x) x.textContent = '저장됨'; }, 400); };
@@ -2242,13 +2985,15 @@ document.addEventListener('click', e => { if (e.target.closest('[data-wl]')) { D
 /* ---------- 1. 빠른 검색 (Ctrl+K) ---------- */
 function searchIndex() {
   const out = [];
-  ROUTES.filter(r => r.id !== 'routine' && r.id !== 'tools').forEach(r => out.push({k:'화면', t:r.label, go:() => go(r.id)}));
-  S.apps.forEach(a => out.push({k:'앱', t:a.name, s:a.desc, go:() => { if (a.url) window.open(a.url, '_blank', 'noopener'); else go('apps'); }}));
+  ROUTES.filter(r => !['routine','tools','embed'].includes(r.id)).forEach(r => out.push({k:'화면', t:r.label, go:() => go(r.id)}));
+  S.apps.forEach(a => out.push({k:'앱', t:a.name, s:a.desc, go:() => { if (a.url && a.embed !== false) location.hash = 'embed/' + a.id; else if (a.url) window.open(a.url, '_blank', 'noopener'); else go('apps'); }}));
   S.rules.forEach(r => out.push({k:'마감', t:r.title, s:ruleText(r), go:() => { go('calendar'); setTimeout(() => editRule(r.id), 60); }}));
   S.staff.forEach(p => out.push({k:'직원', t:p.name, s:`${p.dept} ${p.pos}`, go:() => { D.type = 'emp'; D.staffIds = [p.id]; go('docs'); }}));
   Object.entries(DOCT).forEach(([k, o]) => out.push({k:'문서', t:o.name, go:() => { D.type = k; go('docs'); }}));
   Object.values(MODES).forEach((m, i) => out.push({k:'진우 연결', t:m.title, go:() => { B.mode = Object.keys(MODES)[i]; go('bridge'); }}));
   sops().forEach(s => { out.push({k:'업무', t:s.title, s:s.when, go:() => { HO.open = s.id; go('handover'); }}); s.sections.forEach(sec => sec.steps.forEach(t => out.push({k:'절차', t, s:s.title, go:() => { HO.open = s.id; go('handover'); }}))); });
+  (S.budget?.funds || []).forEach(f => out.push({k:'예산', t:f.name, s:f.owner || '재원', go:() => { BG.fund = f.id; BG.tab = 'acct'; go('budget'); }}));
+  [...new Set((S.budget?.lines || []).map(l => l.proj).filter(Boolean))].forEach(p => out.push({k:'사업', t:p, s:'사업별 사용액', go:() => { BG.tab = 'proj'; go('budget'); }}));
   out.push({k:'기능', t:'인수인계 질문 목록', go:() => { HO.open = null; go('handover'); }});
   out.push({k:'기능', t:'주간 업무 보고 만들기', go:weeklyReport});
   out.push({k:'기능', t:'NAS 캘린더용 .ics 내보내기', go:exportIcs});
@@ -2340,6 +3085,58 @@ if (ENV === 'web' && location.protocol === 'https:' && 'serviceWorker' in naviga
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
+/* ================= 앱 화면을 허브 안에 띄우기 (iframe) =================
+   - 앱 화면은 #embed-host 안에 한 번 만든 뒤 계속 살려 둠 → 다른 메뉴 갔다 와도 입력 중이던 내용 유지
+   - 같은 주소(kittycong.github.io) 앱은 저장 데이터도 원래 앱과 같음. 다른 주소(vercel 등)는 브라우저 정책상 따로 저장될 수 있음 */
+const EMB = {frames: {}, cur: ''};
+const embApps = () => S.apps.filter(a => a.url && a.embed !== false);
+const sameSite = url => { try { return new URL(url).hostname === location.hostname; } catch (e) { return false; } };
+function embedId() { const p = location.hash.slice(1).split('/'); return p[0] === 'embed' ? decodeURIComponent(p[1] || '') : ''; }
+function sizeEmbed() {
+  const h = $('#embed-host'); if (!h || h.hidden) return;
+  const tab = $('#nav-tab'), tabH = tab && getComputedStyle(tab).display !== 'none' ? tab.offsetHeight : 0;
+  h.style.height = Math.max(320, window.innerHeight - h.getBoundingClientRect().top - tabH - 6) + 'px';
+}
+window.addEventListener('resize', sizeEmbed);
+VIEWS.embed = v => {
+  const list = embApps();
+  let id = embedId(); if (!list.some(a => a.id === id)) { try { id = localStorage.getItem('il-hub-emb') || ''; } catch (e) {} }
+  if (!list.some(a => a.id === id)) id = (list[0] || {}).id;
+  const a = list.find(x => x.id === id);
+  if (!a) { v.innerHTML = `<div class="empty">허브 안에 띄울 웹앱이 없어요. <a href="#apps">앱</a>에서 주소를 넣어 주세요.</div>`; return; }
+  if (embedId() !== id) history.replaceState(null, '', '#embed/' + id);
+  try { localStorage.setItem('il-hub-emb', id); } catch (e) {}
+  EMB.cur = id;
+  v.innerHTML = `
+  <div class="emb-bar">
+    <div class="emb-chips" role="tablist" aria-label="앱 화면">${list.map(x => `<a role="tab" href="#embed/${x.id}" aria-selected="${x.id === id}" class="emb-chip">${esc(x.name)}</a>`).join('')}</div>
+    <div class="row" style="gap:4px;flex:0 0 auto">
+      <button class="btn ghost sm" id="emb-re" title="새로고침">새로고침</button>
+      <a class="btn ghost sm" href="${esc(a.url)}" target="_blank" rel="noopener" title="새 탭으로 열기">${icon('ext')}새 탭</a>
+      <button class="btn ghost sm" id="emb-full" title="크게 보기">크게</button>
+    </div>
+  </div>
+  <div class="emb-note small" id="emb-note">${ENV === 'artifact' ? 'Claude 아티팩트 안에서는 다른 사이트 화면이 막힐 수 있어요. GitHub 배포본에서 써 주세요 · ' : ''}${sameSite(a.url) ? '같은 주소 앱이라 여기서 저장한 내용이 원래 앱과 똑같이 보여요' : '<b>다른 주소 앱</b>이라 브라우저에 따라 허브 안 저장과 따로 연 앱 저장이 나뉠 수 있어요'} · 화면이 안 뜨면 <a href="${esc(a.url)}" target="_blank" rel="noopener">새 탭으로 열기</a></div>`;
+  const host = $('#embed-host');
+  Object.entries(EMB.frames).forEach(([k, f]) => { if (!S.apps.some(x => x.id === k && x.url)) { f.remove(); delete EMB.frames[k]; } });
+  let f = EMB.frames[id];
+  if (f && f.dataset.src !== a.url) { f.remove(); f = null; }
+  if (!f) {
+    f = document.createElement('iframe'); f.src = a.url; f.dataset.src = a.url; f.title = a.name; f.loading = 'eager';
+    f.setAttribute('allow', 'clipboard-read; clipboard-write; fullscreen; camera');
+    f.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+    const t0 = Date.now(); f.dataset.ok = '';
+    f.onload = () => { f.dataset.ok = '1'; f.dataset.ms = Date.now() - t0; };
+    host.appendChild(f); EMB.frames[id] = f;
+    setTimeout(() => { if (!f.dataset.ok && EMB.cur === id) { const n = $('#emb-note'); if (n) { n.classList.add('warn'); n.innerHTML = `화면을 불러오는 데 오래 걸리거나 이 앱이 다른 사이트 안에 뜨는 걸 막고 있어요. <a href="${esc(a.url)}" target="_blank" rel="noopener"><b>새 탭으로 열기</b></a>`; } } }, 9000);
+  }
+  Object.values(EMB.frames).forEach(x => x.hidden = x !== f);
+  $('#emb-re', v).onclick = () => { f.dataset.ok = ''; f.src = a.url; toast('다시 불러와요'); };
+  $('#emb-full', v).onclick = () => { const h = $('#embed-host'); (h.requestFullscreen ? h.requestFullscreen() : Promise.reject()).catch(() => window.open(a.url, '_blank', 'noopener')); };
+  const sel = $('.emb-chip[aria-selected="true"]', v); if (sel) sel.scrollIntoView({block: 'nearest', inline: 'center'});
+  requestAnimationFrame(sizeEmbed);
+};
+
 /* ================= settings & backup ================= */
 VIEWS.settings = v => {
   const st = S.settings, o = st.org;
@@ -2372,12 +3169,15 @@ VIEWS.settings = v => {
       <div style="border-top:1px solid var(--line);padding-top:12px" class="row"><span class="faint small grow">모든 데이터를 처음 상태로 되돌립니다</span><button class="btn danger sm" id="bk-reset">초기화</button></div>
     </div></section>
   </div>
+  <section class="panel"><div class="panel-h"><h2>업무 단계 사진</h2><span class="faint small">${PH.count}장 · 이 기기에만 저장</span></div><div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
+    <div class="note small">사진은 설정 백업에 포함되지 않아요. 다른 기기로 옮길 땐 <b>사진 팩 저장</b> → 다른 기기에서 <b>사진 팩 넣기</b>. 사진 팩은 내부 화면이 담겨 있으니 GitHub에 올리지 말고 NAS·메신저로 옮기세요.</div>
+    <div class="row"><button class="btn" id="ph-in">${icon('plus')}사진 팩 넣기</button><button class="btn" id="ph-out" ${PH.count?'':'disabled'}>${icon('down')}사진 팩 저장</button><span class="grow"></span><button class="btn danger sm" id="ph-clr" ${PH.count?'':'disabled'}>사진 모두 지우기</button></div></div></section>
   <section class="panel"><div class="panel-h"><h2>공휴일</h2><span class="faint small">한 줄에 "YYYY-MM-DD 이름". 마감 순연 계산에 쓰여요</span></div><div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
     <textarea class="inp mono" id="hol" rows="8">${esc(hol)}</textarea><div class="row"><button class="btn" id="hol-save">공휴일 저장</button><span class="faint small">2026~2027년 기본값 포함 · 임시공휴일은 직접 추가</span></div></div></section>`;
 
   $('#o-save').onclick = () => {
     Object.assign(o, {name:$('#o-name').value.trim(), rep:$('#o-rep').value.trim(), tel:$('#o-tel').value.trim(), addr:$('#o-addr').value.trim()});
-    st.docPrefix = $('#o-pre').value.trim() || '구로IL'; st.payday = Math.min(31, Math.max(1, Number($('#o-pay').value) || 25));
+    st.docPrefix = $('#o-pre').value.trim(); st.payday = Math.min(31, Math.max(1, Number($('#o-pay').value) || 25));
     st.approvers = $('#o-appr').value.split(',').map(s => s.trim()).filter(Boolean).slice(0, 6);
     st.nasRoot = $('#o-nas').value.trim();
     save(); toast('저장했어요');
@@ -2387,10 +3187,13 @@ VIEWS.settings = v => {
   $('#bk-dl').onclick = () => { download(`업무허브_백업_${ymd(today())}.json`, dump(), 'application/json'); if (CAN_FILE) toast('백업 파일을 저장했어요'); };
   $('#bk-file').onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { $('#bk-in').value = r.result; toast('파일을 읽었어요. "가져오기"를 누르세요'); }; r.readAsText(f); };
   $('#bk-load').onclick = () => {
-    try { const d = JSON.parse($('#bk-in').value); if (!d || !d.rules || !d.settings) throw 0; S = d; const def = defaults(); for (const k of Object.keys(def)) if (S[k] === undefined) S[k] = def[k]; save(); render(); toast('가져왔어요'); }
+    try { const d = JSON.parse($('#bk-in').value); if (d && d.type === 'il-hub-photos') { importPack(d).then(n => { toast(`사진 ${n}장을 넣었어요`); render(); }); return; } if (!d || !d.rules || !d.settings) throw 0; S = d; const def = defaults(); for (const k of Object.keys(def)) if (S[k] === undefined) S[k] = def[k]; save(); render(); toast('가져왔어요'); }
     catch (e) { toast('백업 형식이 아니에요. 복사한 내용 전체를 붙여 넣어 주세요'); }
   };
   const rs = $('#bk-reset'); rs.onclick = () => { if (rs.dataset.armed) { S = defaults(); save(); render(); toast('초기화했어요'); } else { rs.dataset.armed = 1; rs.textContent = '한 번 더 누르면 초기화'; } };
+  $('#ph-in').onclick = () => pickPackFile(render);
+  $('#ph-out').onclick = () => { if (!CAN_FILE) { toast('사진 팩 저장은 GitHub 배포본에서 돼요'); return; } download(`업무허브_사진팩_${ymd(today())}.json`, exportPack(), 'application/json'); toast(`사진 ${PH.count}장을 저장했어요`); };
+  const pc = $('#ph-clr'); pc.onclick = async () => { if (!pc.dataset.armed) { pc.dataset.armed = 1; pc.textContent = '한 번 더 누르면 모두 지움'; return; } await photoClear(); render(); toast('사진을 모두 지웠어요'); };
   $('#hol-save').onclick = () => {
     const h = {}; $('#hol').value.split('\n').forEach(l => { const m = l.trim().match(/^(\d{4}-\d{2}-\d{2})\s*(.*)$/); if (m) h[m[1]] = m[2] || '공휴일'; });
     S.holidays = h; save(); toast(`공휴일 ${Object.keys(h).length}일을 저장했어요`);
@@ -2400,6 +3203,7 @@ VIEWS.settings = v => {
 /* ================= boot ================= */
 S = load();
 render();
+loadPhotos().then(() => { if (['handover','settings'].includes(current())) render(); });
 loadConnectors().then(() => { if (['home','calendar','apps'].includes(current())) render(); return checkApps(); }).then(() => { if (['home','apps'].includes(current())) render(); });
 
 </script>

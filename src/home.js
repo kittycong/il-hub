@@ -51,6 +51,7 @@ VIEWS.home = v => {
 
     <div style="display:flex;flex-direction:column;gap:16px">
       ${hoMonthPanel()}
+      ${budgetHomePanel()}
       ${hoDailyPanel()}
       ${centerPanel()}
       <section class="panel">
@@ -72,9 +73,9 @@ function appCard(a, editable = false) {
   if (a.url && HEALTH[a.id] === 'ok') st = {t:'정상 응답', c:'ok'}; else if (a.url && HEALTH[a.id] === 'down') st = {t:'응답 없음', c:'crit'};
   const ini = esc(a.name.replace(/[^가-힣A-Za-z]/g,'').slice(0,1));
   const inner = `<div class="ic">${ini}</div><div class="n">${esc(a.name)}</div><div class="dsc">${esc(a.desc||'')}${editable&&a.repo?`<br><span class="mono">${esc(a.repo)}</span>`:''}</div>
-    <div class="st row" style="gap:6px"><span class="chip ${st.c}">${st.t}</span>${a.url?`<span class="faint small">${icon('ext','').replace('<svg','<svg style="width:13px;height:13px;vertical-align:-2px"')}</span>`:''}</div>
+    <div class="st row" style="gap:6px"><span class="chip ${st.c}">${st.t}</span>${a.url?`<span class="faint small">허브에서 열기</span>`:''}</div>
     ${editable?`<button class="btn ghost sm edit" data-edit-app="${a.id}" aria-label="${esc(a.name)} 편집">${icon('edit')}</button>`:''}`;
-  return a.url ? `<a class="app" href="${esc(a.url)}" target="_blank" rel="noopener">${inner}</a>` : `<div class="app" ${editable?'':`data-goapps`}>${inner}</div>`;
+  return a.url ? `<a class="app" href="#embed/${a.id}" title="허브 안에서 열기">${inner}<span class="newtab" data-newtab="${esc(a.url)}" role="button" tabindex="0" title="새 탭으로 열기" aria-label="${esc(a.name)} 새 탭으로 열기">${icon('ext')}</span></a>` : `<div class="app" ${editable?'':`data-goapps`}>${inner}</div>`;
 }
 VIEWS.apps = v => {
   v.innerHTML = `
@@ -83,7 +84,7 @@ VIEWS.apps = v => {
   <div class="apps">${S.apps.map(a => appCard(a, true)).join('')}</div>
   ${connPanel()}
   <section class="panel"><div class="panel-h"><h2>연결 방식</h2></div><div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
-    <div class="note"><b>웹앱 (GitHub Pages)</b> — 카드를 누르면 새 탭으로 열립니다. 휴대폰에서는 이 허브를 홈 화면에 추가하면 앱처럼 쓸 수 있어요.</div>
+    <div class="note"><b>웹앱</b> — 카드를 누르면 <b>허브 안에서</b> 그 앱 화면이 그대로 열려요 (왼쪽 메뉴 "앱" 아래 목록, 휴대폰은 위쪽 탭으로 전환). 다른 메뉴에 갔다 와도 입력 중이던 화면이 유지돼요. 모서리 ↗ 버튼은 새 탭. 같은 주소(kittycong.github.io) 앱은 저장 내용도 원래 앱과 같아요. 휴대폰에서는 이 허브를 홈 화면에 추가하면 앱처럼 쓸 수 있어요.</div>
     <div class="note"><b>진우정보시스템</b> — PC 설치형이라 링크로 열 수 없어요. 대신 <a href="#bridge">진우 연결</a>에서 진우 장부를 엑셀로 내려받아 수기 엑셀과 대조하고, 입력할 목록을 정리합니다.</div>
     <div class="note"><b>시놀로지 NAS 캘린더</b> — <a href="#calendar">캘린더</a>에서 .ics 파일을 내보내 NAS 캘린더의 "가져오기"로 넣으면 마감이 센터 공유 일정에 들어갑니다.</div>
   </div></section>`;
@@ -99,11 +100,13 @@ function editApp(id) {
     <label class="f">GitHub 저장소 이름<input class="inp" id="ap-repo" value="${esc(a.repo||'')}" placeholder="예: guro_huga"></label>
     <label class="f">설명<input class="inp" id="ap-desc" value="${esc(a.desc)}"></label>
     <label class="f">상태<select class="inp" id="ap-st">${Object.entries(APP_ST).map(([k,o])=>`<option value="${k}" ${a.st===k?'selected':''}>${o.t}</option>`).join('')}</select></label>
+    <label class="row small"><input type="checkbox" id="ap-emb" ${a.embed===false?'':'checked'}> 허브 안에서 열기 (끄면 새 탭으로만)</label>
+    <div class="faint small">특정 메뉴 주소가 따로 있으면(예: 문서앱의 휴가신청 화면 주소) 그 주소로 앱을 하나 더 추가해 두면 바로 그 화면이 열려요.</div>
     <div id="ap-confirm"></div>`,
     foot: `${id?'<button class="btn danger" id="ap-del">삭제</button><span class="grow"></span>':''}<button class="btn" data-close>취소</button><button class="btn primary" id="ap-save">저장</button>`,
     onMount: el => {
       $('#ap-save', el).onclick = () => {
-        a.name = $('#ap-name', el).value.trim() || '이름 없는 앱'; a.url = $('#ap-url', el).value.trim(); a.desc = $('#ap-desc', el).value.trim(); a.repo = $('#ap-repo', el).value.trim(); a.st = $('#ap-st', el).value;
+        a.name = $('#ap-name', el).value.trim() || '이름 없는 앱'; a.url = $('#ap-url', el).value.trim(); a.desc = $('#ap-desc', el).value.trim(); a.repo = $('#ap-repo', el).value.trim(); a.st = $('#ap-st', el).value; a.embed = $('#ap-emb', el).checked ? undefined : false;
         if (a.url && !/^https?:\/\//.test(a.url)) a.url = 'https://' + a.url;
         if (!id) S.apps.push(a); save(); closeSheet(); render(); toast('저장했어요');
       };
@@ -115,6 +118,8 @@ function editApp(id) {
     }});
 }
 document.addEventListener('click', e => { if (e.target.closest('[data-goapps]')) go('apps'); });
+document.addEventListener('click', e => { const t = e.target.closest('[data-newtab]'); if (!t) return; e.preventDefault(); e.stopPropagation(); window.open(t.dataset.newtab, '_blank', 'noopener'); }, true);
+document.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('[data-newtab]'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); e.stopPropagation(); window.open(t.dataset.newtab, '_blank', 'noopener'); } }, true);
 
 function centerPanel() {
   const t = today(), wk = addDays(t, 6);

@@ -113,13 +113,13 @@ function exportIcs() {
   const e = s => String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
   const d8 = d => ymd(d).replace(/-/g,'');
   const stamp = new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
-  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//GRCIL//Work Hub//KO','CALSCALE:GREGORIAN','X-WR-CALNAME:구로IL 행정 마감'];
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//il-hub//Work Hub//KO','CALSCALE:GREGORIAN','X-WR-CALNAME:업무허브 행정 마감'];
   occ.forEach(o => lines.push('BEGIN:VEVENT', `UID:${o.key}@il-hub`, `DTSTAMP:${stamp}`, `DTSTART;VALUE=DATE:${d8(o.date)}`, `DTEND;VALUE=DATE:${d8(addDays(o.date,1))}`,
     `SUMMARY:${e('[' + CATS[o.rule.cat].name + '] ' + o.rule.title)}`, `DESCRIPTION:${e(o.rule.note || '')}`, 'BEGIN:VALARM','ACTION:DISPLAY','TRIGGER:-P2D',`DESCRIPTION:${e(o.rule.title)}`,'END:VALARM','END:VEVENT'));
   lines.push('END:VCALENDAR');
   const txt = lines.join('\r\n');
-  if (CAN_FILE) { download(`구로IL_마감_${ymd(t)}.ics`, txt, 'text/calendar'); toast(`${occ.length}건을 .ics로 내보냈어요`); }
-  else sheet({title:'NAS 캘린더용 .ics', body:`<div class="note">여기서는 파일 저장이 막혀 있어요. 아래 내용을 복사해 메모장에 붙여 넣고 <b>구로IL_마감.ics</b>로 저장한 뒤, 시놀로지 캘린더 → 가져오기로 넣어 주세요. (GitHub 배포본에서는 바로 파일로 받아져요)</div><textarea class="inp mono" rows="10" readonly id="ics-t">${esc(txt)}</textarea>`,
+  if (CAN_FILE) { download(`업무허브_마감_${ymd(t)}.ics`, txt, 'text/calendar'); toast(`${occ.length}건을 .ics로 내보냈어요`); }
+  else sheet({title:'NAS 캘린더용 .ics', body:`<div class="note">여기서는 파일 저장이 막혀 있어요. 아래 내용을 복사해 메모장에 붙여 넣고 <b>업무허브_마감.ics</b>로 저장한 뒤, 시놀로지 캘린더 → 가져오기로 넣어 주세요. (GitHub 배포본에서는 바로 파일로 받아져요)</div><textarea class="inp mono" rows="10" readonly id="ics-t">${esc(txt)}</textarea>`,
     foot:`<button class="btn" data-close>닫기</button><button class="btn primary" id="ics-c">${icon('copy')}${occ.length}건 복사</button>`, onMount: el => { $('#ics-c', el).onclick = () => copyText(txt, '.ics 내용을 복사했어요'); }});
 }
 

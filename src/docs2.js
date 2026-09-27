@@ -28,10 +28,10 @@ Object.assign(DOCT, {
 function dfDefaults2() {
   const t = ymd(today()), tm = ymd(addDays(today(), 1));
   return {
-    trip:{kind:'출장신청서', writer:'', travelers:'', purpose:'구로구 장애인 자립생활 지원 협력기관 방문', purpose2:'', start:tm, end:'', date:t, tstart:'10:00', tend:'12:00', place:'구로구청 (02-860-2114)', content:'', cost:'교통비 (대중교통)', etc:''},
+    trip:{kind:'출장신청서', writer:'', travelers:'', purpose:'관내 장애인 자립생활 지원 협력기관 방문', purpose2:'', start:tm, end:'', date:t, tstart:'10:00', tend:'12:00', place:'구청', content:'', cost:'교통비 (대중교통)', etc:''},
     purchase:{gr:'GR-', date:t, pay:'카드결제', item:'사무용품', spec:'A4용지 80g 외', qty:1, recv:tm, preset:0, fund:FUND_PRESETS[0].fund, subj:FUND_PRESETS[0].subj, short:FUND_PRESETS[0].short, q1n:'키스오피스', q1:184000, q2n:'오피스디포', q2:192000, q3n:'알파문구', q3:198000, winner:'키스오피스', price:184000, ship:0, note:''},
     fixed:{gr:'GR-', open:'비공개', title:'2026년 10월 임차료 및 관리비 지출', body:'사무실 임차료 및 관리비를 아래와 같이 지출하고자 합니다.', what:'10월 임차료·관리비', period:'2026.01.01 ~ 2026.12.31', date:t, recv:t, pay:'계좌이체', payee:'(건물 관리 주체)', preset:1, fund:FUND_PRESETS[1].fund, subj:FUND_PRESETS[1].subj, total:1200000, attach:'붙임 1부', note:''},
-    outgoing:{kind:'일반 발신공문', no:'', date:t, to:'구로구청장 (장애인복지과장)', via:'', title:'2026년 운영비 정산 자료 제출', body:'1. 귀 기관의 무궁한 발전을 기원합니다.\n2. 2026년 운영비 보조금 정산 자료를 아래와 같이 제출합니다.', items:'정산 기간: 2026. 1. 1. ~ 2026. 12. 31.\n제출 자료: 정산서 1부, 증빙 사본 1부', attach:'2026년 운영비 정산서 1부.'},
+    outgoing:{kind:'일반 발신공문', no:'', date:t, to:'구청장 (장애인복지과장)', via:'', title:'2026년 운영비 정산 자료 제출', body:'1. 귀 기관의 무궁한 발전을 기원합니다.\n2. 2026년 운영비 보조금 정산 자료를 아래와 같이 제출합니다.', items:'정산 기간: 2026. 1. 1. ~ 2026. 12. 31.\n제출 자료: 정산서 1부, 증빙 사본 1부', attach:'2026년 운영비 정산서 1부.'},
     worklog:{date:t, content:'', note:''},
     leave:{staff:'s1', type:'연차', date:t, start:tm, end:tm, reason:'개인 사유', succDept:'사무행정팀', succName:'', remain:''},
   };
@@ -159,7 +159,7 @@ function docappPanel() {
   return `<section class="panel no-print"><div class="panel-h"><div><h2>문서 웹앱 메뉴</h2><div class="faint small">chulchang-munseo · 허브에 같은 양식이 있으면 바로 작성, 나머지는 웹앱에서</div></div><a class="btn sm" href="${DOCAPP_URL}" target="_blank" rel="noopener">${icon('ext')}웹앱 열기</a></div>
     <div class="panel-b" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px">${Object.entries(groups).map(([g, list]) => `<div><div class="eyebrow" style="margin-bottom:6px">${esc(g)}</div>${list.map(([n, k]) => k
       ? `<button class="btn ghost sm" data-hubdoc="${k}" style="width:100%;justify-content:space-between">${esc(n)}<span class="chip ok" style="height:18px">허브에서 작성</span></button>`
-      : `<a class="btn ghost sm" href="${DOCAPP_URL}" target="_blank" rel="noopener" style="width:100%;justify-content:space-between">${esc(n)}<span class="faint small">웹앱 →</span></a>`).join('')}</div>`).join('')}</div></section>`;
+      : `<a class="btn ghost sm" href="#embed/${(S.apps.find(x => x.url === DOCAPP_URL) || {id:'a4'}).id}" style="width:100%;justify-content:space-between">${esc(n)}<span class="faint small">허브에서 열기 →</span></a>`).join('')}</div>`).join('')}</div></section>`;
 }
 
 const WORKLOG_BASE = ['민원 상담, 전화 응대 및 방문 민원 안내','공문서 수신·발신, 문서관리 및 부서 간 업무협조','내부 결재서류 검토·보완'];
