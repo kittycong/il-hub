@@ -3,7 +3,7 @@
 import pathlib
 root = pathlib.Path(__file__).parent
 src = root/'src'
-ORDER = ['core.js','hodata.js','data.js','connect.js','home.js','calendar.js','bridge.js','docs.js','docs2.js','photos.js','budget.js','handover.js','extras.js','embed.js','settings.js']
+ORDER = ['core.js','hodata.js','data.js','connect.js','home.js','calendar.js','bridge.js','docs.js','docs2.js','photos.js','yesu.js','budget.js','handover.js','extras.js','embed.js','settings.js']
 head = (src/'head.html').read_text(encoding='utf-8')
 body = (src/'body.html').read_text(encoding='utf-8')
 js = '\n'.join((src/f).read_text(encoding='utf-8') for f in ORDER)

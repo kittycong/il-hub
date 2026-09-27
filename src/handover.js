@@ -154,14 +154,14 @@ VIEWS.handover = v => {
 
 function hoDetail(v, s) {
   const st = hoState(), r = hoRun(s), cur = st.status[s.id] || 'new';
-  const linked = S.rules.filter(x => !x.off && (sopOfRule(x) || {}).id === s.id);
+  const linked = S.rules.filter(x => !x.off && ((sopOfRule(x) || {}).id === s.id || (s.rules || []).includes(x.id)));
   const cat = HO_CATS[s.cat] || HO_CATS.gen;
   const nextOf = rule => occurrences(today(), addDays(today(), 400)).find(o => o.rule.id === rule.id);
   v.innerHTML = `
   <div class="row"><button class="btn ghost sm" id="ho-back">${icon('left')}업무 목록</button><span class="grow"></span><button class="btn ghost sm" id="ho-edit">${icon('edit')}절차 편집</button></div>
   <div class="page-head"><div><div class="eyebrow">${cat.name} · ${HO_FREQ[s.freq]}${s.custom?' · 내 절차':s.edited?' · 수정함':''}</div><h1>${esc(s.title)}</h1><p>${esc(s.when)} · 인수: ${esc(HO_OWNER[s.id] || '본인')}</p></div>
     <div class="seg" role="group" aria-label="숙지 상태">${Object.entries(HO_ST).map(([k,o]) => `<button aria-pressed="${cur===k}" data-st="${k}">${o.t}</button>`).join('')}</div></div>
-  <div class="ho-layout">
+  <div class="ho-layout"><div style="display:flex;flex-direction:column;gap:16px;min-width:0">
     <section class="panel">
       <div class="panel-h"><div><h2>실행 체크리스트</h2><div class="faint small">${esc(hoPeriod(s))} · ${r.done}/${r.total} 단계</div></div>
         <div class="row" style="gap:4px"><button class="btn primary sm" id="ho-run">${icon('right')}한 단계씩</button>${s.freq==='adhoc'?'<button class="btn ghost sm" id="ho-new">새 건 시작</button>':''}<button class="btn ghost sm" id="ho-reset">체크 초기화</button></div></div>
@@ -173,8 +173,12 @@ function hoDetail(v, s) {
           return `<li class="${on?'on':''}"><button class="check" aria-pressed="${on}" data-k="${k}" aria-label="${esc(t)}">${on?icon('check'):''}</button><div style="min-width:0;flex:1"><span class="tx">${esc(t)}</span>${hits.length?`<div class="step-paths">${hits.map(([l,p]) => `<button class="chip acc" data-cp="${esc(fullPath(p))}" title="${esc(fullPath(p))}">${icon('copy')}${esc(l)}</button>`).join('')}</div>`:''}</div>
             <span class="st-ph">${ph.length?`<img src="${ph[0].data}" alt="단계 사진" data-ph="${k}">${ph.length>1?`<span class="n">+${ph.length-1}</span>`:''}`:''}<button class="addph" data-addph="${k}" aria-label="사진 ${ph.length?'관리':'추가'}" title="사진 ${ph.length?'관리':'추가'}">${ph.length?icon('edit'):icon('plus')}</button></span></li>`; }).join('')}</ul>
         ${(sec.warn||[]).map(w => `<div class="note warn small" style="margin:6px 16px">주의 · ${esc(w)}</div>`).join('')}`).join('')}
-      <div style="height:12px"></div>
+      <div class="row ho-quick" style="gap:6px;padding:12px 16px;border-top:1px solid var(--line)">
+        <select class="inp" id="qs-sec" style="width:auto;max-width:40%">${s.sections.map((sec, i) => `<option value="${i}" ${i === s.sections.length - 1 ? 'selected' : ''}>${esc(sec.h)}</option>`).join('')}<option value="new">+ 새 묶음 "내가 추가한 단계"</option></select>
+        <input class="inp grow" id="qs-tx" placeholder="내 단계 추가 (예: 월말 예수금 통장 잔액 캡처)" style="min-width:160px"><button class="btn sm" id="qs-add">${icon('plus')}추가</button>
+      </div>
     </section>
+    ${s.tool && SOP_TOOLS[s.tool] ? SOP_TOOLS[s.tool].html(s) : ''}</div>
     <div style="display:flex;flex-direction:column;gap:16px">
       <section class="panel"><div class="panel-h"><h3>질문 메모</h3><span class="faint small" id="ho-saved"></span></div>
         <div class="panel-b"><textarea class="inp" id="ho-note" rows="6" placeholder="전임자에게 물어볼 것, 실제로 해 보니 다른 점을 적어 두세요">${esc(st.notes[s.id] || '')}</textarea></div></section>
@@ -189,6 +193,12 @@ function hoDetail(v, s) {
   $('#ho-edit', v).onclick = () => editSop(s.id);
   $('#ho-paths', v).onclick = () => editPaths(s.id);
   $('#ho-run', v).onclick = () => runMode(s);
+  const qadd = () => { const t = $('#qs-tx', v).value.trim(); if (!t) { $('#qs-tx', v).focus(); return; }
+    const secs = clone(s.sections), sv = $('#qs-sec', v).value;
+    if (sv === 'new') { const ex = secs.find(x => x.h === '내가 추가한 단계'); ex ? ex.steps.push(t) : secs.push({h:'내가 추가한 단계', steps:[t], warn:[]}); } else secs[Number(sv)].steps.push(t);
+    savePatch(s, {sections: secs}); render(); toast('단계를 추가했어요 (절차 편집에서 고치거나 지울 수 있어요)'); };
+  $('#qs-add', v).onclick = qadd; $('#qs-tx', v).onkeydown = e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); qadd(); } };
+  if (s.tool && SOP_TOOLS[s.tool]) SOP_TOOLS[s.tool].bind(v, s);
   $$('[data-st]', v).forEach(b => b.onclick = () => { st.status[s.id] = b.dataset.st; save(); render(); toast(`"${HO_ST[b.dataset.st].t}"로 표시했어요`); });
   v.addEventListener('click', e => {
     const c = e.target.closest('[data-k]');
