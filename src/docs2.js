@@ -45,7 +45,7 @@ function docHtml2(type, f, no) {
   const o = S.settings.org, ap = apprTable2(DOCT[type].appr);
   if (type === 'worklog') {
     const me = S.staff[0] || {}, d = f.date ? parseYmd(f.date) : today();
-    const lines = (f.content || worklogAuto(f.date)).split('\n').map(s => s.trim()).filter(Boolean);
+    const lines = (f.content || wlogGet(f.date) || worklogAuto(f.date)).split('\n').map(s => s.trim()).filter(Boolean);
     return `<div class="a4">${ap}<div class="clear"></div><h1 style="margin-top:4mm">일 일 업 무 일 지</h1>
       <table class="dt"><tr><th>날 짜</th><td colspan="3">${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 ${DOW[d.getDay()]}요일</td></tr>
       <tr><th>부서명</th><td>${esc(me.dept||'')}</td><th>직 책</th><td>${esc(me.pos||'')}</td></tr>
@@ -136,7 +136,7 @@ function docHtml2(type, f, no) {
 }
 
 function formHtml2(type, f) {
-  if (type === 'worklog') { if (!f.content) f.content = worklogAuto(f.date); return `<label class="f">날짜<input class="inp" type="date" id="df-date" value="${esc(f.date)}"></label>
+  if (type === 'worklog') { if (!f.content) f.content = wlogGet(f.date) || worklogAuto(f.date); if (!f.note) f.note = (S.wlog?.[f.date] || {}).note || ''; return `<label class="f">날짜<input class="inp" type="date" id="df-date" value="${esc(f.date)}"></label>
     <label class="f">업무내용 (한 줄에 하나)<textarea class="inp" id="df-content" rows="12">${esc(f.content)}</textarea></label>
     <button class="btn" type="button" id="wl-auto">오늘 완료한 일로 다시 채우기</button><label class="f">비고<textarea class="inp" id="df-note" rows="2">${esc(f.note)}</textarea></label>
     <div class="note small">캘린더에서 완료 표시한 마감, 업무 화면에서 체크한 업무, 자금일보를 모아 채워요. 고정 업무는 설정에서 바꿀 수 있어요.</div>`; }
@@ -172,4 +172,13 @@ function worklogAuto(date) {
   (S.settings.worklogBase || WORKLOG_BASE).forEach(t => out.push(t));
   return [...new Set(out)].join('\n');
 }
-document.addEventListener('click', e => { if (e.target.id === 'wl-auto') { D.f.worklog.content = worklogAuto(D.f.worklog.date); render(); toast('오늘 완료한 일로 채웠어요'); } });
+document.addEventListener('click', e => { if (e.target.id === 'wl-auto') { D.f.worklog.content = worklogAuto(D.f.worklog.date); wlogSet(D.f.worklog.date, D.f.worklog.content, D.f.worklog.note); render(); toast('완료한 일로 채웠어요'); } });
+/* ---------- 업무일지 기록 (캘린더·문서 공용, 날짜별 저장 → 자동 연동에도 포함) ---------- */
+function wlogGet(date) { return ((S.wlog || {})[date] || {}).content || ''; }
+function wlogSet(date, content, note) { if (!date) return; S.wlog = S.wlog || {}; if (!String(content || '').trim() && !String(note || '').trim()) delete S.wlog[date]; else S.wlog[date] = {content: content || '', note: note || '', at: new Date().toISOString()}; save(); }
+/* hwpx 업무일지 "업무내용" 칸에 붙여 넣기 좋은 모양: 한 줄에 하나, 앞에 · */
+function wlogHwpText(content) { return String(content || '').split('\n').map(s => s.trim().replace(/^[-·•]\s*/, '')).filter(Boolean).map(s => '· ' + s).join('\n'); }
+function wlogMonthText(y, m) {
+  const out = []; for (let d = new Date(y, m, 1); d.getMonth() === m; d = addDays(d, 1)) { const k = ymd(d), c = wlogGet(k); if (c) out.push(`[${d.getMonth() + 1}/${d.getDate()} ${DOW[d.getDay()]}]\n${wlogHwpText(c)}`); }
+  return out.join('\n\n');
+}

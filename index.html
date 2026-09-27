@@ -220,6 +220,11 @@ textarea.inp{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
 .ys-copy{all:unset;cursor:pointer;padding:6px 10px;border-radius:7px;background:var(--sunk);font-size:13.5px;line-height:1.45;overflow-wrap:anywhere}
 .ys-copy:hover,.ys-copy:focus-visible{background:var(--accent-soft);outline:1px solid var(--accent)}
 @media (max-width:620px){.ys-v{grid-template-columns:1fr}}
+.sy-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--ok);margin-right:6px;vertical-align:1px}
+.sy-dot.saving,.sy-dot.wait{background:var(--warn)}.sy-dot.err,.sy-dot.conflict{background:var(--stamp)}.sy-dot.off{background:var(--line-strong)}
+.wl-mark{align-self:flex-start;font-size:10px;font-weight:700;line-height:15px;padding:0 5px;border-radius:4px;background:var(--ok-soft,var(--sunk));color:var(--ok);border:1px solid currentColor}
+.wl-box{display:flex;flex-direction:column;gap:8px;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line-strong)}
+.wl-box textarea{line-height:1.7}
 .tool-seg{margin-bottom:4px;align-self:flex-start}
 .chip.vfy{background:transparent;border:1px dashed var(--warn,#b7791f);color:var(--warn,#b7791f);height:18px;padding:0 6px;font-size:11px}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
@@ -293,6 +298,11 @@ a.app:hover{border-color:var(--accent);box-shadow:var(--shadow)}
 .cal .cell.hol .dn,.cal .cell.sun .dn{color:var(--stamp)}
 .cal .cell.sat .dn{color:var(--accent)}
 .cal .cell.today .dn span.n{background:var(--accent);color:var(--accent-ink);border-radius:99px;padding:0 6px}
+.cal .cell{position:relative}
+.cal .cell.today{background:var(--accent-soft);box-shadow:inset 0 0 0 2.5px var(--accent);z-index:1}
+.cal .cell.today::after{content:'오늘';position:absolute;top:5px;right:6px;font-size:10.5px;font-weight:700;color:var(--accent-ink);background:var(--accent);border-radius:4px;padding:0 5px;line-height:17px}
+.cal .cell.today .ev{background:var(--surface)}
+@media (max-width:620px){.cal .cell.today::after{display:none}.cal .cell.today{box-shadow:inset 0 0 0 2px var(--accent)}}
 .cal .hn{font-size:10px;color:var(--stamp);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ev{font-size:11.5px;line-height:1.3;padding:2px 5px;border-radius:4px;background:var(--sunk);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:3px solid var(--cat-etc)}
 .ev.done{opacity:.5;text-decoration:line-through}
@@ -466,7 +476,7 @@ function load() {
   }
   return saved;
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function save(quiet) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (!quiet && typeof syncDirty === 'function') syncDirty(); }
 
 /* ---------- ui helpers ---------- */
 let toastT;
@@ -527,7 +537,7 @@ function renderNav() {
   $('#nav-side').innerHTML = ROUTES.filter(r=>!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?`<span class="badge">${od}</span>`:''}</a>`
     + (r.id === 'apps' && typeof embApps === 'function' ? `<div class="nav-sub">${embApps().map(a => `<a href="#embed/${a.id}" ${eid===a.id?'aria-current="page"':''}>${esc(a.name)}</a>`).join('')}</div>` : '')).join('');
   $('#nav-tab').innerHTML = ROUTES.filter(r=>!r.sideOnly&&!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?'<i class="dot"></i>':''}</a>`).join('');
-  $('#side-foot').innerHTML = `${ENV==='artifact'?'Claude 아티팩트판':'웹 배포판'} · 데이터는 이 기기 브라우저에 저장<br><a href="#settings">백업하기</a>`;
+  $('#side-foot').innerHTML = typeof syncBadge === 'function' ? syncBadge() : `${ENV==='artifact'?'Claude 아티팩트판':'웹 배포판'} · 데이터는 이 기기 브라우저에 저장<br><a href="#settings">백업하기</a>`;
 }
 function render() {
   const cur = current();
@@ -1387,6 +1397,7 @@ VIEWS.calendar = v => {
       ${list.slice(0,3).map(o=>`<div class="ev ${o.done?'done':''}" style="border-left-color:${CATS[o.rule.cat].color}" title="${esc(o.rule.title)}">${esc(o.rule.title)}</div>`).join('')}
       ${xl.slice(0, Math.max(0, 3-list.length)).map(e=>`<div class="ev x" style="border-left-color:${XCAT[e.kind].color}" title="${esc(e.title)}">${esc(e.title)}</div>`).join('')}
       ${list.length+xl.length>3?`<div class="cal-more">+${list.length+xl.length-3}건</div>`:''}
+      ${wlogGet(k) ? `<span class="wl-mark" title="업무일지 기록됨">일지</span>` : ''}
       <div class="pips">${list.map(o=>`<i style="background:${o.done?'var(--line-strong)':CATS[o.rule.cat].color}"></i>`).join('')}${xl.map(e=>`<i style="background:${XCAT[e.kind].color}"></i>`).join('')}</div>
     </div>`;
   }
@@ -1394,7 +1405,7 @@ VIEWS.calendar = v => {
 
   v.innerHTML = `
   <div class="page-head"><div><h1>마감 캘린더</h1><p>법정·정기 마감이 매달 자동으로 잡히고, 주말·공휴일이면 규칙에 따라 앞뒤로 옮겨집니다.</p></div>
-    <div class="row"><button class="btn" id="ics">${icon('down')}NAS 캘린더용 .ics</button><button class="btn primary" id="add-rule">${icon('plus')}일정·규칙 추가</button></div></div>
+    <div class="row"><button class="btn" id="wl-today">${icon('edit')}오늘 업무일지</button><button class="btn" id="ics">${icon('down')}NAS 캘린더용 .ics</button><button class="btn primary" id="add-rule">${icon('plus')}일정·규칙 추가</button></div></div>
 
   <section class="panel">
     <div class="panel-h">
@@ -1407,7 +1418,7 @@ VIEWS.calendar = v => {
   </section>
 
   <div class="grid-2">
-    <section class="panel"><div class="panel-h"><h2>${m+1}월 마감 목록</h2><span class="faint small">${monthOcc.filter(o=>o.done).length}/${monthOcc.length} 완료</span></div>
+    <section class="panel"><div class="panel-h"><h2>${m+1}월 마감 목록</h2><div class="row" style="gap:6px"><span class="faint small">${monthOcc.filter(o=>o.done).length}/${monthOcc.length} 완료</span><button class="btn ghost sm" id="wl-month" title="이 달 업무일지 전체 복사">${icon('copy')}${m+1}월 업무일지</button></div></div>
       ${monthOcc.length?`<ul class="dl" id="mlist">${monthOcc.map(o=>deadlineItem(o)).join('')}</ul>`:'<div class="empty">이 달에는 마감이 없어요</div>'}</section>
     <section class="panel"><div class="panel-h"><h2>반복 규칙 ${S.rules.length}개</h2><span class="faint small">${S.rules.filter(r=>r.verify&&!r.off).length?`"날짜 확인" ${S.rules.filter(r=>r.verify&&!r.off).length}개는 추정 날짜예요`:'센터 기준에 맞게 날짜를 고쳐 쓰세요'}</span></div>
       <div class="tbl-wrap" style="border:0;border-radius:0;max-height:520px;overflow:auto"><table class="tbl"><thead><tr><th>일정</th><th>주기</th><th>휴일이면</th><th></th></tr></thead><tbody>
@@ -1420,6 +1431,8 @@ VIEWS.calendar = v => {
   $('#thism').onclick = () => { const t = today(); calMonth = new Date(t.getFullYear(), t.getMonth(), 1); render(); };
   $('#add-rule').onclick = () => editRule(null);
   $('#ics').onclick = exportIcs;
+  $('#wl-today').onclick = () => { const k = ymd(today()); dayDetail(k, occurrences(today(), today()).filter(o => calFilter.has(o.rule.cat))); };
+  const wm = $('#wl-month'); if (wm) wm.onclick = () => { const t = wlogMonthText(y, m); t ? copyText(t, `${m+1}월 업무일지 ${Object.keys(S.wlog || {}).filter(x => x.startsWith(`${y}-${pad(m+1)}`)).length}일치를 복사했어요`) : toast('이 달에 기록한 업무일지가 없어요'); };
   $$('[data-cat]', v).forEach(b => b.onclick = () => { const k = b.dataset.cat; calFilter.has(k) ? calFilter.delete(k) : calFilter.add(k); if (!calFilter.size) calFilter = new Set([...Object.keys(CATS), 'leave', 'bday']); render(); });
   $$('[data-edit-rule]', v).forEach(b => b.onclick = () => editRule(b.dataset.editRule));
   $$('.cal .cell', v).forEach(c => { const open = () => dayDetail(c.dataset.day, byDay[c.dataset.day] || [], xByDay[c.dataset.day] || []); c.onclick = open; c.onkeydown = e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); open(); } }; });
@@ -1432,13 +1445,23 @@ function ruleText(r) {
   return r.date;
 }
 function dayDetail(k, list, xl = extraEvents(parseYmd(k), parseYmd(k))) {
-  const d = parseYmd(k), h = S.holidays[k];
-  sheet({title: `${d.getMonth()+1}월 ${d.getDate()}일 ${DOW[d.getDay()]}요일${h?' · '+h:''}`,
-    body: (list.length ? `<ul class="dl" style="margin:-16px -16px 0">${list.map(o=>deadlineItem(o)).join('')}</ul>` : '<div class="empty">잡힌 마감이 없어요</div>') + (xl.length ? `<div style="display:flex;flex-direction:column;gap:6px;padding-top:8px">${xl.map(e=>`<div class="row small" style="gap:8px"><span class="dotcat" style="background:${XCAT[e.kind].color}"></span>${esc(e.title)}<span class="faint">${XCAT[e.kind].name} · 연동 데이터</span></div>`).join('')}</div>` : ''),
-    foot: `<button class="btn" data-close>닫기</button><button class="btn primary" id="dd-add">${icon('plus')}이 날짜에 일정 추가</button>`,
+  const d = parseYmd(k), h = S.holidays[k], saved = (S.wlog || {})[k];
+  const content = saved ? saved.content : '';
+  sheet({title: `${d.getMonth()+1}월 ${d.getDate()}일 ${DOW[d.getDay()]}요일${h?' · '+h:''}`, wide: true,
+    body: (list.length ? `<ul class="dl" style="margin:-16px -16px 0">${list.map(o=>deadlineItem(o)).join('')}</ul>` : '<div class="empty" style="padding:10px">잡힌 마감이 없어요</div>') + (xl.length ? `<div style="display:flex;flex-direction:column;gap:6px;padding-top:8px">${xl.map(e=>`<div class="row small" style="gap:8px"><span class="dotcat" style="background:${XCAT[e.kind].color}"></span>${esc(e.title)}<span class="faint">${XCAT[e.kind].name} · 연동 데이터</span></div>`).join('')}</div>` : '')
+      + `<div class="wl-box"><div class="row"><b>업무일지 (결재용)</b><span class="faint small" id="wl-st">${saved ? '저장됨 · ' + esc(new Date(saved.at).toLocaleString('ko-KR', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})) : '아직 기록 없음'}</span><span class="grow"></span><button class="btn ghost sm" id="wl-fill">${icon('check')}완료한 일로 채우기</button></div>
+        <textarea class="inp" id="wl-tx" rows="8" placeholder="한 줄에 업무 하나씩 적어요&#10;예) 9월분 급여 계산 및 급여대장 결재&#10;예) 4대보험 고지내역 확인">${esc(content)}</textarea>
+        <label class="f">비고<input class="inp" id="wl-note" value="${esc(saved ? saved.note : '')}"></label>
+        <div class="row" style="gap:6px"><button class="btn primary sm" id="wl-copy">${icon('copy')}hwpx 업무내용 칸용 복사</button><button class="btn sm" id="wl-doc">${icon('print')}업무일지 양식으로 보기·인쇄</button><span class="grow"></span><span class="faint small">입력하면 바로 저장돼요</span></div></div>`,
+    foot: `<button class="btn" data-close>닫기</button><button class="btn" id="dd-add">${icon('plus')}이 날짜에 일정 추가</button>`,
     onMount: el => {
       $('#dd-add', el).onclick = () => editRule(null, k);
       el.addEventListener('click', e => { const b = e.target.closest('[data-done]'); if (!b) return; toggleDone(b.dataset.done); render(); dayDetail(k, occurrences(d, d).filter(o=>calFilter.has(o.rule.cat))); });
+      let tm; const put = () => { clearTimeout(tm); tm = setTimeout(() => { wlogSet(k, $('#wl-tx', el).value, $('#wl-note', el).value); const st = $('#wl-st', el); if (st) st.textContent = '저장됨 · 방금'; if (current() === 'calendar') { const c = document.querySelector(`.cal .cell[data-day="${k}"]`); if (c && !c.querySelector('.wl-mark') && wlogGet(k)) c.querySelector('.pips').insertAdjacentHTML('beforebegin', '<span class="wl-mark" title="업무일지 기록됨">일지</span>'); } }, 400); };
+      $('#wl-tx', el).oninput = put; $('#wl-note', el).oninput = put;
+      $('#wl-fill', el).onclick = () => { const cur = $('#wl-tx', el).value.trim(), auto = worklogAuto(k); $('#wl-tx', el).value = cur ? [...new Set([...cur.split('\n'), ...auto.split('\n')].map(s => s.trim()).filter(Boolean))].join('\n') : auto; put(); toast('완료한 마감·업무로 채웠어요 (기존 내용은 유지)'); };
+      $('#wl-copy', el).onclick = () => { const t = wlogHwpText($('#wl-tx', el).value); t ? copyText(t, '복사했어요. hwpx 업무일지의 업무내용 칸에 붙여 넣으세요') : toast('업무일지 내용을 먼저 적어 주세요'); };
+      $('#wl-doc', el).onclick = () => { wlogSet(k, $('#wl-tx', el).value, $('#wl-note', el).value); D.type = 'worklog'; D.f.worklog = Object.assign(D.f.worklog || {}, {date: k, content: $('#wl-tx', el).value, note: $('#wl-note', el).value}); closeSheet(); go('docs'); };
     }});
 }
 function editRule(id, date) {
@@ -1960,6 +1983,7 @@ VIEWS.docs = v => {
     const k = id.slice(3); f[k] = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     if (k === 'preset') { const p = FUND_PRESETS[Number(f.preset)]; Object.assign(f, {fund:p.fund, subj:p.subj, short:p.short}); render(); return; }
     if (k === 'kind' && D.type === 'trip') { render(); return; }
+    if (D.type === 'worklog') { if (k === 'date') { f.content = wlogGet(f.date) || worklogAuto(f.date); render(); return; } if (k === 'content' || k === 'note') wlogSet(f.date, f.content, f.note); }
     renderPreview();
   });
   $('#dform', v).addEventListener('change', e => {
@@ -2062,7 +2086,7 @@ function docHtml2(type, f, no) {
   const o = S.settings.org, ap = apprTable2(DOCT[type].appr);
   if (type === 'worklog') {
     const me = S.staff[0] || {}, d = f.date ? parseYmd(f.date) : today();
-    const lines = (f.content || worklogAuto(f.date)).split('\n').map(s => s.trim()).filter(Boolean);
+    const lines = (f.content || wlogGet(f.date) || worklogAuto(f.date)).split('\n').map(s => s.trim()).filter(Boolean);
     return `<div class="a4">${ap}<div class="clear"></div><h1 style="margin-top:4mm">일 일 업 무 일 지</h1>
       <table class="dt"><tr><th>날 짜</th><td colspan="3">${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 ${DOW[d.getDay()]}요일</td></tr>
       <tr><th>부서명</th><td>${esc(me.dept||'')}</td><th>직 책</th><td>${esc(me.pos||'')}</td></tr>
@@ -2153,7 +2177,7 @@ function docHtml2(type, f, no) {
 }
 
 function formHtml2(type, f) {
-  if (type === 'worklog') { if (!f.content) f.content = worklogAuto(f.date); return `<label class="f">날짜<input class="inp" type="date" id="df-date" value="${esc(f.date)}"></label>
+  if (type === 'worklog') { if (!f.content) f.content = wlogGet(f.date) || worklogAuto(f.date); if (!f.note) f.note = (S.wlog?.[f.date] || {}).note || ''; return `<label class="f">날짜<input class="inp" type="date" id="df-date" value="${esc(f.date)}"></label>
     <label class="f">업무내용 (한 줄에 하나)<textarea class="inp" id="df-content" rows="12">${esc(f.content)}</textarea></label>
     <button class="btn" type="button" id="wl-auto">오늘 완료한 일로 다시 채우기</button><label class="f">비고<textarea class="inp" id="df-note" rows="2">${esc(f.note)}</textarea></label>
     <div class="note small">캘린더에서 완료 표시한 마감, 업무 화면에서 체크한 업무, 자금일보를 모아 채워요. 고정 업무는 설정에서 바꿀 수 있어요.</div>`; }
@@ -2189,7 +2213,16 @@ function worklogAuto(date) {
   (S.settings.worklogBase || WORKLOG_BASE).forEach(t => out.push(t));
   return [...new Set(out)].join('\n');
 }
-document.addEventListener('click', e => { if (e.target.id === 'wl-auto') { D.f.worklog.content = worklogAuto(D.f.worklog.date); render(); toast('오늘 완료한 일로 채웠어요'); } });
+document.addEventListener('click', e => { if (e.target.id === 'wl-auto') { D.f.worklog.content = worklogAuto(D.f.worklog.date); wlogSet(D.f.worklog.date, D.f.worklog.content, D.f.worklog.note); render(); toast('완료한 일로 채웠어요'); } });
+/* ---------- 업무일지 기록 (캘린더·문서 공용, 날짜별 저장 → 자동 연동에도 포함) ---------- */
+function wlogGet(date) { return ((S.wlog || {})[date] || {}).content || ''; }
+function wlogSet(date, content, note) { if (!date) return; S.wlog = S.wlog || {}; if (!String(content || '').trim() && !String(note || '').trim()) delete S.wlog[date]; else S.wlog[date] = {content: content || '', note: note || '', at: new Date().toISOString()}; save(); }
+/* hwpx 업무일지 "업무내용" 칸에 붙여 넣기 좋은 모양: 한 줄에 하나, 앞에 · */
+function wlogHwpText(content) { return String(content || '').split('\n').map(s => s.trim().replace(/^[-·•]\s*/, '')).filter(Boolean).map(s => '· ' + s).join('\n'); }
+function wlogMonthText(y, m) {
+  const out = []; for (let d = new Date(y, m, 1); d.getMonth() === m; d = addDays(d, 1)) { const k = ymd(d), c = wlogGet(k); if (c) out.push(`[${d.getMonth() + 1}/${d.getDate()} ${DOW[d.getDay()]}]\n${wlogHwpText(c)}`); }
+  return out.join('\n\n');
+}
 
 /* ================= 단계별 사진 (이 기기 IndexedDB에만 저장) ================= */
 const PH = {db: null, map: {}, ready: false, count: 0};
@@ -2221,11 +2254,14 @@ function photosOfSop(sop) { return Object.entries(PH.map).filter(([key]) => key.
 async function photoAdd(sop, k, data, cap = '', src = '직접 추가') {
   const p = {id: uid() + Date.now().toString(36), key: phKey(sop, k), sop, k, data, cap, src, ord: Date.now()};
   if (!PH.db) { (PH.map[p.key] ||= []).push(p); PH.count++; toast('이 브라우저는 사진 저장이 막혀 있어요. 새로고침하면 사라져요'); return p; }
-  await phTx('readwrite', st => st.put(p)); await loadPhotos(); return p;
+  await phTx('readwrite', st => st.put(p)); await loadPhotos(); phChanged(); return p;
 }
-async function photoUpdate(p) { await phTx('readwrite', st => st.put(p)); await loadPhotos(); }
-async function photoDel(id) { await phTx('readwrite', st => st.delete(id)); await loadPhotos(); }
-async function photoClear() { await phTx('readwrite', st => st.clear()); await loadPhotos(); }
+async function photoUpdate(p) { p.synced = false; await phTx('readwrite', st => st.put(p)); await loadPhotos(); phChanged(); }
+async function photoDel(id) { phTomb([id]); await phTx('readwrite', st => st.delete(id)); await loadPhotos(); phChanged(); }
+async function photoClear() { phTomb(Object.values(PH.map).flat().map(p => p.id)); await phTx('readwrite', st => st.clear()); await loadPhotos(); phChanged(); }
+/* 연동 훅 (sync.js가 있으면 클라우드로 보냄) */
+function phChanged() { if (typeof syncPhotosSoon === 'function') syncPhotosSoon(); }
+function phTomb(ids) { try { const t = JSON.parse(localStorage.getItem('il-hub-ph-del') || '[]'); localStorage.setItem('il-hub-ph-del', JSON.stringify([...new Set([...t, ...ids])])); } catch (e) {} }
 
 /* 큰 사진은 줄여서 저장 (긴 변 1600px, JPEG) */
 function shrinkImage(file) {
@@ -2250,7 +2286,7 @@ async function importPack(txt) {
   await phTx('readwrite', st => { d.items.forEach(it => { if (!it.sop || it.k == null || !/^data:image\//.test(it.data || '')) return;
     const key = phKey(it.sop, it.k); if (have.has(key + '#' + it.data.length + '#' + it.data.slice(-40))) return;
     st.put({id: uid() + (ord++).toString(36), key, sop: it.sop, k: String(it.k), data: it.data, cap: it.cap || '', src: it.src || '사진 팩', ord}); n++; }); });
-  await loadPhotos(); return n;
+  await loadPhotos(); if (n) phChanged(); return n;
 }
 function exportPack() {
   const items = Object.values(PH.map).flat().map(({sop, k, cap, src, data}) => ({sop, k, cap, src, data}));
@@ -3112,7 +3148,7 @@ function hoDailyPanel() {
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-hoopen]'); if (b) { e.preventDefault(); HO.open = b.dataset.hoopen; closeSheet(); go('handover'); } });
 
-document.addEventListener('click', e => { if (e.target.closest('[data-wl]')) { D.type = 'worklog'; if (D.f.worklog) D.f.worklog.content = ''; go('docs'); } });
+document.addEventListener('click', e => { if (e.target.closest('[data-wl]')) { const k = ymd(today()); dayDetail(k, occurrences(today(), today())); } });
 
 /* ================= 개선: 빠른 검색 · 주간 보고 · 앱 점검 · 매핑 기억 · 오프라인 ================= */
 
@@ -3271,12 +3307,193 @@ VIEWS.embed = v => {
   requestAnimationFrame(sizeEmbed);
 };
 
+/* ================= 자동 연동 (Supabase) =================
+   아이디+비밀번호로 로그인한 모든 기기에서 허브 자료와 단계 사진을 자동으로 맞춤.
+   - 계정·자료 표는 직접 접근 불가, 서버 함수(hub_*)만 통해 읽고 씀 (로그인 토큰 확인)
+   - 비밀번호는 서버에 bcrypt 해시로만 저장, 5번 틀리면 15분 잠김
+   - 아래 키는 공개용(publishable) 키 */
+const SB = {url: 'https://ucvdzharyqohmnskrjzg.supabase.co', key: 'sb_publishable_GbB9vX51cUGISeIes5ai1w__fXrFbgV'};
+const SY = {sess: null, meta: {rev: 0, at: '', dirty: false}, busy: false, t: 0, pt: 0, err: '', state: 'off', photoBusy: false};
+const SY_K = {sess: 'il-hub-login', meta: 'il-hub-sync'};
+const syGet = k => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+const sySet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const syDevice = () => { let d = syGet('il-hub-device'); if (!d) { d = (/Mobi|Android|iPhone/.test(navigator.userAgent) ? '휴대폰' : 'PC') + '-' + Math.random().toString(36).slice(2, 6); sySet('il-hub-device', d); } return d; };
+SY.sess = syGet(SY_K.sess); SY.meta = Object.assign(SY.meta, syGet(SY_K.meta) || {});
+const syOn = () => !!(SY.sess && SY.sess.token);
+function syMetaSave() { sySet(SY_K.meta, SY.meta); }
+
+/* ---------- 서버 함수 호출 ---------- */
+async function syRpc(fn, args) {
+  const r = await fetch(SB.url + '/rest/v1/rpc/' + fn, {method: 'POST', headers: {apikey: SB.key, 'Content-Type': 'application/json'}, body: JSON.stringify(args || {})});
+  const txt = await r.text(); let j = null; try { j = txt ? JSON.parse(txt) : null; } catch (e) {}
+  if (!r.ok) { const m = (j && (j.message || j.hint)) || ('HTTP ' + r.status); if (/no_session/.test(m)) { syLogout(true); throw new Error('로그인이 풀렸어요. 다시 로그인해 주세요'); } throw new Error('연동 서버 오류: ' + String(m).slice(0, 80)); }
+  return j;
+}
+const syT = () => (SY.sess || {}).token;
+function syErrText(j) {
+  const e = (j || {}).error;
+  if (e === 'bad_login') return '아이디 또는 비밀번호가 맞지 않아요' + (j.left != null ? ` (${j.left}번 더 틀리면 15분 잠김)` : '');
+  if (e === 'locked') return '비밀번호를 여러 번 틀려서 잠시 잠겼어요. ' + new Date(j.until).toLocaleTimeString('ko-KR', {hour: '2-digit', minute: '2-digit'}) + ' 이후 다시 해 주세요';
+  if (e === 'login_taken') return '이미 있는 아이디예요. 로그인해 주세요';
+  if (e === 'bad_pw_length') return '비밀번호는 4자 이상이어야 해요';
+  if (e === 'bad_login_format') return '아이디는 영문 소문자·숫자·.-_ 로 3~30자';
+  if (e === 'signup_closed') return '계정을 더 만들 수 없어요 (최대 5개)';
+  return '실패했어요';
+}
+async function syAuthCall(fn, login, pw) {
+  const j = await syRpc(fn, {p_login: login, p_pw: pw, p_device: syDevice()});
+  if (!j || !j.token) throw new Error(syErrText(j));
+  SY.sess = {token: j.token, login: j.login}; sySet(SY_K.sess, SY.sess); sySet('il-hub-last-login', j.login);
+}
+async function syLogin(login, pw) { await syAuthCall('hub_login', login, pw); SY.meta = {rev: 0, at: '', dirty: SY.meta.dirty}; syMetaSave(); await syFirstPull(); }
+async function sySignup(login, pw) { await syAuthCall('hub_signup', login, pw); SY.meta = {rev: 0, at: '', dirty: true}; syMetaSave(); await syFirstPull(); return 'in'; }
+async function syChangePw(oldPw, newPw) { const j = await syRpc('hub_change_pw', {p_token: syT(), p_old: oldPw, p_new: newPw}); if (!j || !j.ok) throw new Error(syErrText(j)); }
+function syLogout(silent) {
+  if (SY.sess && !silent) syRpc('hub_logout', {p_token: syT()}).catch(() => {});
+  SY.sess = null; sySet(SY_K.sess, null); SY.state = 'off'; SY.meta.rev = 0; syMetaSave(); if (typeof render === 'function') render();
+}
+const syRemoteMeta = async () => (await syRpc('hub_state_meta', {p_token: syT()})) || null;
+const syRemoteFull = async () => (await syRpc('hub_state_get', {p_token: syT()})) || null;
+async function syPushNow(force) {
+  if (!syOn() || SY.busy) return; SY.busy = true; SY.state = 'saving'; syPaint();
+  try {
+    if (!force) { const m = await syRemoteMeta(); if (m && m.rev > SY.meta.rev) { SY.busy = false; return syConflict(); } }
+    const r0 = (await syRpc('hub_state_put', {p_token: syT(), p_data: S, p_device: syDevice()})) || {}; SY.meta = {rev: r0.rev || SY.meta.rev + 1, at: r0.updated_at || new Date().toISOString(), dirty: false}; syMetaSave(); SY.state = 'ok'; SY.err = '';
+  } catch (e) { SY.state = 'err'; SY.err = e.message; }
+  SY.busy = false; syPaint();
+}
+function syApply(row) {
+  const keepLocal = {nasRoot: (S.settings || {}).nasRoot};
+  S = row.data; const def = defaults(); for (const k of Object.keys(def)) if (S[k] === undefined) S[k] = def[k];
+  if (!S.settings.nasRoot && keepLocal.nasRoot) S.settings.nasRoot = keepLocal.nasRoot;
+  save(true); SY.meta = {rev: row.rev, at: row.updated_at, dirty: false}; syMetaSave(); SY.state = 'ok';
+  if (!$('#layer').innerHTML) render(); else renderNav();
+}
+async function syPull(quietIfSame = true) {
+  if (!syOn() || SY.busy || document.querySelector('#sy-conf')) return;
+  if (!SY.meta.rev) { if (!SY.firstAsked) { SY.firstAsked = true; try { await syFirstPull(); } catch (e) { SY.state = 'err'; SY.err = e.message; syPaint(); } } return; }
+  try {
+    const m = await syRemoteMeta();
+    if (!m) { if (SY.meta.rev === 0) await syPushNow(true); return; }
+    if (m.rev <= SY.meta.rev) { if (SY.meta.dirty) syDirty(); else SY.state = 'ok'; if (!quietIfSame) toast('이미 최신이에요'); syPaint(); }
+    else if (SY.meta.dirty) { syConflict(); return; }
+    else { const row = await syRemoteFull(); syApply(row); toast(`다른 기기(${row.device || '?'})에서 바뀐 내용을 가져왔어요`); }
+  } catch (e) { SY.state = 'err'; SY.err = e.message; syPaint(); }
+  syPhotos();
+}
+/* 이 기기에서 처음 로그인: 클라우드에 자료가 있으면 어느 쪽을 쓸지 고르기 */
+async function syFirstPull() {
+  const m = await syRemoteMeta();
+  if (!m) { await syPushNow(true); toast('이 기기 자료를 클라우드에 올렸어요. 다른 기기에서 같은 이메일로 로그인하면 연동돼요'); render(); syPhotos(); return; }
+  sheet({title: '클라우드에 저장된 자료가 있어요', body: `
+    <div class="note">마지막 저장: <b>${esc(new Date(m.updated_at).toLocaleString('ko-KR'))}</b> · ${esc(m.device || '')}</div>
+    <div class="small">어느 쪽 자료를 쓸까요? 고르지 않은 쪽 자료는 이 기기의 백업(설정 → 백업)으로 남겨 둬요.</div>`,
+    foot: `<button class="btn" id="fp-local">이 기기 자료로 클라우드 덮기</button><button class="btn primary" id="fp-cloud">클라우드 자료 쓰기 (권장)</button>`,
+    onMount: el => {
+      sySet('il-hub-before-sync', S);
+      $('#fp-cloud', el).onclick = async () => { closeSheet(); syApply(await syRemoteFull()); toast('클라우드 자료로 맞췄어요'); syPhotos(); };
+      $('#fp-local', el).onclick = async () => { closeSheet(); SY.meta.rev = m.rev; await syPushNow(true); toast('이 기기 자료를 클라우드에 올렸어요'); render(); syPhotos(); };
+    }});
+}
+function syConflict() {
+  if (document.querySelector('#sy-conf')) return;
+  SY.state = 'conflict'; syPaint();
+  sheet({title: '다른 기기에서도 바뀌었어요', body: `<div id="sy-conf" class="note warn">이 기기에서 저장하지 않은 변경이 있는데, 그사이 다른 기기에서도 저장했어요. 어느 쪽을 쓸까요?</div>
+    <div class="small">고르지 않은 쪽은 이 기기에 "충돌 백업"으로 남겨 둬요 (설정 → 자동 연동에서 되돌리기 가능).</div>`,
+    foot: `<button class="btn" id="cf-local">이 기기 것으로 덮기</button><button class="btn primary" id="cf-cloud">다른 기기 것 가져오기</button>`,
+    onMount: el => {
+      $('#cf-cloud', el).onclick = async () => { sySet('il-hub-conflict', {at: new Date().toISOString(), data: S}); closeSheet(); syApply(await syRemoteFull()); toast('다른 기기 자료를 가져왔어요 (이 기기 것은 충돌 백업에 보관)'); };
+      $('#cf-local', el).onclick = async () => { const r = await syRemoteFull(); sySet('il-hub-conflict', {at: r.updated_at, data: r.data}); closeSheet(); await syPushNow(true); toast('이 기기 자료로 덮었어요 (다른 기기 것은 충돌 백업에 보관)'); };
+    }});
+}
+function syDirty() { SY.meta.dirty = true; syMetaSave(); if (!syOn()) return; SY.state = 'wait'; clearTimeout(SY.t); SY.t = setTimeout(() => syPushNow(false), 2500); syPaint(); }
+const syncDirty = () => syDirty();
+
+/* ---------- 사진 ---------- */
+function syncPhotosSoon() { if (!syOn()) return; clearTimeout(SY.pt); SY.pt = setTimeout(syPhotos, 2000); }
+async function syPhotos() {
+  if (!syOn() || SY.photoBusy || !PH.db) return; SY.photoBusy = true;
+  try {
+    const tomb = syGet('il-hub-ph-del') || [];
+    if (tomb.length) { await syRpc('hub_photo_del', {p_token: syT(), p_ids: tomb}); sySet('il-hub-ph-del', []); }
+    const remote = (await syRpc('hub_photo_list', {p_token: syT()})) || [];
+    const rmap = new Map(remote.map(r => [r.id, r])), local = Object.values(PH.map).flat(), lmap = new Map(local.map(p => [p.id, p]));
+    const up = local.filter(p => !rmap.has(p.id) || !p.synced);
+    for (const p of up) {
+      await syRpc('hub_photo_put', {p_token: syT(), p_row: {id: p.id, key: p.key, sop: p.sop, k: p.k, cap: p.cap || '', src: p.src || '', ord: p.ord || 0, data: p.data}});
+      p.synced = true; await phTx('readwrite', st => st.put(p));
+    }
+    const del = remote.filter(r => r.deleted && lmap.has(r.id));
+    if (del.length) await phTx('readwrite', st => del.forEach(r => st.delete(r.id)));
+    const need = remote.filter(r => !r.deleted && !lmap.has(r.id));
+    const capFix = remote.filter(r => !r.deleted && lmap.has(r.id) && lmap.get(r.id).synced && (lmap.get(r.id).cap || '') !== (r.cap || ''));
+    if (capFix.length) await phTx('readwrite', st => capFix.forEach(r => { const p = lmap.get(r.id); p.cap = r.cap; st.put(p); }));
+    for (let i = 0; i < need.length; i += 5) {
+      const rows = (await syRpc('hub_photo_get', {p_token: syT(), p_ids: need.slice(i, i + 5).map(r => r.id)})) || [];
+      await phTx('readwrite', st => rows.forEach(d => { const r = rmap.get(d.id); st.put({id: r.id, key: r.key, sop: r.sop, k: r.k, cap: r.cap, src: r.src, ord: r.ord, data: d.data, synced: true}); }));
+    }
+    if (up.length || del.length || need.length || capFix.length) { await loadPhotos(); if (!$('#layer').innerHTML && ['handover', 'settings'].includes(current())) render(); }
+    SY.photoInfo = {n: remote.filter(r => !r.deleted).length + up.filter(p => !rmap.has(p.id)).length, at: new Date().toISOString()};
+  } catch (e) { SY.err = '사진: ' + e.message; }
+  SY.photoBusy = false; syPaint();
+}
+
+/* ---------- 표시 ---------- */
+function syAgo(iso) { if (!iso) return ''; const s = Math.round((Date.now() - new Date(iso)) / 1000); return s < 60 ? '방금' : s < 3600 ? `${Math.round(s / 60)}분 전` : s < 86400 ? `${Math.round(s / 3600)}시간 전` : new Date(iso).toLocaleDateString('ko-KR'); }
+function syncBadge() {
+  if (!syOn()) return `${ENV === 'artifact' ? 'Claude 아티팩트판' : '웹 배포판'} · 이 기기에만 저장<br><a href="#settings">자동 연동 켜기</a> · <a href="#settings">백업</a>`;
+  const st = {ok: `연동됨 · ${syAgo(SY.meta.at)}`, saving: '클라우드에 저장 중…', wait: '저장 대기…', err: '연동 오류 · 설정에서 확인', conflict: '충돌 · 선택 필요', off: '연동 준비 중'}[SY.state] || '연동됨';
+  return `<span class="sy-dot ${SY.state}"></span>${esc(st)}<br><span class="faint">${esc(SY.sess.login || '')}</span>`;
+}
+function syPaint() { const f = $('#side-foot'); if (f) f.innerHTML = syncBadge(); const p = $('#sy-panel'); if (p && !p.contains(document.activeElement)) p.outerHTML = syncPanel(); bindSyncPanel(); }
+function syncPanel() {
+  if (ENV === 'artifact') return `<section class="panel" id="sy-panel"><div class="panel-h"><h2>자동 연동 (클라우드)</h2></div><div class="panel-b"><div class="note small">Claude 아티팩트 안에서는 외부 서버 연결이 막혀 있어요. GitHub 배포본(kittycong.github.io/il-hub)에서 로그인해 주세요.</div></div></section>`;
+  if (!syOn()) return `<section class="panel" id="sy-panel"><div class="panel-h"><h2>자동 연동 (클라우드)</h2><span class="chip">꺼짐</span></div><div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
+    <div class="note small">회사 PC·집 PC·휴대폰에서 <b>같은 아이디로 로그인</b>하면 업무 체크·메모·절차·예산·예수금·사진이 자동으로 맞춰져요. 이메일은 필요 없어요.</div>
+    <div class="form-grid"><label class="f">아이디<input class="inp" id="sy-id" autocomplete="username" autocapitalize="off" spellcheck="false" value="${esc(syGet('il-hub-last-login') || '')}" placeholder="예: hwiwon"></label>
+    <label class="f">비밀번호 (4자 이상)<input class="inp" id="sy-pw" type="password" autocomplete="current-password"></label></div>
+    <div class="row" style="gap:6px"><button class="btn primary" id="sy-in">로그인</button><button class="btn" id="sy-up">처음이면 계정 만들기</button></div>
+    <div class="faint small">비밀번호는 서버에 암호화(해시)해서만 저장돼 저도 볼 수 없어요. 잊어버리면 되찾을 수 없으니 기억해 두세요. 5번 틀리면 15분 잠겨요.</div>
+    <div class="small" id="sy-msg"></div></div></section>`;
+  const conf = syGet('il-hub-conflict'), before = syGet('il-hub-before-sync');
+  return `<section class="panel" id="sy-panel"><div class="panel-h"><h2>자동 연동 (클라우드)</h2><span class="chip ${SY.state === 'err' || SY.state === 'conflict' ? 'crit' : 'ok'}">${SY.state === 'err' ? '오류' : SY.state === 'conflict' ? '충돌' : '켜짐'}</span></div><div class="panel-b" style="display:flex;flex-direction:column;gap:10px">
+    <div class="row small" style="gap:10px"><span>아이디 <b>${esc(SY.sess.login || '')}</b></span><span class="faint">이 기기: ${esc(syDevice())}</span></div>
+    <div class="row small" style="gap:10px"><span><span class="sy-dot ${SY.state}"></span>자료 ${SY.state === 'ok' ? '최신' : esc(SY.state)} · 마지막 동기화 ${esc(syAgo(SY.meta.at) || '-')} · 버전 ${SY.meta.rev}</span>${SY.photoInfo ? `<span>사진 ${SY.photoInfo.n}장 연동</span>` : ''}</div>
+    ${SY.err ? `<div class="note warn small">${esc(SY.err)}</div>` : ''}
+    <div class="row" style="gap:6px"><button class="btn" id="sy-now">지금 동기화</button><button class="btn ghost" id="sy-out">로그아웃</button><button class="btn ghost sm" id="sy-pwc">비밀번호 바꾸기</button>
+      ${conf ? '<button class="btn ghost sm" id="sy-conf-restore">충돌 백업으로 되돌리기</button>' : ''}${before ? '<button class="btn ghost sm" id="sy-before">연동 전 자료로 되돌리기</button>' : ''}</div>
+    <div class="faint small">입력하면 2~3초 뒤 자동 저장되고, 다른 기기는 화면을 다시 볼 때(탭 전환·1분마다) 가져와요. 로그아웃해도 이 기기 자료는 남아요.</div></div></section>`;
+}
+function bindSyncPanel() {
+  const p = $('#sy-panel'); if (!p || p.dataset.bound) return; p.dataset.bound = 1;
+  const msg = t => { const m = $('#sy-msg'); if (m) m.textContent = t; };
+  const cred = () => { const e = ($('#sy-id') || {}).value.trim().toLowerCase(), pw = $('#sy-pw').value; if (!e || !pw) { msg('아이디와 비밀번호를 넣어 주세요'); return null; } return [e, pw]; };
+  const run = async (btn, fn) => { const b = $(btn); if (!b) return; b.onclick = async () => { b.disabled = true; try { await fn(); } catch (e) { msg(e.message || String(e)); toast(e.message || '실패'); } b.disabled = false; }; };
+  run('#sy-in', async () => { const c = cred(); if (!c) return; msg('로그인 중…'); await syLogin(...c); render(); });
+  run('#sy-up', async () => { const c = cred(); if (!c) return; msg('계정 만드는 중…'); await sySignup(...c); toast('계정을 만들었어요. 다른 기기에서는 같은 아이디로 로그인하세요'); render(); });
+  const pw = $('#sy-pw'); if (pw) pw.onkeydown = e => { if (e.key === 'Enter') $('#sy-in').click(); };
+  run('#sy-pwc', async () => sheet({title: '비밀번호 바꾸기', body: `<label class="f">지금 비밀번호<input class="inp" type="password" id="pc-old" autocomplete="current-password"></label><label class="f">새 비밀번호 (4자 이상)<input class="inp" type="password" id="pc-new" autocomplete="new-password"></label><div class="small" id="pc-msg"></div>`,
+    foot: `<button class="btn" data-close>취소</button><button class="btn primary" id="pc-ok">바꾸기</button>`,
+    onMount: el => { $('#pc-ok', el).onclick = async () => { try { await syChangePw($('#pc-old', el).value, $('#pc-new', el).value); closeSheet(); toast('비밀번호를 바꿨어요 (다른 기기는 다시 로그인 필요)'); } catch (e) { $('#pc-msg', el).textContent = e.message; } }; }}));
+  run('#sy-now', async () => { await syPull(false); if (SY.meta.dirty) await syPushNow(false); await syPhotos(); });
+  run('#sy-out', async () => { syLogout(); toast('로그아웃했어요 (이 기기 자료는 그대로)'); });
+  run('#sy-conf-restore', async () => { const c = syGet('il-hub-conflict'); if (!c) return; S = c.data; save(); sySet('il-hub-conflict', null); render(); toast('충돌 백업으로 되돌렸어요'); });
+  run('#sy-before', async () => { const c = syGet('il-hub-before-sync'); if (!c) return; if (!confirmOnce('#sy-before')) return; S = c; save(); sySet('il-hub-before-sync', null); render(); toast('연동 전 자료로 되돌렸어요'); });
+}
+function confirmOnce(sel) { const b = $(sel); if (b.dataset.armed) return true; b.dataset.armed = 1; b.textContent = '한 번 더 누르면 되돌림'; return false; }
+
+/* ---------- 자동 확인 ---------- */
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') syPull(); });
+window.addEventListener('focus', () => syPull());
+setInterval(() => { if (document.visibilityState === 'visible') syPull(); }, 60000);
+
 /* ================= settings & backup ================= */
 VIEWS.settings = v => {
   const st = S.settings, o = st.org;
   const hol = Object.entries(S.holidays).sort().map(([d, n]) => `${d} ${n}`).join('\n');
   v.innerHTML = `
   <div class="page-head"><div><h1>설정 · 백업</h1><p>기관 정보, 급여일, 공휴일을 고치고 데이터를 다른 기기로 옮깁니다.</p></div></div>
+  ${syncPanel()}
   <div class="grid-2">
     <section class="panel"><div class="panel-h"><h2>기관 · 문서</h2></div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px">
       <div class="form-grid">
@@ -3286,14 +3503,14 @@ VIEWS.settings = v => {
         <label class="f span2">소재지<input class="inp" id="o-addr" value="${esc(o.addr)}"></label>
         <label class="f">문서번호 머리말<input class="inp" id="o-pre" value="${esc(st.docPrefix)}"></label>
         <label class="f">급여일 (매월)<input class="inp" type="number" min="1" max="31" id="o-pay" value="${esc(st.payday)}"></label>
-        <label class="f span2">공용서버 주소 (이 기기에만 저장 · 예: \\\\서버IP)<input class="inp" id="o-nas" value="${esc(st.nasRoot||'')}" placeholder="비우면 '공용서버\\'로 표시"></label>
+        <label class="f span2">공용서버 주소 (공개 사이트엔 안 올라감 · 예: \\\\서버IP)<input class="inp" id="o-nas" value="${esc(st.nasRoot||'')}" placeholder="비우면 '공용서버\\'로 표시"></label>
         <label class="f span2">결재란 (쉼표로 구분)<input class="inp" id="o-appr" value="${esc(st.approvers.join(', '))}"></label>
       </div>
       <div class="row"><button class="btn primary" id="o-save">저장</button></div>
     </div></section>
 
     <section class="panel"><div class="panel-h"><h2>백업 · 기기 간 옮기기</h2></div><div class="panel-b" style="display:flex;flex-direction:column;gap:12px">
-      <div class="note">데이터는 <b>이 브라우저</b>에만 저장돼요. PC ↔ 휴대폰, 아티팩트판 ↔ GitHub 배포본 사이에서는 백업을 내보내고 다른 쪽에서 가져오세요. 주 1회 백업 파일을 NAS에 넣어 두기를 권해요.</div>
+      <div class="note">자동 연동을 켜면 백업 없이도 기기끼리 맞춰져요. 연동을 안 쓰거나 아티팩트판과 옮길 때는 백업을 내보내고 다른 쪽에서 가져오세요. 주 1회 백업 파일을 NAS에 넣어 두기를 권해요.</div>
       <div class="row">
         <button class="btn" id="bk-copy">${icon('copy')}백업 복사</button>
         <button class="btn" id="bk-dl">${icon('down')}백업 파일 저장</button>
@@ -3328,6 +3545,7 @@ VIEWS.settings = v => {
   $('#ph-in').onclick = () => pickPackFile(render);
   $('#ph-out').onclick = () => { if (!CAN_FILE) { toast('사진 팩 저장은 GitHub 배포본에서 돼요'); return; } download(`업무허브_사진팩_${ymd(today())}.json`, exportPack(), 'application/json'); toast(`사진 ${PH.count}장을 저장했어요`); };
   const pc = $('#ph-clr'); pc.onclick = async () => { if (!pc.dataset.armed) { pc.dataset.armed = 1; pc.textContent = '한 번 더 누르면 모두 지움'; return; } await photoClear(); render(); toast('사진을 모두 지웠어요'); };
+  bindSyncPanel();
   $('#hol-save').onclick = () => {
     const h = {}; $('#hol').value.split('\n').forEach(l => { const m = l.trim().match(/^(\d{4}-\d{2}-\d{2})\s*(.*)$/); if (m) h[m[1]] = m[2] || '공휴일'; });
     S.holidays = h; save(); toast(`공휴일 ${Object.keys(h).length}일을 저장했어요`);
@@ -3337,7 +3555,7 @@ VIEWS.settings = v => {
 /* ================= boot ================= */
 S = load();
 render();
-loadPhotos().then(() => { if (['handover','settings'].includes(current())) render(); });
+loadPhotos().then(() => { if (['handover','settings'].includes(current())) render(); if (syOn()) { SY.state = 'ok'; syPull(); } });
 loadConnectors().then(() => { if (['home','calendar','apps'].includes(current())) render(); return checkApps(); }).then(() => { if (['home','apps'].includes(current())) render(); });
 
 </script>

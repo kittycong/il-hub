@@ -19,6 +19,7 @@ VIEWS.calendar = v => {
       ${list.slice(0,3).map(o=>`<div class="ev ${o.done?'done':''}" style="border-left-color:${CATS[o.rule.cat].color}" title="${esc(o.rule.title)}">${esc(o.rule.title)}</div>`).join('')}
       ${xl.slice(0, Math.max(0, 3-list.length)).map(e=>`<div class="ev x" style="border-left-color:${XCAT[e.kind].color}" title="${esc(e.title)}">${esc(e.title)}</div>`).join('')}
       ${list.length+xl.length>3?`<div class="cal-more">+${list.length+xl.length-3}건</div>`:''}
+      ${wlogGet(k) ? `<span class="wl-mark" title="업무일지 기록됨">일지</span>` : ''}
       <div class="pips">${list.map(o=>`<i style="background:${o.done?'var(--line-strong)':CATS[o.rule.cat].color}"></i>`).join('')}${xl.map(e=>`<i style="background:${XCAT[e.kind].color}"></i>`).join('')}</div>
     </div>`;
   }
@@ -26,7 +27,7 @@ VIEWS.calendar = v => {
 
   v.innerHTML = `
   <div class="page-head"><div><h1>마감 캘린더</h1><p>법정·정기 마감이 매달 자동으로 잡히고, 주말·공휴일이면 규칙에 따라 앞뒤로 옮겨집니다.</p></div>
-    <div class="row"><button class="btn" id="ics">${icon('down')}NAS 캘린더용 .ics</button><button class="btn primary" id="add-rule">${icon('plus')}일정·규칙 추가</button></div></div>
+    <div class="row"><button class="btn" id="wl-today">${icon('edit')}오늘 업무일지</button><button class="btn" id="ics">${icon('down')}NAS 캘린더용 .ics</button><button class="btn primary" id="add-rule">${icon('plus')}일정·규칙 추가</button></div></div>
 
   <section class="panel">
     <div class="panel-h">
@@ -39,7 +40,7 @@ VIEWS.calendar = v => {
   </section>
 
   <div class="grid-2">
-    <section class="panel"><div class="panel-h"><h2>${m+1}월 마감 목록</h2><span class="faint small">${monthOcc.filter(o=>o.done).length}/${monthOcc.length} 완료</span></div>
+    <section class="panel"><div class="panel-h"><h2>${m+1}월 마감 목록</h2><div class="row" style="gap:6px"><span class="faint small">${monthOcc.filter(o=>o.done).length}/${monthOcc.length} 완료</span><button class="btn ghost sm" id="wl-month" title="이 달 업무일지 전체 복사">${icon('copy')}${m+1}월 업무일지</button></div></div>
       ${monthOcc.length?`<ul class="dl" id="mlist">${monthOcc.map(o=>deadlineItem(o)).join('')}</ul>`:'<div class="empty">이 달에는 마감이 없어요</div>'}</section>
     <section class="panel"><div class="panel-h"><h2>반복 규칙 ${S.rules.length}개</h2><span class="faint small">${S.rules.filter(r=>r.verify&&!r.off).length?`"날짜 확인" ${S.rules.filter(r=>r.verify&&!r.off).length}개는 추정 날짜예요`:'센터 기준에 맞게 날짜를 고쳐 쓰세요'}</span></div>
       <div class="tbl-wrap" style="border:0;border-radius:0;max-height:520px;overflow:auto"><table class="tbl"><thead><tr><th>일정</th><th>주기</th><th>휴일이면</th><th></th></tr></thead><tbody>
@@ -52,6 +53,8 @@ VIEWS.calendar = v => {
   $('#thism').onclick = () => { const t = today(); calMonth = new Date(t.getFullYear(), t.getMonth(), 1); render(); };
   $('#add-rule').onclick = () => editRule(null);
   $('#ics').onclick = exportIcs;
+  $('#wl-today').onclick = () => { const k = ymd(today()); dayDetail(k, occurrences(today(), today()).filter(o => calFilter.has(o.rule.cat))); };
+  const wm = $('#wl-month'); if (wm) wm.onclick = () => { const t = wlogMonthText(y, m); t ? copyText(t, `${m+1}월 업무일지 ${Object.keys(S.wlog || {}).filter(x => x.startsWith(`${y}-${pad(m+1)}`)).length}일치를 복사했어요`) : toast('이 달에 기록한 업무일지가 없어요'); };
   $$('[data-cat]', v).forEach(b => b.onclick = () => { const k = b.dataset.cat; calFilter.has(k) ? calFilter.delete(k) : calFilter.add(k); if (!calFilter.size) calFilter = new Set([...Object.keys(CATS), 'leave', 'bday']); render(); });
   $$('[data-edit-rule]', v).forEach(b => b.onclick = () => editRule(b.dataset.editRule));
   $$('.cal .cell', v).forEach(c => { const open = () => dayDetail(c.dataset.day, byDay[c.dataset.day] || [], xByDay[c.dataset.day] || []); c.onclick = open; c.onkeydown = e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); open(); } }; });
@@ -64,13 +67,23 @@ function ruleText(r) {
   return r.date;
 }
 function dayDetail(k, list, xl = extraEvents(parseYmd(k), parseYmd(k))) {
-  const d = parseYmd(k), h = S.holidays[k];
-  sheet({title: `${d.getMonth()+1}월 ${d.getDate()}일 ${DOW[d.getDay()]}요일${h?' · '+h:''}`,
-    body: (list.length ? `<ul class="dl" style="margin:-16px -16px 0">${list.map(o=>deadlineItem(o)).join('')}</ul>` : '<div class="empty">잡힌 마감이 없어요</div>') + (xl.length ? `<div style="display:flex;flex-direction:column;gap:6px;padding-top:8px">${xl.map(e=>`<div class="row small" style="gap:8px"><span class="dotcat" style="background:${XCAT[e.kind].color}"></span>${esc(e.title)}<span class="faint">${XCAT[e.kind].name} · 연동 데이터</span></div>`).join('')}</div>` : ''),
-    foot: `<button class="btn" data-close>닫기</button><button class="btn primary" id="dd-add">${icon('plus')}이 날짜에 일정 추가</button>`,
+  const d = parseYmd(k), h = S.holidays[k], saved = (S.wlog || {})[k];
+  const content = saved ? saved.content : '';
+  sheet({title: `${d.getMonth()+1}월 ${d.getDate()}일 ${DOW[d.getDay()]}요일${h?' · '+h:''}`, wide: true,
+    body: (list.length ? `<ul class="dl" style="margin:-16px -16px 0">${list.map(o=>deadlineItem(o)).join('')}</ul>` : '<div class="empty" style="padding:10px">잡힌 마감이 없어요</div>') + (xl.length ? `<div style="display:flex;flex-direction:column;gap:6px;padding-top:8px">${xl.map(e=>`<div class="row small" style="gap:8px"><span class="dotcat" style="background:${XCAT[e.kind].color}"></span>${esc(e.title)}<span class="faint">${XCAT[e.kind].name} · 연동 데이터</span></div>`).join('')}</div>` : '')
+      + `<div class="wl-box"><div class="row"><b>업무일지 (결재용)</b><span class="faint small" id="wl-st">${saved ? '저장됨 · ' + esc(new Date(saved.at).toLocaleString('ko-KR', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})) : '아직 기록 없음'}</span><span class="grow"></span><button class="btn ghost sm" id="wl-fill">${icon('check')}완료한 일로 채우기</button></div>
+        <textarea class="inp" id="wl-tx" rows="8" placeholder="한 줄에 업무 하나씩 적어요&#10;예) 9월분 급여 계산 및 급여대장 결재&#10;예) 4대보험 고지내역 확인">${esc(content)}</textarea>
+        <label class="f">비고<input class="inp" id="wl-note" value="${esc(saved ? saved.note : '')}"></label>
+        <div class="row" style="gap:6px"><button class="btn primary sm" id="wl-copy">${icon('copy')}hwpx 업무내용 칸용 복사</button><button class="btn sm" id="wl-doc">${icon('print')}업무일지 양식으로 보기·인쇄</button><span class="grow"></span><span class="faint small">입력하면 바로 저장돼요</span></div></div>`,
+    foot: `<button class="btn" data-close>닫기</button><button class="btn" id="dd-add">${icon('plus')}이 날짜에 일정 추가</button>`,
     onMount: el => {
       $('#dd-add', el).onclick = () => editRule(null, k);
       el.addEventListener('click', e => { const b = e.target.closest('[data-done]'); if (!b) return; toggleDone(b.dataset.done); render(); dayDetail(k, occurrences(d, d).filter(o=>calFilter.has(o.rule.cat))); });
+      let tm; const put = () => { clearTimeout(tm); tm = setTimeout(() => { wlogSet(k, $('#wl-tx', el).value, $('#wl-note', el).value); const st = $('#wl-st', el); if (st) st.textContent = '저장됨 · 방금'; if (current() === 'calendar') { const c = document.querySelector(`.cal .cell[data-day="${k}"]`); if (c && !c.querySelector('.wl-mark') && wlogGet(k)) c.querySelector('.pips').insertAdjacentHTML('beforebegin', '<span class="wl-mark" title="업무일지 기록됨">일지</span>'); } }, 400); };
+      $('#wl-tx', el).oninput = put; $('#wl-note', el).oninput = put;
+      $('#wl-fill', el).onclick = () => { const cur = $('#wl-tx', el).value.trim(), auto = worklogAuto(k); $('#wl-tx', el).value = cur ? [...new Set([...cur.split('\n'), ...auto.split('\n')].map(s => s.trim()).filter(Boolean))].join('\n') : auto; put(); toast('완료한 마감·업무로 채웠어요 (기존 내용은 유지)'); };
+      $('#wl-copy', el).onclick = () => { const t = wlogHwpText($('#wl-tx', el).value); t ? copyText(t, '복사했어요. hwpx 업무일지의 업무내용 칸에 붙여 넣으세요') : toast('업무일지 내용을 먼저 적어 주세요'); };
+      $('#wl-doc', el).onclick = () => { wlogSet(k, $('#wl-tx', el).value, $('#wl-note', el).value); D.type = 'worklog'; D.f.worklog = Object.assign(D.f.worklog || {}, {date: k, content: $('#wl-tx', el).value, note: $('#wl-note', el).value}); closeSheet(); go('docs'); };
     }});
 }
 function editRule(id, date) {

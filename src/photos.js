@@ -28,11 +28,14 @@ function photosOfSop(sop) { return Object.entries(PH.map).filter(([key]) => key.
 async function photoAdd(sop, k, data, cap = '', src = '직접 추가') {
   const p = {id: uid() + Date.now().toString(36), key: phKey(sop, k), sop, k, data, cap, src, ord: Date.now()};
   if (!PH.db) { (PH.map[p.key] ||= []).push(p); PH.count++; toast('이 브라우저는 사진 저장이 막혀 있어요. 새로고침하면 사라져요'); return p; }
-  await phTx('readwrite', st => st.put(p)); await loadPhotos(); return p;
+  await phTx('readwrite', st => st.put(p)); await loadPhotos(); phChanged(); return p;
 }
-async function photoUpdate(p) { await phTx('readwrite', st => st.put(p)); await loadPhotos(); }
-async function photoDel(id) { await phTx('readwrite', st => st.delete(id)); await loadPhotos(); }
-async function photoClear() { await phTx('readwrite', st => st.clear()); await loadPhotos(); }
+async function photoUpdate(p) { p.synced = false; await phTx('readwrite', st => st.put(p)); await loadPhotos(); phChanged(); }
+async function photoDel(id) { phTomb([id]); await phTx('readwrite', st => st.delete(id)); await loadPhotos(); phChanged(); }
+async function photoClear() { phTomb(Object.values(PH.map).flat().map(p => p.id)); await phTx('readwrite', st => st.clear()); await loadPhotos(); phChanged(); }
+/* 연동 훅 (sync.js가 있으면 클라우드로 보냄) */
+function phChanged() { if (typeof syncPhotosSoon === 'function') syncPhotosSoon(); }
+function phTomb(ids) { try { const t = JSON.parse(localStorage.getItem('il-hub-ph-del') || '[]'); localStorage.setItem('il-hub-ph-del', JSON.stringify([...new Set([...t, ...ids])])); } catch (e) {} }
 
 /* 큰 사진은 줄여서 저장 (긴 변 1600px, JPEG) */
 function shrinkImage(file) {
@@ -57,7 +60,7 @@ async function importPack(txt) {
   await phTx('readwrite', st => { d.items.forEach(it => { if (!it.sop || it.k == null || !/^data:image\//.test(it.data || '')) return;
     const key = phKey(it.sop, it.k); if (have.has(key + '#' + it.data.length + '#' + it.data.slice(-40))) return;
     st.put({id: uid() + (ord++).toString(36), key, sop: it.sop, k: String(it.k), data: it.data, cap: it.cap || '', src: it.src || '사진 팩', ord}); n++; }); });
-  await loadPhotos(); return n;
+  await loadPhotos(); if (n) phChanged(); return n;
 }
 function exportPack() {
   const items = Object.values(PH.map).flat().map(({sop, k, cap, src, data}) => ({sop, k, cap, src, data}));

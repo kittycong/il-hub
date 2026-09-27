@@ -223,4 +223,4 @@ function hoDailyPanel() {
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-hoopen]'); if (b) { e.preventDefault(); HO.open = b.dataset.hoopen; closeSheet(); go('handover'); } });
 
-document.addEventListener('click', e => { if (e.target.closest('[data-wl]')) { D.type = 'worklog'; if (D.f.worklog) D.f.worklog.content = ''; go('docs'); } });
+document.addEventListener('click', e => { if (e.target.closest('[data-wl]')) { const k = ymd(today()); dayDetail(k, occurrences(today(), today())); } });

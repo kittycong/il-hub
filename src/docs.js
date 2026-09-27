@@ -138,6 +138,7 @@ VIEWS.docs = v => {
     const k = id.slice(3); f[k] = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
     if (k === 'preset') { const p = FUND_PRESETS[Number(f.preset)]; Object.assign(f, {fund:p.fund, subj:p.subj, short:p.short}); render(); return; }
     if (k === 'kind' && D.type === 'trip') { render(); return; }
+    if (D.type === 'worklog') { if (k === 'date') { f.content = wlogGet(f.date) || worklogAuto(f.date); render(); return; } if (k === 'content' || k === 'note') wlogSet(f.date, f.content, f.note); }
     renderPreview();
   });
   $('#dform', v).addEventListener('change', e => {

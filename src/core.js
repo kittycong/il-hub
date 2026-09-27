@@ -76,7 +76,7 @@ function load() {
   }
   return saved;
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+function save(quiet) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (!quiet && typeof syncDirty === 'function') syncDirty(); }
 
 /* ---------- ui helpers ---------- */
 let toastT;
@@ -137,7 +137,7 @@ function renderNav() {
   $('#nav-side').innerHTML = ROUTES.filter(r=>!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?`<span class="badge">${od}</span>`:''}</a>`
     + (r.id === 'apps' && typeof embApps === 'function' ? `<div class="nav-sub">${embApps().map(a => `<a href="#embed/${a.id}" ${eid===a.id?'aria-current="page"':''}>${esc(a.name)}</a>`).join('')}</div>` : '')).join('');
   $('#nav-tab').innerHTML = ROUTES.filter(r=>!r.sideOnly&&!r.hidden).map(r => `<a href="#${r.id}" ${navOn(r,cur)?'aria-current="page"':''}>${icon(r.icon)}<span>${r.label}</span>${r.id==='home'&&od?'<i class="dot"></i>':''}</a>`).join('');
-  $('#side-foot').innerHTML = `${ENV==='artifact'?'Claude 아티팩트판':'웹 배포판'} · 데이터는 이 기기 브라우저에 저장<br><a href="#settings">백업하기</a>`;
+  $('#side-foot').innerHTML = typeof syncBadge === 'function' ? syncBadge() : `${ENV==='artifact'?'Claude 아티팩트판':'웹 배포판'} · 데이터는 이 기기 브라우저에 저장<br><a href="#settings">백업하기</a>`;
 }
 function render() {
   const cur = current();
