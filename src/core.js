@@ -119,6 +119,7 @@ const ROUTES = [
   {id:'tools', label:'도구', icon:'bridge'},
   {id:'bridge', label:'진우 연결', icon:'bridge', hidden:true},
   {id:'docs', label:'문서', icon:'doc', hidden:true},
+  {id:'files', label:'자료함', icon:'doc', hidden:true},
   {id:'routine', label:'업무', icon:'list', hidden:true},
   {id:'budget', label:'예산', icon:'won'},
   {id:'apps', label:'앱', icon:'apps'},
@@ -129,7 +130,7 @@ const VIEWS = {};
 VIEWS.tools = v => { let t = 'bridge'; try { t = localStorage.getItem('il-hub-tool') || 'bridge'; } catch (e) {} location.replace('#' + (TOOL_IDS.includes(t) ? t : 'bridge')); };
 function go(id) { if (location.hash.slice(1) !== id) location.hash = id; else render(); }
 function current() { const h = location.hash.slice(1).split('/')[0]; return ROUTES.some(r => r.id === h) ? h : 'home'; }
-const TOOL_IDS = ['bridge', 'docs'];
+const TOOL_IDS = ['bridge', 'docs', 'files'];
 function navOn(r, cur) { return r.id === cur || (r.id === 'tools' && TOOL_IDS.includes(cur)) || (r.id === 'handover' && cur === 'routine') || (r.id === 'apps' && cur === 'embed'); }
 function renderNav() {
   const cur = current(), od = overdueCount();
@@ -148,7 +149,7 @@ function render() {
   const eh = $('#embed-host'); if (eh) eh.hidden = cur !== 'embed';
   document.querySelector('.main').classList.toggle('embedding', cur === 'embed');
   VIEWS[cur](v);
-  if (TOOL_IDS.includes(cur)) v.insertAdjacentHTML('afterbegin', `<div class="seg tool-seg" role="group" aria-label="도구">${[['bridge','진우 연결'],['docs','문서 작성']].map(([k,n]) => `<a href="#${k}" aria-pressed="${cur===k}" class="segl">${n}</a>`).join('')}</div>`);
+  if (TOOL_IDS.includes(cur)) v.insertAdjacentHTML('afterbegin', `<div class="seg tool-seg" role="group" aria-label="도구">${[['bridge','진우 연결'],['docs','문서 작성'],['files','자료함']].map(([k,n]) => `<a href="#${k}" aria-pressed="${cur===k}" class="segl">${n}</a>`).join('')}</div>`);
   if (render.last !== cur) window.scrollTo(0, 0);
   render.last = cur;
 }

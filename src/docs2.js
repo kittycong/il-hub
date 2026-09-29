@@ -138,7 +138,7 @@ function docHtml2(type, f, no) {
 function formHtml2(type, f) {
   if (type === 'worklog') { if (!f.content) f.content = wlogGet(f.date) || worklogAuto(f.date); if (!f.note) f.note = (S.wlog?.[f.date] || {}).note || ''; return `<label class="f">날짜<input class="inp" type="date" id="df-date" value="${esc(f.date)}"></label>
     <label class="f">업무내용 (한 줄에 하나)<textarea class="inp" id="df-content" rows="12">${esc(f.content)}</textarea></label>
-    <button class="btn" type="button" id="wl-auto">오늘 완료한 일로 다시 채우기</button><label class="f">비고<textarea class="inp" id="df-note" rows="2">${esc(f.note)}</textarea></label>
+    <div class="row" style="gap:6px;flex-wrap:wrap"><button class="btn" type="button" id="wl-auto">오늘 완료한 일로 다시 채우기</button><button class="btn" type="button" id="wl-ph2">문구 넣기</button><button class="btn primary" type="button" id="wl-hwpx2">hwpx 파일로 저장</button><button class="btn ghost" type="button" id="wl-tpl2">양식 등록·변경</button></div><label class="f">비고<textarea class="inp" id="df-note" rows="2">${esc(f.note)}</textarea></label>
     <div class="note small">캘린더에서 완료 표시한 마감, 업무 화면에서 체크한 업무, 자금일보를 모아 채워요. 고정 업무는 설정에서 바꿀 수 있어요.</div>`; }
   const inp = (k, l, t = 'text', cls = '') => `<label class="f ${cls}">${l}<input class="inp" type="${t}" id="df-${k}" value="${esc(f[k] ?? '')}"></label>`;
   const sel = (k, l, opts, cls = '') => `<label class="f ${cls}">${l}<select class="inp" id="df-${k}">${opts.map(o => `<option ${String(f[k])===String(o)?'selected':''}>${esc(o)}</option>`).join('')}</select></label>`;
@@ -162,7 +162,7 @@ function docappPanel() {
       : `<a class="btn ghost sm" href="#embed/${(S.apps.find(x => x.url === DOCAPP_URL) || {id:'a4'}).id}" style="width:100%;justify-content:space-between">${esc(n)}<span class="faint small">허브에서 열기 →</span></a>`).join('')}</div>`).join('')}</div></section>`;
 }
 
-const WORKLOG_BASE = ['민원 상담, 전화 응대 및 방문 민원 안내','공문서 수신·발신, 문서관리 및 부서 간 업무협조','내부 결재서류 검토·보완'];
+const WORKLOG_BASE = ['기관 업무 메일 확인 및 수신 공문 접수 처리','활동지원사 관련 전화 문의 응대','회계 전표 입력 및 지출 관련 업무 처리'];
 function worklogAuto(date) {
   const d = date ? parseYmd(date) : today(), k = ymd(d), out = [];
   const daily = sops().filter(s => s.freq === 'daily' && s.id !== 'worklog');
@@ -172,6 +172,12 @@ function worklogAuto(date) {
   (S.settings.worklogBase || WORKLOG_BASE).forEach(t => out.push(t));
   return [...new Set(out)].join('\n');
 }
+document.addEventListener('click', e => {
+  const id = e.target.id, w = D.f && D.f.worklog; if (!w) return;
+  if (id === 'wl-hwpx2') wlHwpxSave(w.date, w.content, w.note);
+  if (id === 'wl-tpl2') wlTplSheet();
+  if (id === 'wl-ph2') wlPhraseSheet(w.date, v => { w.content = [...new Set([...(w.content || '').split('\n'), ...v].map(x => x.trim()).filter(Boolean))].join('\n'); wlogSet(w.date, w.content, w.note); closeSheet(); render(); });
+});
 document.addEventListener('click', e => { if (e.target.id === 'wl-auto') { D.f.worklog.content = worklogAuto(D.f.worklog.date); wlogSet(D.f.worklog.date, D.f.worklog.content, D.f.worklog.note); render(); toast('완료한 일로 채웠어요'); } });
 /* ---------- 업무일지 기록 (캘린더·문서 공용, 날짜별 저장 → 자동 연동에도 포함) ---------- */
 function wlogGet(date) { return ((S.wlog || {})[date] || {}).content || ''; }
