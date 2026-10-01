@@ -17,7 +17,7 @@ function hoRun(sop) {
 }
 function monthSops() {
   const t = today(), from = new Date(t.getFullYear(), t.getMonth(), 1), to = new Date(t.getFullYear(), t.getMonth() + 1, 0);
-  const due = new Set(occurrences(from, to).map(o => (sopOfRule(o.rule) || {}).id).filter(Boolean));
+  const due = new Set(occurrences(from, to).filter(o => o.rule.who !== 'other').map(o => (sopOfRule(o.rule) || {}).id).filter(Boolean));
   return sops().filter(s => { if (s.freq === 'daily') return false; if (s.freq === 'monthly' || due.has(s.id)) return true;
     const r = hoRun(s); return s.freq === 'adhoc' && r.done > 0 && r.done < r.total; });
 }
@@ -29,6 +29,22 @@ function sopCard(s, st) {
     <div class="st" style="width:100%"><div class="row small" style="gap:6px"><span class="faint">${esc(hoPeriod(s))} 진행</span><span class="grow"></span><span class="num">${r.done}/${r.total}</span>${r.total&&r.done===r.total?'<span class="chip ok">완료</span>':''}</div><div class="prog" style="margin-top:4px"><i style="width:${r.total?r.done/r.total*100:0}%"></i></div></div>
   </button>`;
 }
+function hoPlan() {
+  const t = today(), y = t.getFullYear(), mine = r => !r.off && r.who !== 'other';
+  const link = r => { const sp = sopOfRule(r); return sp ? `data-hoopen="${sp.id}"` : `data-edit-plan="${r.id}"`; };
+  const chip = (r, label) => `<a href="#handover" ${link(r)} class="pl-i" style="border-left-color:${CATS[r.cat].color}" title="${esc(r.note || '')}"><span>${esc(r.title)}</span><span class="faint small">${label}${sopOfRule(r) ? ' · 절차' : ''}${r.who === 'shared' ? ' · 공통' : ''}${r.verify ? ' · 날짜확인' : ''}</span></a>`;
+  const dd = r => r.day === 'payday' ? S.settings.payday + '일' : r.day === 'last' ? '말일' : r.day + '일';
+  const monthly = S.rules.filter(r => mine(r) && r.type === 'monthly' && !r.undated).sort((a, b) => (a.day === 'last' ? 99 : a.day === 'payday' ? +S.settings.payday : +a.day) - (b.day === 'last' ? 99 : b.day === 'payday' ? +S.settings.payday : +b.day));
+  const occ = occurrences(new Date(y, 0, 1), new Date(y, 11, 31)).filter(o => mine(o.rule) && o.rule.type !== 'monthly' && o.date.getFullYear() === y);
+  const und = S.rules.filter(r => mine(r) && r.undated);
+  const rows = [...Array(12)].map((_, i) => { const l = occ.filter(o => o.date.getMonth() === i);
+    return `<div class="pl-m ${i === t.getMonth() ? 'now' : ''}"><div class="pl-h num">${i + 1}월</div><div class="pl-b">${l.map(o => chip(o.rule, `${o.date.getDate()}일`)).join('') || '<span class="faint small">—</span>'}</div></div>`; }).join('');
+  return `<div class="note small">내 담당과 공통으로 표시한 일정만 모았어요. 항목을 누르면 연결된 업무 절차(인계서 기준)가 열리고, 절차가 없으면 일정 편집이 열려요. 다른 담당 일정은 <a href="#calendar">캘린더</a>에서 "전체 담당"으로 볼 수 있어요.</div>
+  <section class="panel"><div class="panel-h"><h2>매월 반복 (${monthly.length})</h2><span class="faint small">날짜 순</span></div><div class="panel-b pl-wrap">${monthly.map(r => chip(r, '매월 ' + dd(r))).join('')}</div></section>
+  <section class="panel"><div class="panel-h"><h2>${y}년 월별 일정</h2><span class="faint small">보험·구독 만기, 신고, 교육, 회의 포함</span></div><div class="panel-b pl-grid">${rows}</div></section>
+  ${und.length ? `<section class="panel"><div class="panel-h"><h2>날짜 미정 (${und.length})</h2><span class="faint small">날짜가 정해지면 입력</span></div><div class="panel-b pl-wrap">${und.map(r => chip(r, '미정')).join('')}</div></section>` : ''}`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-edit-plan]'); if (b) { e.preventDefault(); editRule(b.dataset.editPlan); } });
 function hoMonthPanel() {
   const list = monthSops(); if (!list.length) return '';
   const t = today();
@@ -124,8 +140,8 @@ VIEWS.handover = v => {
   <div class="page-head"><div><h1>업무</h1><p>인계 문서·인수인계 확인표를 업무별 절차로 정리했어요. 단계마다 체크하며 실행하고, 모르는 건 질문 메모에 적어 두세요. 절차는 직접 고칠 수 있어요.</p></div>
     <div class="row"><button class="btn" id="ho-q">${icon('copy')}질문 목록 복사 (${qN})</button><button class="btn primary" id="ho-add">${icon('plus')}새 절차</button></div></div>
   ${PH.ready && !PH.count ? `<div class="note small row" style="gap:8px"><span class="grow">단계마다 화면 사진을 붙여 두면 일할 때 바로 확인할 수 있어요. 받은 <b>사진 팩(.json)</b>이 있으면 넣어 주세요.</span><button class="btn sm" id="ho-pack">사진 팩 넣기</button></div>` : ''}
-  <div class="seg" role="group" aria-label="보기">${[['month',`이번 달 할 일 ${mDone}/${ms.length}`],['all',`전체 절차 ${all.length}`]].map(([k,n]) => `<button aria-pressed="${HO.tab===k}" data-tab="${k}">${n}</button>`).join('')}</div>
-  ${HO.tab === 'month' ? `
+  <div class="seg" role="group" aria-label="보기">${[['month',`이번 달 할 일 ${mDone}/${ms.length}`],['plan','내 연간 계획'],['all',`전체 절차 ${all.length}`]].map(([k,n]) => `<button aria-pressed="${HO.tab===k}" data-tab="${k}">${n}</button>`).join('')}</div>
+  ${HO.tab === 'plan' ? hoPlan() : HO.tab === 'month' ? `
   ${daily.length ? `<div class="eyebrow">매일</div><div class="apps" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">${daily.map(s => sopCard(s, st)).join('')}</div>` : ''}
   <div class="eyebrow">${t.getMonth()+1}월에 할 일 · 매월 업무 + 이번 달 마감이 걸린 업무 + 진행 중인 건</div>
   ${ms.length ? `<div class="apps" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">${ms.map(s => sopCard(s, st)).join('')}</div>` : '<div class="empty">이번 달에 걸린 업무가 없어요</div>'}

@@ -23,7 +23,7 @@
   --stamp:#B23A2E; --stamp-soft:#F6E1DD;
   --warn:#9A6A12; --warn-soft:#F5EACF;
   --ok:#2E6B3F; --ok-soft:#DDEEDF;
-  --cat-tax:#7A4E9E; --cat-pay:#1F5F6B; --cat-ins:#2E6B3F; --cat-acc:#9A6A12; --cat-don:#B4527A; --cat-etc:#5E6A64; --cat-leave:#3E7CB1; --cat-bday:#C0673A;
+  --cat-tax:#7A4E9E; --cat-pay:#1F5F6B; --cat-ins:#2E6B3F; --cat-acc:#9A6A12; --cat-don:#B4527A; --cat-etc:#5E6A64; --cat-leave:#3E7CB1; --cat-bday:#C0673A; --cat-sub:#8A5A3C; --cat-edu:#2F8A74; --cat-insp:#B03A2E; --cat-mtg:#5B5BA8;
   --paper:#FFFFFF; --paper-ink:#111;
   --shadow:0 1px 2px rgba(20,35,30,.06),0 4px 14px rgba(20,35,30,.06);
   --radius:10px;
@@ -40,7 +40,7 @@
     --stamp:#E57A6C; --stamp-soft:#3A2220;
     --warn:#D9AE55; --warn-soft:#352C18;
     --ok:#7CC08E; --ok-soft:#1C3222;
-    --cat-tax:#B794D6; --cat-pay:#72B6C2; --cat-ins:#7CC08E; --cat-acc:#D9AE55; --cat-don:#E08DB0; --cat-etc:#9AA7A1; --cat-leave:#86B6E0; --cat-bday:#E59A6E;
+    --cat-tax:#B794D6; --cat-pay:#72B6C2; --cat-ins:#7CC08E; --cat-acc:#D9AE55; --cat-don:#E08DB0; --cat-etc:#9AA7A1; --cat-leave:#86B6E0; --cat-bday:#E59A6E; --cat-sub:#C99A78; --cat-edu:#7CCBB8; --cat-insp:#E58A80; --cat-mtg:#A5A5E0;
     --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
   }
 }
@@ -52,7 +52,7 @@
   --stamp:#E57A6C; --stamp-soft:#3A2220;
   --warn:#D9AE55; --warn-soft:#352C18;
   --ok:#7CC08E; --ok-soft:#1C3222;
-  --cat-tax:#B794D6; --cat-pay:#72B6C2; --cat-ins:#7CC08E; --cat-acc:#D9AE55; --cat-don:#E08DB0; --cat-etc:#9AA7A1; --cat-leave:#86B6E0; --cat-bday:#E59A6E;
+  --cat-tax:#B794D6; --cat-pay:#72B6C2; --cat-ins:#7CC08E; --cat-acc:#D9AE55; --cat-don:#E08DB0; --cat-etc:#9AA7A1; --cat-leave:#86B6E0; --cat-bday:#E59A6E; --cat-sub:#C99A78; --cat-edu:#7CCBB8; --cat-insp:#E58A80; --cat-mtg:#A5A5E0;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
 }
 *{box-sizing:border-box}
@@ -382,6 +382,17 @@ tr.entered td.t{text-decoration:line-through}
   @page{size:A4;margin:0}
 }
 .fl-row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line,#e5e5e5)}.fl-row:last-child{border-bottom:0}.fl-main{min-width:0}.fl-name{word-break:break-all}.fl-act{flex-shrink:0}@media(max-width:600px){.fl-row{flex-direction:column;align-items:stretch}}
+.mg-body{white-space:pre-wrap;max-height:6.4em;overflow:hidden;color:var(--ink-2);margin-top:6px;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}.mg-card{margin-bottom:10px}
+.cg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.cg-l{list-style:none;margin:6px 0 0;padding:0;display:flex;flex-direction:column;gap:2px;max-height:260px;overflow:auto}
+.cg-i{display:flex;justify-content:space-between;gap:8px;width:100%;text-align:left;background:none;border:0;padding:5px 4px;border-radius:6px;font:inherit;color:inherit;cursor:pointer}
+.cg-i:hover{background:var(--bg-2,rgba(128,128,128,.12))}
+.cg-t{font-size:13px}.cg-d{font-size:12px;color:var(--ink-3);white-space:nowrap}.cg-d.und{color:var(--stamp)}
+.pl-wrap{display:flex;flex-wrap:wrap;gap:8px}
+.pl-i{display:flex;flex-direction:column;gap:2px;padding:6px 10px;border:1px solid var(--line,#ddd);border-left:4px solid;border-radius:8px;text-decoration:none;color:inherit;font-size:13px}
+.pl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.pl-m{border:1px solid var(--line,#ddd);border-radius:10px;padding:8px}.pl-m.now{border-color:var(--accent)}
+.pl-h{font-weight:700;margin-bottom:6px}.pl-b{display:flex;flex-direction:column;gap:6px}
 </style>
 
 </head>
@@ -475,6 +486,14 @@ function load() {
     own.forEach(r => saved.hoCustom.push({id:'c' + r.id, cat:'gen', freq: HO_FREQ[r.freq] ? r.freq : 'adhoc', title:r.name, when:r.when || '', sections:[{h:'단계', steps:r.steps.map(x => x.t), warn:[]}]}));
     saved.v = 6;
   }
+  if (saved.v < 7) { // v7: 정기·만기 일정(보험·구독·의무교육·회의·점검) 추가, 업무분장 앱 기준 날짜 정렬
+    const have = new Set(saved.rules.map(r => r.id)); saved.rules.push(...def.rules.filter(r => !have.has(r.id)));
+    const byId = Object.fromEntries(def.rules.map(r => [r.id, r]));
+    const patch = (id, ok) => { const r = saved.rules.find(x => x.id === id); if (r && ok(r)) Object.assign(r, {type:byId[id].type, month:byId[id].month, day:byId[id].day, title:byId[id].title, note:byId[id].note}); };
+    patch('r5', r => r.day === 15); patch('y2', r => r.day === 10); patch('y3', r => r.day === 15); patch('r6', r => r.type === 'monthly' && r.day === 'last');
+    const y9 = saved.rules.find(x => x.id === 'y9'); if (y9 && y9.cat === 'etc') y9.cat = 'sub';
+    saved.v = 7;
+  }
   return saved;
 }
 function save(quiet) { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} if (!quiet && typeof syncDirty === 'function') syncDirty(); }
@@ -521,6 +540,7 @@ const ROUTES = [
   {id:'bridge', label:'진우 연결', icon:'bridge', hidden:true},
   {id:'docs', label:'문서', icon:'doc', hidden:true},
   {id:'files', label:'자료함', icon:'doc', hidden:true},
+  {id:'msgs', label:'문구함', icon:'doc', hidden:true},
   {id:'routine', label:'업무', icon:'list', hidden:true},
   {id:'budget', label:'예산', icon:'won'},
   {id:'apps', label:'앱', icon:'apps'},
@@ -531,7 +551,7 @@ const VIEWS = {};
 VIEWS.tools = v => { let t = 'bridge'; try { t = localStorage.getItem('il-hub-tool') || 'bridge'; } catch (e) {} location.replace('#' + (TOOL_IDS.includes(t) ? t : 'bridge')); };
 function go(id) { if (location.hash.slice(1) !== id) location.hash = id; else render(); }
 function current() { const h = location.hash.slice(1).split('/')[0]; return ROUTES.some(r => r.id === h) ? h : 'home'; }
-const TOOL_IDS = ['bridge', 'docs', 'files'];
+const TOOL_IDS = ['bridge', 'docs', 'files', 'msgs'];
 function navOn(r, cur) { return r.id === cur || (r.id === 'tools' && TOOL_IDS.includes(cur)) || (r.id === 'handover' && cur === 'routine') || (r.id === 'apps' && cur === 'embed'); }
 function renderNav() {
   const cur = current(), od = overdueCount();
@@ -550,7 +570,7 @@ function render() {
   const eh = $('#embed-host'); if (eh) eh.hidden = cur !== 'embed';
   document.querySelector('.main').classList.toggle('embedding', cur === 'embed');
   VIEWS[cur](v);
-  if (TOOL_IDS.includes(cur)) v.insertAdjacentHTML('afterbegin', `<div class="seg tool-seg" role="group" aria-label="도구">${[['bridge','진우 연결'],['docs','문서 작성'],['files','자료함']].map(([k,n]) => `<a href="#${k}" aria-pressed="${cur===k}" class="segl">${n}</a>`).join('')}</div>`);
+  if (TOOL_IDS.includes(cur)) v.insertAdjacentHTML('afterbegin', `<div class="seg tool-seg" role="group" aria-label="도구">${[['bridge','진우 연결'],['docs','문서 작성'],['files','자료함'],['msgs','문구함']].map(([k,n]) => `<a href="#${k}" aria-pressed="${cur===k}" class="segl">${n}</a>`).join('')}</div>`);
   if (render.last !== cur) window.scrollTo(0, 0);
   render.last = cur;
 }
@@ -794,7 +814,7 @@ const HO_SOPS = [
 // 인수인계 문서에서 나온 추가 마감 (기존 사용자에게도 id가 없으면 추가)
 const HO_RULES = [
   {id:'y8', title:'활동지원사 사회보험 연말정산', cat:'ins', type:'yearly', month:4, day:20, shift:'next', note:'4월 고지 확인 후 → 5월 급여(4월분) 반영'},
-  {id:'y9', title:'단체상해공제 만료·갱신', cat:'etc', type:'yearly', month:11, day:9, shift:'prev', note:'한국사회복지공제회'},
+  {id:'y9', title:'단체상해공제 만료·갱신', cat:'sub', type:'yearly', month:11, day:9, shift:'prev', note:'한국사회복지공제회'},
   {id:'y10', title:'구비 운영비 전년 정산·사업계획서 제출', cat:'acc', type:'yearly', month:1, day:31, shift:'prev', note:'임차료·관리비 보조금 (월 120만원)'},
   {id:'y11', title:'서울시·구비 수용비 소진 확인', cat:'acc', type:'yearly', month:11, day:30, shift:'prev', note:'남기지 않기 — 사업팀 사용 계획 확인'},
   {id:'y12', title:'사회보험 요율·IL센터 지침 확인', cat:'pay', type:'yearly', month:1, day:2, shift:'next', note:'건강·고용 요율, 식비·명절수당 기준'},
@@ -803,7 +823,7 @@ const HO_RULES = [
   {id:'r11', title:'사무용품 결제 (키스오피스)', cat:'acc', type:'monthly', day:15, shift:'next', note:'월 1회 · 날짜는 센터 기준으로 수정'},
 ];
 
-/* ===== 조승민 간사 폴더(구글 드라이브) 학습분 — 2026.9.24 =====
+/* ===== 전임 간사 폴더(구글 드라이브) 학습분 — 2026.9.24 =====
    출처: 업무인수인계서_확인표, 행정 인수인계(전전임), 인사관리, 구비 운영비 집행, 업무일지, 교부신청서, 공문·예산·비품·지도점검 폴더 구조
    공개 사이트이므로 동료 이름은 가림 표기, 연락처·비밀번호·계좌번호 제외 */
 const HO_OWNER = {contract:'노○○ 간사', crime:'최○○ 간사'}; // 확인표상 인수자. 나머지는 본인
@@ -847,8 +867,11 @@ HO_SOPS.push(
 {id:'grant', cat:'fin', freq:'yearly', title:'서울시 IL 보조금 교부·정산 (분기)', when:'분기마다 교부신청 · 분기 정산·실적보고 · 1월 연간 정산',
  systems:['botem','excel'], paths:[['교부 관련','서울시\\교부 관련 (분기 교부신청서, 정산 및 실적보고서)'],['서울시 인건비','서울시\\★2026년 서울시 인건비.xlsx']],
  sections:[
-  {h:'분기 교부신청', steps:['교부신청서: 사업 내용 요약(기본·선택사업), 분기 총사업비·월별 금액','항목별 인건비·운영비·사업비 금액 기재 (천원 단위)','계좌입금의뢰서: 서울시 보탬이 예치계좌 · 구청장 귀하','직인 날인 후 제출'], warn:[]},
-  {h:'분기 정산·실적보고', steps:['「IL센터 운영 보조금 정산 및 실적보고서(누적)」 엑셀 갱신','사업팀 실적 받아 반영 → 제출'], warn:[]},
+  {h:'분기 신청 패키지 (정산+교부)', steps:['매 분기 종료 후 10일 이내 구청(장애인복지과)에 공문 1건으로 제출 (예: 7월 초중순 = 2분기 정산·실적 + 3분기 교부신청)','공문: 수신 구청 장애인복지과, 문서번호 GR연도-번호, 결재 후 직인 · 붙임 3종','붙임1 분기 사업비 교부신청서 (한글·pdf, 직인)','붙임2 정산 및 실적보고서 (한글)','붙임3 정산 및 실적보고서 (엑셀) — 한글본과 숫자 일치 확인','통장사본·사업계획 변경이 있으면 함께 첨부'], warn:['신청 시기를 놓치면 교부 지연 → 분기 말 1주 전부터 준비']},
+  {h:'분기 교부신청서 (붙임1)', steps:['법인명·대표자·소재지·사업 내용 요약(기본·선택사업)','분기 총사업비 = 보조금(월별 3개월 분할) + 자부담','항목별 인건비·운영비·사업비 금액 (천원 단위)','계좌입금의뢰서: 서울시 보탬이 예치계좌 · 구청장 귀하','직인 날인 후 제출'], warn:['계좌번호 등은 서식에서 가져오고 이 앱에는 저장하지 않음']},
+  {h:'정산·실적보고서 엑셀 (붙임3, 누적)', steps:['1.현황: 직원 현황 (장애/비장애, 장애유형, 성별, 연령대, 상근/비상근, 센터장 상근 여부)','2.정산: 예산액·집행액·잔액 — 인건비/운영비/사업비/(단위사업)거주시설 연계사업 · 노란 셀만 입력','3.실적: 이용장애인 수, 기본사업(권익옹호·동료상담·개인별 자립지원·거주시설 지역사회 자립지원) 연인원·횟수, 선택사업, 기타 선택사업','4-1 외부인사 수당지급 현황 (강의·회의·동료상담가·기타)','4-2 이용장애인 현황 (실 이용자·장애유형/정도·참여사업 횟수)','4-3 거주시설 장애인 이용현황','전 분기 파일을 복사해 누적 갱신 · 사업팀 실적 취합'], warn:['실적 서식 변경 불가 · 연인원과 횟수 필수 기재','이용장애인 개인정보가 들어가므로 앱·공개 저장소에 올리지 말 것']},
+  {h:'보탬e 집행마감·정산 순서', steps:['집행마감(94001): 자부담 집행비율, 집행 미처리 내역(원천징수 0원도 이체실행), 자부담계좌 이자·수익금 등록 확인','지자체 집행내역 검토(94002)','실적보고서 제출(94008, 정산보고서 포함) — 정산마감 이후 작성 가능','지자체 실적보고서 확정(94009)','반환정산: 반환등록(94011) → 이체실행(94032, 이체담당자) → 지자체 세입처리'], warn:['정산마감 후 이자 수정 불가 → 지자체 정산마감취소·정산검토반려 필요']},
+  {h:'집행기준 점검 (2026 서울시)', steps:['보조금 전용통장·전용카드, 제한업종 사용 금지','집행 증빙 1세트: 품의서→증빙→지출결의서 · 5년 보존 · 회계연도(1/1~12/31) 내 집행','사업계획 변경: 보조비목간·총사업비 10% 이상·세목간 30% 초과는 사전승인, 경미한 변경은 5일 이내 사후보고','인건비: 기본급+3개 수당(명절휴가비·가족수당·정액급식비) 외 자부담','강사·회의수당 등 기타소득은 원천징수(소득금액 40% 기준 20%+지방소득세 10%), 다음 달 10일까지 신고납부','다과비 1인 1일 4,000원(식사 포함 2만원) · 인쇄비 100만원 초과 시 비교견적','이행보증보험·재정보증 비용은 자부담'], warn:['단가·기준은 해마다 바뀜 → 해당 연도 집행기준 원문으로 최종 확인']},
   {h:'연간 정산·반납', steps:['보조금 정산 1월 10일 이전 제출 (사업팀과 공유)','예수금 정산 반납, 서울시 예금이자 반납, 퇴직반환금 반납 처리','기타 재원 정산은 2월 운영위원회 전까지'], warn:[]},
  ], rules:['q1','q2','y15','y17']},
 
@@ -885,7 +908,7 @@ HO_SOPS.push(
   g('daily').sections[0].steps.push('일일 자금 집행내역 확인');
 })();
 HO_RULES.push(
-  {id:'q1', title:'서울시 IL 보조금 분기 교부신청', cat:'acc', type:'yearly', month:[1,4,7,10], day:10, shift:'next', note:'날짜는 구청 안내에 맞춰 수정'},
+  {id:'q1', title:'서울시 IL 보조금 분기 교부신청', cat:'acc', type:'yearly', month:[1,4,7,10], day:10, shift:'next', note:'분기 종료 후 10일 이내 · 정산·실적 보고서와 한 공문으로 제출 (보탬e 집행마감 확인)'},
   {id:'q2', title:'IL 보조금 분기 정산·실적보고', cat:'acc', type:'yearly', month:[1,4,7,10], day:20, shift:'next', note:'누적 정산 및 실적보고서 · 사업팀 실적 취합'},
   {id:'q3', title:'분기 운영위원회 일정 확정 (2~3주 전)', cat:'etc', type:'yearly', month:[1,4,7,10], day:15, shift:'next', note:'활동지원 운영위 → 센터 운영위 순서'},
   {id:'y15', title:'서울시 보조금 연간 정산 제출', cat:'acc', type:'yearly', month:1, day:10, shift:'prev', note:'1월 10일 이전 · 예수금·이자·퇴직반환금 반납 포함'},
@@ -965,6 +988,88 @@ HO_SOPS.push({id:'yesu', cat:'fin', freq:'monthly', title:'예수금 관리 (사
  ], rules:['r1','r4','y15']});
 const SOP_TOOLS = {};
 
+/* ===== 정기·만기 일정 추가분 (업무분장·인수인계 앱 센터 일정과 대조해 반영) — 2026.10 =====
+   who: 'me' 내 담당 · 'shared' 공통 · 'other' 다른 담당 (캘린더·업무 화면은 기본으로 내 담당+공통만 보여 줌)
+   undated: 날짜 미정 — 날짜가 정해지면 규칙 편집에서 입력. 공개 사이트라 이름·연락처·계좌 없음 */
+(function () {
+  const R = (id, title, cat, who, o) => HO_RULES.push(Object.assign({id, title, cat, who, shift:'prev', note:''}, o));
+  const M = (id, t, c, w, day, note, sop, sh) => R(id, t, c, w, {type:'monthly', day, note, sop, shift: sh || 'prev'});
+  const Y = (id, t, c, w, month, day, note, sop, vf) => R(id, t, c, w, {type:'yearly', month, day, note, sop, verify: !!vf});
+  const U = (id, t, c, w, note, sop, extra) => R(id, t, c, w, Object.assign({type:'yearly', month:1, day:10, undated:true, note, sop}, extra || {}));
+
+  // ── 월 신고·지급 (업무분장 앱 기준)
+  M('n1', '기타소득 지급', 'pay', 'other', 5, '업무분장 앱: 매월 5일 · 보탬e·인터넷뱅킹·진우');
+  M('n2', '복지일자리 급여 지급', 'pay', 'me', 5, '업무분장 앱: 매월 5일');
+  M('n3', '활동지원사 급여 지급', 'pay', 'other', 10, '업무분장 앱: 매월 10일');
+  M('n4', '기타소득·일용근로소득 신고', 'tax', 'other', 'last', '업무분장 앱: 매월 말일까지 (홈택스) · 일용·사업소득 포함', 'monthclose', 'next');
+  M('n5', '퇴직연금 부담금 이체', 'pay', 'other', 14, '업무분장 앱: 매월 14일');
+  M('n6', '퇴직연금 지급 신청', 'pay', 'other', 16, '업무분장 앱: 매월 16일');
+  M('n7', '활동지원사 입사자 등록', 'pay', 'other', 5, '업무분장 앱: 매월 5일까지', 'join');
+  M('n8', '사업체노동력조사', 'etc', 'other', 12, '업무분장 앱: 매월 12일까지 (통계청 조사 응답)');
+  M('n9', '퇴사자 정산', 'pay', 'other', 20, '업무분장 앱: 매월 20일 · 퇴사자 있을 때', 'resignins');
+  // ── 연 신고·보고
+  Y('n10', '장애인 고용부담금·고용현황 신고', 'tax', 'shared', 1, 31, '업무분장 앱: 1/31 · 공통 담당');
+  Y('n11', '기타소득 지급명세서 신고', 'tax', 'other', 2, 28, '업무분장 앱: 2월 말일까지', 'yearend');
+  U('n13', '근무평정 (연 1회)', 'pay', 'other', '업무분장 앱: 연 1회 · 시기 미정 → 정해지면 날짜 입력', 'promo');
+  // ── 보험·구독 만기
+  const ins = [
+   ['n20','복지시설 종합안전배상공제 · 사무실',4,15,'other'],['n21','신원보증보험 · 자립생활주택 코디 (1)',3,5,'other'],['n22','신원보증보험 · 자립생활주택 코디 (2)',6,23,'other'],
+   ['n23','신원보증보험 · 자립생활주택 코디 (3)',9,22,'other'],['n24','신원보증보험 · 사무국 회계담당직원·간부',11,28,'other'],['n25','자동차보험 · 레이',6,18,'me'],
+   ['n26','자동차보험 · 스타렉스',10,24,'me'],['n27','화재보험 · 사무실(8층)',12,30,'other'],['n28','화재보험 · 사무실(5층)',7,22,'other'],['n29','화재보험 · 자립생활주택 가형',12,19,'other'],
+   ['n30','화재보험 · 자립생활주택 다형1',7,3,'other'],['n31','화재보험 · 자립생활주택 다형2',9,12,'other'],
+  ];
+  ins.forEach(a => Y(a[0], a[1] + ' 만기', 'sub', a[4], a[2], a[3], '업무분장 앱 만기일 · 갱신 전 견적·결재', 'subs'));
+  Y('n32', '배상책임보험 · 활동지원사 갱신', 'sub', 'other', 12, 15, '업무분장 앱: 12월(차기년 시작 전) → 날짜 미확정', 'subs', true);
+  const subs = [
+   ['n40','센터 홈페이지(웹모아) 이용료',11,28,'me'],['n41','진우 연장 계약',3,11,'other'],['n42','DAUM 메일 사용료',5,7,'other'],['n43','법인 교통카드 연 관리비',7,3,'me'],
+   ['n44','비즈폼 이용료',8,9,'other'],['n45','미리캔버스 이용료',8,12,'other'],
+  ];
+  subs.forEach(a => Y(a[0], a[1], 'sub', a[4], a[2], a[3], '업무분장 앱 만기일 · 결제수단·세금계산서 확인', 'subs'));
+  Y('n46', 'ChatGPT 구독 갱신', 'sub', 'shared', 8, 1, '업무분장 앱: 8/1 시작 연 구독 → 날짜 미확정', 'subs', true);
+  Y('n47', 'Adobe 구독 갱신', 'sub', 'shared', 6, 1, '업무분장 앱: 6월 → 날짜 미확정', 'subs', true);
+  Y('n48', 'Claude 구독 갱신', 'sub', 'shared', 1, 1, '업무분장 앱: 1월 시작 연 구독 → 날짜 미확정', 'subs', true);
+  // ── 의무교육·직무교육 (연 1회 · 시기 미정)
+  const edu = ['인권교육','성희롱 예방교육','성폭력·성매매 예방교육','가정폭력 예방교육','장애인식개선교육','개인정보보호교육','장애인학대 신고의무자 교육','아동학대 신고의무자 교육','긴급복지 신고의무자 교육','퇴직연금 교육'];
+  edu.forEach((t, i) => U('n' + (60 + i), t + ' (연 1회)', 'edu', 'shared', '법정 의무교육 · 이수 기한·시수는 해당 연도 지침 확인 · 날짜 정해지면 입력', 'edu'));
+  U('n70', '산업안전보건교육 (분기별)', 'edu', 'shared', '분기별 · 날짜 정해지면 입력 (월 여러 개는 규칙 편집에서)', 'edu', {month:[3,6,9,12]});
+  U('n71', '활동지원사 보수교육 (연 1회 이상)', 'edu', 'other', '활동지원 사업팀 · 시기 정해지면 입력', 'edu');
+  U('n72', '전담인력 직무교육 (연 1회)', 'edu', 'shared', '시기 정해지면 입력', 'edu');
+  Y('n73', '직장인 건강검진 (11월까지)', 'edu', 'shared', 11, 30, '업무분장 앱: 연 1회, 11월까지', 'edu');
+  // ── 회의·임기
+  U('n80', '운영위원회 (분기별)', 'mtg', 'me', '3·6·9·12월 중 · 회의 날짜 확정되면 입력 (분기 일정 확정은 q3)', 'board', {month:[3,6,9,12]});
+  U('n81', '활동지원사업 운영위원회 (반기)', 'mtg', 'shared', '6·12월 중 · 날짜 확정되면 입력', 'board', {month:[6,12]});
+  U('n82', '정기총회 (2월 중)', 'mtg', 'me', '연 1회 이상 · 총회 날짜 확정되면 입력 (준비는 y20)', 'rules', {month:2});
+  U('n83', '노사협의회 (분기별)', 'mtg', 'shared', '분기별 1회 · 날짜 확정되면 입력', 'board', {month:[3,6,9,12]});
+  R('n84', '대표·감사 임기 만료', 'mtg', 'me', {type:'once', date:'', undated:true, shift:'none', note:'2026.2.28 만료됨 → 차기 임기 확인 후 날짜 입력 (총회 의결·등기·구청 보고)', sop:'rules'});
+  R('n85', '운영위원 임기 만료', 'mtg', 'me', {type:'once', date:'', undated:true, shift:'none', note:'2026.2.28 만료됨 → 차기 임기 확인 후 날짜 입력', sop:'board'});
+  R('n86', '활동지원사업 운영위원 임기 만료', 'mtg', 'shared', {type:'once', date:'2027-02-28', shift:'none', note:'업무분장 앱: 2027.2.28', sop:'board'});
+  // ── 지도점검·평가·감사 (날짜 정해지면 입력)
+  const insp = [['n90','구청 지도점검 (장애인활동지원)','shared'],['n91','구청 지도점검 (중증장애인자립생활센터)','me'],['n92','장애인활동지원기관 평가','shared'],['n93','자립생활센터 운영 평가','me'],['n94','보조금 정산검사·외부 회계감사','me']];
+  insp.forEach(a => R(a[0], a[1], 'insp', a[2], {type:'once', date:'', undated:true, shift:'none', note:'공문으로 일정이 오면 날짜 입력 → 준비 체크리스트(연결 절차) 확인', sop:'inspect'}));
+})();
+
+HO_SOPS.push(
+{id:'inspect', cat:'gen', freq:'adhoc', title:'지도점검·외부평가·감사 대응 (초안)', when:'공문으로 일정 통보 → 날짜를 캘린더에 입력 · 점검 전 서류 완비',
+ systems:['nas','jinwoo','botem'], paths:[['지도점검','공문·예산·비품·지도점검 폴더 (공용서버)']],
+ sections:[
+  {h:'일정이 정해졌을 때', steps:['수신 공문 확인: 점검 종류·일자·대상 기간·제출 서류','캘린더 규칙(지도점검·평가·감사)에 날짜 입력, 점검 2~3주 전 알림 메모','대표·소장·사업팀에 일정·역할 공유'], warn:[]},
+  {h:'서류 준비 (행정 영역)', steps:['회계: 재원별 장부·통장·증빙 편철 (품의서→증빙→지출결의서), 보탬e 집행내역 대조','인사: 근로계약서·급여대장·4대보험·근태, 의무교육 이수 기록','규정: 정관·운영규정·취업규칙·세칙 최신본, 운영위원회·총회 회의록','자산: 비품관리대장·재물조사 결과, 차량 운행일지','보험: 가입 증권 (배상공제·신원보증·화재·자동차)'], warn:['규정·세칙은 점검 전에 완성 필요 (회계·사업운영 세칙)']},
+  {h:'점검 당일·이후', steps:['지적사항·시정요구 기록 → 시정 기한 캘린더 등록','시정 결과 공문 회신 · 자료함 "지도점검·외부평가" 폴더에 보관'], warn:[]},
+ ], rules:['n90','n91','n92','n93','n94']},
+{id:'edu', cat:'hr', freq:'yearly', title:'의무교육·직무교육 이수 관리 (초안)', when:'연 1회 · 산업안전보건은 분기별 · 건강검진 11월까지',
+ systems:['nas','excel'], paths:[['교육','교육 이수 기록 (공용서버)']],
+ sections:[
+  {h:'연초 계획', steps:['법정 의무교육 목록(인권·성희롱·성폭력·가정폭력·장애인식·개인정보·학대신고의무자·긴급복지·퇴직연금·산업안전)과 대상자 확인','교육 일정·방식(집합/온라인) 정해 캘린더에 날짜 입력'], warn:['이수 기한·시수는 해당 연도 지침 원문 확인']},
+  {h:'실시·기록', steps:['참석자 서명부·이수증 수집','교육 결과 보고서·사진은 자료함 "회의·행사"에 보관','미이수자 안내·재교육'], warn:[]},
+ ], rules:['n60','n61','n62','n63','n64','n65','n66','n67','n68','n69','n70','n71','n72','n73']},
+{id:'subs', cat:'gen', freq:'yearly', title:'보험·시스템 구독 만기 갱신 (초안)', when:'만기 2~4주 전 견적·결재 → 갱신 → 증권·영수증 보관',
+ systems:['nas','excel'], paths:[['보험·구독','보험증권·계약서 폴더 (공용서버)']],
+ sections:[
+  {h:'만기 전', steps:['만기일 2~4주 전 갱신 안내 확인, 가입 대상·금액 변동 확인 (인원·차량·면적)','견적 비교 필요 시 비교견적, 기안·결재','재원(자부담/보조금) 확인 — 이행보증보험·재정보증은 자부담'], warn:['재원 구분: 집행기준상 보험료 지출 가능 여부 확인']},
+  {h:'갱신 후', steps:['증권·영수증을 자료함 "시설·차량·물품"에 보관','전표 입력(진우)·보탬e 집행 증빙 첨부','다음 만기일을 캘린더 규칙에 갱신'], warn:[]},
+ ], rules:['y9','n20','n21','n22','n23','n24','n25','n26','n27','n28','n29','n30','n31','n32','n40','n41','n42','n43','n44','n45','n46','n47','n48']},
+);
+
 /* ================= defaults & schedule engine ================= */
 const CATS = {
   pay:{name:'급여·인사', color:'var(--cat-pay)'},
@@ -972,6 +1077,10 @@ const CATS = {
   ins:{name:'4대보험', color:'var(--cat-ins)'},
   acc:{name:'회계·예결산', color:'var(--cat-acc)'},
   don:{name:'후원', color:'var(--cat-don)'},
+  sub:{name:'보험·구독 만기', color:'var(--cat-sub)'},
+  edu:{name:'의무교육', color:'var(--cat-edu)'},
+  insp:{name:'점검·평가·감사', color:'var(--cat-insp)'},
+  mtg:{name:'회의·임기', color:'var(--cat-mtg)'},
   etc:{name:'기타', color:'var(--cat-etc)'},
 };
 
@@ -989,7 +1098,7 @@ const HOLIDAYS_DEFAULT = {
 
 function defaults() {
   return {
-    v: 6,
+    v: 7,
     settings: {
       payday: 25,
       since: ymd(today()),   // 이 날짜 이전 마감은 '지난 마감'으로 치지 않음
@@ -1014,14 +1123,14 @@ function defaults() {
       {id:'r2', title:'급여 계산·급여대장 결재', cat:'pay', type:'monthly', day:20, shift:'prev', note:'근태·연차 반영 후 진우 급여 메뉴에서 계산', sop:'pay', verify:true},
       {id:'r3', title:'원천세 신고·납부 (지방소득세 포함)', cat:'tax', type:'monthly', day:10, shift:'next', note:'반기납부 승인 기관이면 1·7월만 해당. 홈택스·위택스'},
       {id:'r4', title:'4대보험료 납부', cat:'ins', type:'monthly', day:10, shift:'next', note:'전월분 고지서 확인 (EDI)'},
-      {id:'r5', title:'4대보험 취득·상실 신고 확인', cat:'ins', type:'monthly', day:15, shift:'next', note:'사유 발생 다음 달 15일까지. 입·퇴사자 있을 때만'},
-      {id:'r6', title:'간이지급명세서 제출', cat:'tax', type:'monthly', day:'last', shift:'next', note:'근로소득(상용)·일용·사업소득 해당분. 센터 적용 대상 확인'},
+      {id:'r5', title:'4대보험 취득·상실 신고 확인', cat:'ins', type:'monthly', day:14, shift:'next', note:'업무분장 앱 기준 14일까지 (기존 허브: 15일). 입·퇴사자 있을 때만'},
+      {id:'r6', title:'근로소득 간이지급명세서 제출 (반기)', cat:'tax', type:'yearly', month:[1,7], day:31, shift:'next', note:'업무분장 앱 기준 반기(1/31·7/31) (기존 허브: 매월 말). 일용·기타소득은 매월 말(n4)'},
       {id:'r7', title:'월 회계마감 (진우 전표 정리)', cat:'acc', type:'monthly', day:'last', shift:'prev', note:'수기 엑셀과 대조 후 마감', sop:'monthclose'},
       {id:'r8', title:'CMS 후원금 입금 대사', cat:'don', type:'monthly', day:26, shift:'next', note:'CMS 출금일 기준으로 날짜 조정', sop:'monthclose', verify:true},
       {id:'r9', title:'월초 전월 정리', cat:'acc', type:'monthly', day:3, shift:'next', note:'전월 전표·재원별 요약', sop:'monthclose', verify:true},
       {id:'y1', title:'근로소득 지급명세서 제출 (연말정산)', cat:'tax', type:'yearly', month:3, day:10, shift:'next', note:'', sop:'yearend'},
-      {id:'y2', title:'건강보험 보수총액 신고', cat:'ins', type:'yearly', month:3, day:10, shift:'next', note:''},
-      {id:'y3', title:'고용·산재 보수총액 신고', cat:'ins', type:'yearly', month:3, day:15, shift:'next', note:''},
+      {id:'y2', title:'건강보험 보수총액 신고', cat:'ins', type:'yearly', month:3, day:14, shift:'next', note:'업무분장 앱 기준 3/14까지 (기존 허브: 3/10)'},
+      {id:'y3', title:'고용·산재 보수총액 신고', cat:'ins', type:'yearly', month:3, day:14, shift:'next', note:'업무분장 앱 기준 3/14까지 (기존 허브: 3/15)'},
       {id:'y4', title:'전년도 결산보고서 제출', cat:'acc', type:'yearly', month:3, day:31, shift:'next', note:'관할 구청. 사회복지법인 및 사회복지시설 재무·회계 규칙 기준', sop:'budget'},
       {id:'y5', title:'후원금 수입·사용결과 보고·공개', cat:'don', type:'yearly', month:3, day:31, shift:'next', note:'결산 제출과 함께', sop:'budget'},
       {id:'y6', title:'기부금영수증 발급명세서 제출', cat:'don', type:'yearly', month:6, day:30, shift:'next', note:'센터 해당 여부 확인', verify:true},
@@ -1098,7 +1207,7 @@ function ruleDay(rule, y, m) { // m: 0-based
 function occurrences(from, to) {
   const out = [];
   for (const r of S.rules) {
-    if (r.off) continue;
+    if (r.off || r.undated) continue;
     if (r.type === 'once') {
       const d = parseYmd(r.date);
       if (d >= from && d <= to) out.push(mk(r, d, d));
@@ -1381,12 +1490,30 @@ function centerPanel() {
 /* ================= calendar ================= */
 let calMonth = (() => { const t = today(); return new Date(t.getFullYear(), t.getMonth(), 1); })();
 let calFilter = new Set([...Object.keys(CATS), 'leave', 'bday']);
+const calMineOn = () => S.calMine !== false;
+const calShow = o => calFilter.has(o.rule.cat) && !(calMineOn() && o.rule.who === 'other');
+const WHO = {me:'내 담당', shared:'공통', other:'다른 담당'};
+const CAL_GROUPS = ['sub','edu','insp','mtg'];
+// 분류별 모아보기: 다음 일정 날짜(또는 날짜 미정)
+function calGroupPanel() {
+  const t = today(), to = addDays(t, 366), occ = occurrences(t, to);
+  const vis = r => !r.off && !(calMineOn() && r.who === 'other');
+  const col = CAL_GROUPS.map(cat => {
+    const rules = S.rules.filter(r => r.cat === cat && vis(r));
+    const rows = rules.map(r => { const o = occ.find(x => x.rule.id === r.id); return {r, o}; })
+      .sort((a, b) => (a.r.undated ? 1 : 0) - (b.r.undated ? 1 : 0) || ((a.o ? a.o.date : addDays(t, 999)) - (b.o ? b.o.date : addDays(t, 999))));
+    return `<div class="cg"><div class="row" style="gap:6px"><span class="dotcat" style="background:${CATS[cat].color}"></span><b>${CATS[cat].name}</b><span class="faint small">${rules.length}건</span></div>
+      <ul class="cg-l">${rows.map(({r, o}) => `<li><button class="cg-i" data-edit-rule="${r.id}"><span class="cg-t">${esc(r.title)}</span><span class="cg-d ${r.undated?'und':''}">${r.undated ? '날짜 미정' : o ? `${o.date.getMonth()+1}/${o.date.getDate()} · D${(() => { const d = Math.round((o.date - t) / 864e5); return d === 0 ? '-day' : d > 0 ? '-' + d : '+' + (-d); })()}` : '—'}</span></button></li>`).join('') || '<li class="faint small">없음</li>'}</ul></div>`;
+  }).join('');
+  const und = S.rules.filter(r => r.undated && !r.off && vis(r)).length;
+  return `<section class="panel"><div class="panel-h"><h2>정기·만기 모아보기</h2><span class="faint small">${und ? `날짜 미정 ${und}건 — 눌러서 날짜를 입력하면 캘린더에 올라가요` : '보험·구독 만기, 교육, 점검·평가·감사, 회의·임기'}</span></div><div class="panel-b cg-grid">${col}</div></section>`;
+}
 
 VIEWS.calendar = v => {
   const y = calMonth.getFullYear(), m = calMonth.getMonth();
   const start = addDays(calMonth, -calMonth.getDay());
   const end = addDays(new Date(y, m+1, 0), 6 - new Date(y, m+1, 0).getDay());
-  const occ = occurrences(start, end).filter(o => calFilter.has(o.rule.cat));
+  const occ = occurrences(start, end).filter(o => calShow(o));
   const byDay = {}; occ.forEach(o => (byDay[ymd(o.date)] ||= []).push(o));
   const xs = extraEvents(start, end).filter(e => calFilter.has(e.kind)); const xByDay = {}; xs.forEach(e => (xByDay[ymd(e.date)] ||= []).push(e));
   const tk = ymd(today());
@@ -1409,6 +1536,7 @@ VIEWS.calendar = v => {
   <div class="page-head"><div><h1>마감 캘린더</h1><p>법정·정기 마감이 매달 자동으로 잡히고, 주말·공휴일이면 규칙에 따라 앞뒤로 옮겨집니다.</p></div>
     <div class="row"><button class="btn" id="wl-today">${icon('edit')}오늘 업무일지</button><button class="btn" id="ics">${icon('down')}NAS 캘린더용 .ics</button><button class="btn primary" id="add-rule">${icon('plus')}일정·규칙 추가</button></div></div>
 
+  <div class="row small" style="gap:8px;margin:0 0 8px"><button class="chip" id="mine-tg" aria-pressed="${calMineOn()}">${calMineOn() ? '내 담당 + 공통만 보는 중' : '전체 담당 보는 중'}</button><span class="faint">누르면 ${calMineOn() ? '다른 담당 일정까지 모두' : '내 담당 + 공통만'} 봅니다 · 일정 편집에서 담당을 바꿀 수 있어요</span></div>
   <section class="panel">
     <div class="panel-h">
       <div class="row"><button class="btn ghost sm" id="prev" aria-label="이전 달">${icon('left')}</button>
@@ -1419,12 +1547,14 @@ VIEWS.calendar = v => {
     <div style="overflow-x:auto"><div class="cal">${DOW.map((d,i)=>`<div class="dow" style="${i===0?'color:var(--stamp)':i===6?'color:var(--accent)':''}">${d}</div>`).join('')}${cells}</div></div>
   </section>
 
+  ${calGroupPanel()}
+
   <div class="grid-2">
     <section class="panel"><div class="panel-h"><h2>${m+1}월 마감 목록</h2><div class="row" style="gap:6px"><span class="faint small">${monthOcc.filter(o=>o.done).length}/${monthOcc.length} 완료</span><button class="btn ghost sm" id="wl-month" title="이 달 업무일지 전체 복사">${icon('copy')}${m+1}월 업무일지</button><button class="btn ghost sm" id="wl-hwpx-month" title="이 달 업무일지를 hwpx 파일 묶음(zip)으로">${icon('doc')}hwpx 묶음</button></div></div>
       ${monthOcc.length?`<ul class="dl" id="mlist">${monthOcc.map(o=>deadlineItem(o)).join('')}</ul>`:'<div class="empty">이 달에는 마감이 없어요</div>'}</section>
     <section class="panel"><div class="panel-h"><h2>반복 규칙 ${S.rules.length}개</h2><span class="faint small">${S.rules.filter(r=>r.verify&&!r.off).length?`"날짜 확인" ${S.rules.filter(r=>r.verify&&!r.off).length}개는 추정 날짜예요`:'센터 기준에 맞게 날짜를 고쳐 쓰세요'}</span></div>
       <div class="tbl-wrap" style="border:0;border-radius:0;max-height:520px;overflow:auto"><table class="tbl"><thead><tr><th>일정</th><th>주기</th><th>휴일이면</th><th></th></tr></thead><tbody>
-      ${S.rules.map(r=>`<tr style="${r.off?'opacity:.45':''}"><td class="wrap"><span class="dotcat" style="background:${CATS[r.cat].color};margin-right:6px"></span>${esc(r.title)}${r.verify?' <span class="chip vfy">날짜 확인</span>':''}</td><td>${ruleText(r)}</td><td>${{prev:'앞당김',next:'미룸',none:'그대로'}[r.shift]}</td><td><button class="btn ghost sm" data-edit-rule="${r.id}">편집</button></td></tr>`).join('')}
+      ${S.rules.map(r=>`<tr style="${r.off?'opacity:.45':''}"><td class="wrap"><span class="dotcat" style="background:${CATS[r.cat].color};margin-right:6px"></span>${esc(r.title)}${r.verify?' <span class="chip vfy">날짜 확인</span>':''}${r.who&&r.who!=='me'?` <span class="chip">${WHO[r.who]}</span>`:''}</td><td>${ruleText(r)}</td><td>${{prev:'앞당김',next:'미룸',none:'그대로'}[r.shift]}</td><td><button class="btn ghost sm" data-edit-rule="${r.id}">편집</button></td></tr>`).join('')}
       </tbody></table></div></section>
   </div>`;
 
@@ -1432,8 +1562,9 @@ VIEWS.calendar = v => {
   $('#next').onclick = () => { calMonth = new Date(y, m+1, 1); render(); };
   $('#thism').onclick = () => { const t = today(); calMonth = new Date(t.getFullYear(), t.getMonth(), 1); render(); };
   $('#add-rule').onclick = () => editRule(null);
+  $('#mine-tg').onclick = () => { S.calMine = !calMineOn(); save(); render(); };
   $('#ics').onclick = exportIcs;
-  $('#wl-today').onclick = () => { const k = ymd(today()); dayDetail(k, occurrences(today(), today()).filter(o => calFilter.has(o.rule.cat))); };
+  $('#wl-today').onclick = () => { const k = ymd(today()); dayDetail(k, occurrences(today(), today()).filter(o => calShow(o))); };
   const wh = $('#wl-hwpx-month'); if (wh) wh.onclick = () => wlHwpxMonth(y, m);
   const wm = $('#wl-month'); if (wm) wm.onclick = () => { const t = wlogMonthText(y, m); t ? copyText(t, `${m+1}월 업무일지 ${Object.keys(S.wlog || {}).filter(x => x.startsWith(`${y}-${pad(m+1)}`)).length}일치를 복사했어요`) : toast('이 달에 기록한 업무일지가 없어요'); };
   $$('[data-cat]', v).forEach(b => b.onclick = () => { const k = b.dataset.cat; calFilter.has(k) ? calFilter.delete(k) : calFilter.add(k); if (!calFilter.size) calFilter = new Set([...Object.keys(CATS), 'leave', 'bday']); render(); });
@@ -1442,6 +1573,7 @@ VIEWS.calendar = v => {
   const ml = $('#mlist', v); if (ml) bindDone(ml, () => render());
 };
 function ruleText(r) {
+  if (r.undated) return '날짜 미정';
   const dd = r.day === 'payday' ? `${S.settings.payday}일(급여일)` : r.day === 'last' ? '말일' : `${r.day}일`;
   if (r.type === 'monthly') return `매월 ${dd}`;
   if (r.type === 'yearly') return Array.isArray(r.month) ? `매년 ${r.month.join('·')}월 ${dd}` : `매년 ${r.month}월 ${dd}`;
@@ -1459,11 +1591,11 @@ function dayDetail(k, list, xl = extraEvents(parseYmd(k), parseYmd(k))) {
     foot: `<button class="btn" data-close>닫기</button><button class="btn" id="dd-add">${icon('plus')}이 날짜에 일정 추가</button>`,
     onMount: el => {
       $('#dd-add', el).onclick = () => editRule(null, k);
-      el.addEventListener('click', e => { const b = e.target.closest('[data-done]'); if (!b) return; toggleDone(b.dataset.done); render(); dayDetail(k, occurrences(d, d).filter(o=>calFilter.has(o.rule.cat))); });
+      el.addEventListener('click', e => { const b = e.target.closest('[data-done]'); if (!b) return; toggleDone(b.dataset.done); render(); dayDetail(k, occurrences(d, d).filter(o=>calShow(o))); });
       let tm; const put = () => { clearTimeout(tm); tm = setTimeout(() => { wlogSet(k, $('#wl-tx', el).value, $('#wl-note', el).value); const st = $('#wl-st', el); if (st) st.textContent = '저장됨 · 방금'; if (current() === 'calendar') { const c = document.querySelector(`.cal .cell[data-day="${k}"]`); if (c && !c.querySelector('.wl-mark') && wlogGet(k)) c.querySelector('.pips').insertAdjacentHTML('beforebegin', '<span class="wl-mark" title="업무일지 기록됨">일지</span>'); } }, 400); };
       $('#wl-tx', el).oninput = put; $('#wl-note', el).oninput = put;
       $('#wl-fill', el).onclick = () => { const cur = $('#wl-tx', el).value.trim(), auto = worklogAuto(k); $('#wl-tx', el).value = cur ? [...new Set([...cur.split('\n'), ...auto.split('\n')].map(s => s.trim()).filter(Boolean))].join('\n') : auto; put(); toast('완료한 마감·업무로 채웠어요 (기존 내용은 유지)'); };
-      const reopen = () => dayDetail(k, occurrences(d, d).filter(o => calFilter.has(o.rule.cat)));
+      const reopen = () => dayDetail(k, occurrences(d, d).filter(o => calShow(o)));
       $('#wl-ph', el).onclick = () => { wlogSet(k, $('#wl-tx', el).value, $('#wl-note', el).value); const note = $('#wl-note', el).value, cur = $('#wl-tx', el).value; wlPhraseSheet(k, v => { const merged = [...new Set([...cur.split('\n'), ...v].map(x => x.trim()).filter(Boolean))].join('\n'); wlogSet(k, merged, note); closeSheet(); reopen(); render(); }); };
       $('#wl-hwpx', el).onclick = async () => { wlogSet(k, $('#wl-tx', el).value, $('#wl-note', el).value); await wlHwpxSave(k, $('#wl-tx', el).value, $('#wl-note', el).value); if (!document.querySelector('#wl-tx')) reopen(); };
       $('#wl-tpl', el).onclick = () => wlTplSheet(() => reopen());
@@ -1484,6 +1616,8 @@ function editRule(id, date) {
       <label class="f" data-for="once">날짜<input class="inp" type="date" id="ru-date" value="${esc(r.date||'')}"></label>
       <label class="f">주말·공휴일이면<select class="inp" id="ru-s"><option value="next">다음 평일로 미룸</option><option value="prev">전 평일로 앞당김</option><option value="none">그대로</option></select></label>
     </div>
+    <label class="f">담당<select class="inp" id="ru-w">${Object.entries(WHO).map(([k,n])=>`<option value="${k}" ${(r.who||'me')===k?'selected':''}>${n}</option>`).join('')}</select></label>
+    ${r.undated?`<label class="row small"><input type="checkbox" id="ru-set"> 날짜 정함 (체크하면 위 주기·날짜로 캘린더에 표시)</label>`:''}
     <label class="f">메모<input class="inp" id="ru-n" value="${esc(r.note)}"></label>
     <label class="f">연결 절차 (업무)<select class="inp" id="ru-rt"><option value="">없음</option>${sops().map(x=>`<option value="${x.id}" ${(sopOfRule(r)||{}).id===x.id?'selected':''}>${esc(x.title)}</option>`).join('')}</select></label>
     ${r.verify?`<div class="note warn small">이 날짜는 문서에서 정확히 확인되지 않은 <b>추정값</b>이에요. 전임자·공문으로 확인한 뒤 날짜를 고치고 아래를 체크해 주세요.</div>
@@ -1496,7 +1630,8 @@ function editRule(id, date) {
       $('#ru-ty', el).onchange = sync; sync();
       $('#ru-save', el).onclick = () => {
         const t = $('#ru-t', el).value.trim(); if (!t) { $('#ru-t', el).focus(); toast('일정 이름을 적어 주세요'); return; }
-        Object.assign(r, {title:t, cat:$('#ru-c', el).value, type:$('#ru-ty', el).value, month:(Array.isArray(r.month) && Number($('#ru-m', el).value) === Number(r.month[0])) ? r.month : Number($('#ru-m', el).value), shift:$('#ru-s', el).value, note:$('#ru-n', el).value.trim(), sop:$('#ru-rt', el).value, date:$('#ru-date', el).value || ymd(today())});
+        Object.assign(r, {title:t, cat:$('#ru-c', el).value, type:$('#ru-ty', el).value, month:(Array.isArray(r.month) && Number($('#ru-m', el).value) === Number(r.month[0])) ? r.month : Number($('#ru-m', el).value), shift:$('#ru-s', el).value, note:$('#ru-n', el).value.trim(), sop:$('#ru-rt', el).value, date:$('#ru-date', el).value || (r.undated ? '' : ymd(today())), who:$('#ru-w', el).value});
+        const st = $('#ru-set', el); if (st) { if (st.checked) { if ($('#ru-ty', el).value === 'once' && !$('#ru-date', el).value) { toast('한 번 일정은 날짜를 골라 주세요'); return; } delete r.undated; } }
         const dv = $('#ru-d', el).value; r.day = /^\d+$/.test(dv) ? Number(dv) : dv;
         const off = $('#ru-off', el); if (off) r.off = off.checked;
         const vf = $('#ru-vf', el); if (vf && vf.checked) { delete r.verify; r.verified = true; }
@@ -2751,6 +2886,109 @@ function wlPhraseSheet(k, onPick) {
     onMount: sh => { $('#wp-ok', sh).onclick = () => { const v = $$('input:checked', sh).map(x => x.value); if (!v.length) { toast('넣을 문구를 체크해 주세요'); return; } onPick(v); }; }});
 }
 
+/* ================= 문구함 (거래처·기관에 보내는 메시지 문구 저장) =================
+   - 문자/카카오톡/이메일/공문/전화 멘트 문구를 수신처별·분류별로 저장해 두고 한 번에 복사해요.
+   - 문구 안에 {수신처} {담당자} {날짜} {기한} {금액} 처럼 중괄호를 쓰면, 복사할 때 빈칸을 채우는 창이 떠요.
+   - 내용은 S.msgs에 저장돼 자동 연동(로그인)에 포함되고, 공개 사이트 파일에는 들어가지 않아요. */
+const MSG_CH = ['문자·카톡', '이메일', '공문', '전화 멘트'];
+const MSG_SEED = [
+  {ch: '공문', title: '분기 보조금 신청 공문 (정산·실적 + 교부신청)', org: '', subject: '{연도}년 {이전분기}분기 장애인자립생활지원센터 운영실적, {분기}분기 보조금 신청 관련 자료 제출', body: '1. 관련: {구청} 장애인복지과-{문서번호} ({공문일자})\n2. {연도}년 {이전분기}분기 운영실적 및 {분기}분기 보조금 신청 자료를 아래와 같이 제출합니다.\n\n붙임 1. {분기}분기 보조금 교부신청서 1부\n     2. {이전분기}분기 정산 및 실적보고서(한글) 1부\n     3. {이전분기}분기 정산 및 실적보고서(엑셀) 1부.  끝.'},
+  {ch: '이메일', title: '추경 예산서 제출 + 사업 전담인력 변경 안내', org: '', subject: '[{센터}] {연도}년 {차수}차 추경 예산서 제출 및 사업 전담인력 변경 안내의 건', body: '{호칭}, 안녕하십니까.\n{센터} {내이름} 간사입니다.\n항상 센터 사업 운영과 발전을 위해 애써주심에 깊이 감사드립니다.\n\n1. {연도}년 {차수}차 추경 예산서 제출\n{연도}년 {차수}차 추가경정예산서 제출과 관련하여 공문 및 관련 서류를 첨부하여 보내드립니다. (첨부파일 확인 부탁드립니다.)\n\n2. {사업명} 사업 전담인력 변경 안내\n기존 {전임자} 담당자의 퇴사로 인하여, {변경일자} 자로 {사업명} 사업 전담인력이 변경되어 함께 안내해 드립니다.\n\n* 변경일자: {변경일자} 자\n* 주요내용: {전임자} 담당자 퇴사에 따른 {사업명} 사업 전담인력 변경\n\n제출해 드린 서류와 관련하여 문의 사항이나 추가로 필요한 서류가 있으시면 언제든 연락해주시기 바랍니다.\n감사합니다.\n{센터} {내이름} 드림'},
+  {ch: '이메일', title: '후원업무 담당자 변경 + 입금 내역 확인 요청', org: '', body: '안녕하세요, 선생님.\n{센터} {내이름} 사회복지사입니다.\n\n그동안 후원업무를 함께해 주시고 늘 꼼꼼하게 챙겨 주셔서 진심으로 감사했습니다.\n\n{날짜}자로 후원업무 담당자가 변경되어, 담당자 연락처와 업무 메일 주소를 안내드립니다.\n\n- 후원업무 담당: {새담당자}\n- 직통번호: {직통번호}\n- 업무 메일: {업무메일}\n\n아울러 {대상월}분 입금 내역 확인을 요청드립니다.\n\n1. CMS 입금액\n{대상월}분 CMS 입금액은 {CMS입금액}원으로 확인됩니다. {회원현황} 기준으로, 출금액 {출금액}원에서 수수료 {수수료}원이 차감된 금액이 맞는지 확인 부탁드립니다.\n\n2. {입금일}자 입금 건 (총 {건수}건)\n- {입금내역1}\n- {입금내역2}\n- {입금내역3}\n- {입금내역4}\n\n확인 후 회신해 주시면 감사하겠습니다.\n\n{다음달}분부터는 {새담당자}께 연락 부탁드립니다. CMS 출금 오류나 미입금자가 있을 경우에는 성명을 알려주시면 감사하겠습니다.\n\n그동안 많은 도움 주셔서 다시 한번 감사드리며, 앞으로도 변함없이 잘 부탁드립니다.\n\n감사합니다.\n{내이름} 드림'},
+  {ch: '문자·카톡', title: '증빙서류 요청', org: '', body: '안녕하세요, {수신처} {담당자}님.\n{센터} {내이름}입니다.\n{금액} 건 정산을 위해 아래 서류를 {기한}까지 보내주시면 감사하겠습니다.\n- 세금계산서 또는 영수증\n- 거래명세서\n문의사항은 언제든 연락 주세요. 감사합니다.'},
+  {ch: '문자·카톡', title: '후원 감사 인사', org: '', body: '안녕하세요, {수신처} {담당자}님.\n{센터} {내이름}입니다.\n보내주신 따뜻한 후원 덕분에 센터가 힘을 얻고 있습니다. 진심으로 감사드립니다.\n후원금 영수증은 {날짜}에 발송해 드릴 예정입니다.'},
+  {ch: '문자·카톡', title: '면접 일정 안내', org: '', body: '안녕하세요, {수신처}님.\n{센터} {내이름}입니다.\n면접 일정 안내드립니다.\n- 일시: {날짜}\n- 장소: {센터}\n- 준비물: 신분증\n참석이 어려우시면 미리 연락 부탁드립니다.'},
+  {ch: '이메일', title: '공문 발송 안내', org: '', body: '{수신처} {담당자}님께\n\n안녕하세요, {센터} {내이름}입니다.\n{날짜}자 공문을 첨부하여 발송드립니다. 확인 후 {기한}까지 회신 부탁드립니다.\n\n감사합니다.'},
+  {ch: '이메일', title: '회의 참석 요청', org: '', body: '{수신처} {담당자}님께\n\n안녕하세요, {센터} {내이름}입니다.\n아래와 같이 회의를 개최하오니 참석해 주시기 바랍니다.\n- 일시: {날짜}\n- 장소: {센터}\n참석 여부를 {기한}까지 회신해 주시면 감사하겠습니다.'},
+  {ch: '전화 멘트', title: '결제·입금 확인 요청', org: '', body: '안녕하세요, {센터} {내이름}입니다. {담당자}님 계신가요?\n{금액} 입금 건 확인차 연락드렸습니다. {날짜} 기준으로 입금 내역이 확인되지 않아서요. 처리 현황 확인 부탁드립니다.'},
+];
+const MSG = {q: '', ch: '', org: ''};
+const MSG_KEEP = ['수신처', '담당자', '내이름', '센터', '새담당자', '직통번호', '업무메일', '호칭']; // 이 기기에만 기억 (매번 바뀌는 금액·날짜는 기억 안 함)
+function msgState() { S.msgs ||= {items: []}; S.msgs.items ||= []; return S.msgs; }
+function msgVars(body) { return [...new Set((String(body).match(/\{([^{}\n]{1,12})\}/g) || []).map(x => x.slice(1, -1)))]; }
+function msgMem() { try { return JSON.parse(localStorage.getItem('il-hub-msgvars') || '{}'); } catch (e) { return {}; } }
+function msgMemSet(o) { try { localStorage.setItem('il-hub-msgvars', JSON.stringify(o)); } catch (e) {} }
+function msgFill(body, vals) { return String(body).replace(/\{([^{}\n]{1,12})\}/g, (m, k) => (vals[k] !== undefined && vals[k] !== '') ? vals[k] : m); }
+
+function msgCopy(it) {
+  const vars = msgVars((it.subject || '') + '\n' + it.body), mem = msgMem(), now = today();
+  const mo = now.getMonth() + 1, prev = mo === 1 ? 12 : mo - 1;
+  const pre = {'수신처': it.org || '', '센터': (S.settings.org || {}).name || '', '날짜': `${mo}월 ${now.getDate()}일`, '연도': String(now.getFullYear()), '대상월': `${prev}월`, '다음달': `${mo}월 말에 입금되는 ${mo}월`};
+  const done = (vals, what) => {
+    const txt = what === 'subject' ? msgFill(it.subject, vals) : msgFill(it.body, vals);
+    copyText(txt, what === 'subject' ? '제목을 복사했어요. 메일 제목칸에 붙여 넣으세요' : '복사했어요. 메신저·메일에 붙여 넣으세요');
+    it.used = (it.used || 0) + 1; it.last = ymd(today()); save();
+    const m = msgMem(); vars.forEach(k => { if (vals[k] && MSG_KEEP.includes(k)) m[k] = vals[k]; }); msgMemSet(m);
+  };
+  if (!vars.length && !it.subject) { done({}, 'body'); return; }
+  const need = vars; // 모든 빈칸을 보여 주되 아는 값은 미리 채워 둠
+  sheet({title: '빈칸 채우기 후 복사', body: `<div class="small muted" style="margin-bottom:6px">비워 두면 {중괄호}가 그대로 복사돼요. 수신처·담당자·내이름은 다음에도 기억해요.</div>` +
+    need.map(k => `<label class="f">${esc(k)}<input class="inp" data-v="${esc(k)}" value="${esc(mem[k] || pre[k] || '')}"></label>`).join('') +
+    `<div class="note small" id="mg-pv" style="white-space:pre-wrap;margin-top:8px"></div>`,
+    foot: `<button class="btn" data-close>취소</button>${it.subject ? '<button class="btn" id="mg-sub">제목 복사</button>' : ''}<button class="btn primary" id="mg-ok">${it.subject ? '본문 복사' : '복사'}</button>`,
+    onMount: sh => {
+      const get = () => { const v = Object.assign({}, pre); $$('[data-v]', sh).forEach(i => { v[i.dataset.v] = i.value.trim(); }); return v; };
+      const pv = () => { const v = get(); $('#mg-pv', sh).textContent = (it.subject ? '제목: ' + msgFill(it.subject, v) + '\n\n' : '') + msgFill(it.body, v); };
+      $$('[data-v]', sh).forEach(i => i.oninput = pv); pv();
+      $('#mg-ok', sh).onclick = () => { const v = get(); closeSheet(); done(v, 'body'); setTimeout(render, 50); };
+      const sb = $('#mg-sub', sh); if (sb) sb.onclick = () => { done(get(), 'subject'); };
+    }});
+}
+function msgEdit(it) {
+  const isNew = !it, m = it ? Object.assign({}, it) : {id: uid(), ch: MSG.ch || MSG_CH[0], title: '', org: MSG.org || '', body: '', fav: false};
+  const orgs = [...new Set(msgState().items.map(x => x.org).filter(Boolean))];
+  sheet({title: isNew ? '문구 추가' : '문구 수정', body: `
+    <label class="f">제목<input class="inp" id="me-t" value="${esc(m.title)}" placeholder="예: 증빙서류 요청"></label>
+    <div class="form-grid">
+      <label class="f">보내는 방법<select class="inp" id="me-c">${MSG_CH.map(c => `<option ${c === m.ch ? 'selected' : ''}>${c}</option>`).join('')}</select></label>
+      <label class="f">수신처 (거래처·기관, 비워도 돼요)<input class="inp" id="me-o" list="me-ol" value="${esc(m.org)}" placeholder="예: ○○복지관"><datalist id="me-ol">${orgs.map(o => `<option value="${esc(o)}">`).join('')}</datalist></label>
+    </div>
+    <label class="f" id="me-sw">메일 제목 (이메일일 때만)<input class="inp" id="me-s" value="${esc(m.subject || '')}" placeholder="예: [{센터}] 서류 제출 안내의 건"></label>
+    <label class="f">문구<textarea class="inp" id="me-b" rows="9" placeholder="안녕하세요, {수신처} {담당자}님.&#10;{센터} {내이름}입니다.">${esc(m.body)}</textarea></label>
+    <div class="small muted">{수신처} {담당자} {날짜} {기한} {금액} {센터} {내이름} 처럼 중괄호로 빈칸을 만들어 두면, 복사할 때 채우는 창이 떠요. 직접 이름을 지어도 돼요 (예: {차량번호}).</div>`,
+    foot: `${isNew ? '' : '<button class="btn ghost" id="me-del" style="margin-right:auto">삭제</button>'}<button class="btn" data-close>취소</button><button class="btn primary" id="me-ok">저장</button>`,
+    onMount: sh => {
+      const sw = () => { $('#me-sw', sh).style.display = $('#me-c', sh).value === '이메일' ? '' : 'none'; }; $('#me-c', sh).onchange = sw; sw();
+      $('#me-ok', sh).onclick = () => {
+        m.title = $('#me-t', sh).value.trim(); m.ch = $('#me-c', sh).value; m.org = $('#me-o', sh).value.trim(); m.body = $('#me-b', sh).value.replace(/\s+$/, ''); m.subject = m.ch === '이메일' ? $('#me-s', sh).value.trim() : '';
+        if (!m.title || !m.body) { toast('제목과 문구를 적어 주세요'); return; }
+        const st = msgState();
+        if (isNew) st.items.unshift(m); else { const i = st.items.findIndex(x => x.id === m.id); Object.assign(st.items[i], m); }
+        save(); closeSheet(); render(); toast('저장했어요');
+      };
+      const d = $('#me-del', sh); if (d) d.onclick = () => { if (!d.dataset.armed) { d.dataset.armed = 1; d.textContent = '한 번 더 누르면 삭제'; return; } const st = msgState(); st.items = st.items.filter(x => x.id !== m.id); save(); closeSheet(); render(); };
+    }});
+}
+VIEWS.msgs = v => {
+  const items = msgState().items, q = MSG.q.trim().toLowerCase();
+  const list = items.filter(i => (!MSG.ch || i.ch === MSG.ch) && (!MSG.org || i.org === MSG.org) && (!q || (i.title + ' ' + i.org + ' ' + (i.subject || '') + ' ' + i.body).toLowerCase().includes(q)))
+    .sort((a, b) => (b.fav ? 1 : 0) - (a.fav ? 1 : 0) || (b.last || '').localeCompare(a.last || '') || 0);
+  const orgs = [...new Set(items.map(x => x.org).filter(Boolean))].sort();
+  v.innerHTML = `
+  <div class="page-head"><div><h1>문구함</h1><p>거래처·기관에 자주 보내는 메시지 문구를 저장해 두고 <b>빈칸만 채워 바로 복사</b>해요. 내용은 이 기기와 로그인 동기화에만 저장되고 공개 사이트에는 올라가지 않아요.</p></div>
+    <div class="row"><button class="btn" id="mg-seed2">예시 불러오기</button><button class="btn primary" id="mg-add">${icon('plus')}문구 추가</button></div></div>
+  <div class="row" style="flex-wrap:wrap;gap:6px;margin:4px 0 8px">
+    <button class="btn sm ${MSG.ch ? 'ghost' : 'primary'}" data-ch="">전체 ${items.length}</button>
+    ${MSG_CH.map(c => `<button class="btn sm ${MSG.ch === c ? 'primary' : 'ghost'}" data-ch="${c}">${c} ${items.filter(i => i.ch === c).length}</button>`).join('')}</div>
+  ${orgs.length ? `<div class="row" style="flex-wrap:wrap;gap:6px;margin-bottom:8px"><span class="faint small">수신처</span>${orgs.map(o => `<button class="chip ${MSG.org === o ? 'acc' : ''}" data-org="${esc(o)}" style="cursor:pointer;border:0">${esc(o)}</button>`).join('')}${MSG.org ? '<button class="chip" data-org="" style="cursor:pointer;border:0">× 해제</button>' : ''}</div>` : ''}
+  <input class="inp" id="mg-q" placeholder="제목·수신처·내용 검색" value="${esc(MSG.q)}" style="margin-bottom:10px">
+  <div id="mg-list">${list.length ? list.map(i => `<div class="panel mg-card" data-id="${i.id}"><div class="panel-b">
+      <div class="row" style="gap:8px;align-items:flex-start"><div style="min-width:0;flex:1"><b>${esc(i.title)}</b>
+        <div class="small muted">${esc(i.ch)}${i.org ? ' · ' + esc(i.org) : ''}${i.used ? ` · ${i.used}회 사용` : ''}${i.last ? ' · 최근 ' + esc(i.last.slice(5).replace('-', '/')) : ''}</div></div>
+        <button class="btn ghost sm" data-a="fav" aria-label="즐겨찾기" aria-pressed="${!!i.fav}" style="font-size:16px;line-height:1">${i.fav ? '★' : '☆'}</button></div>
+      ${i.subject ? `<div class="small" style="margin:6px 0 2px"><b>제목</b> ${esc(i.subject)}</div>` : ''}<div class="mg-body small">${esc(i.body)}</div>
+      <div class="row" style="gap:6px;margin-top:8px"><button class="btn primary sm" data-a="copy">${icon('copy')}복사</button><button class="btn sm ghost" data-a="edit">수정</button></div>
+    </div></div>`).join('') : `<div class="panel"><div class="panel-b muted" style="text-align:center;padding:22px 8px">${items.length ? '조건에 맞는 문구가 없어요' : `아직 저장한 문구가 없어요.<div style="margin-top:10px"><button class="btn" id="mg-seed">예시 문구 ${MSG_SEED.length}개 불러오기</button></div>`}</div></div>`}</div>`;
+  $('#mg-add', v).onclick = () => msgEdit(null);
+  const seed = () => { const have = new Set(msgState().items.map(x => x.title)), add = MSG_SEED.filter(x => !have.has(x.title)); if (!add.length) { toast('예시 문구가 이미 모두 들어 있어요'); return; } msgState().items.push(...add.map(x => Object.assign({id: uid(), fav: false}, x))); save(); render(); toast(add.length + '개를 불러왔어요'); };
+  const sd = $('#mg-seed', v); if (sd) sd.onclick = seed; $('#mg-seed2', v).onclick = seed;
+  $('#mg-q', v).oninput = e => { MSG.q = e.target.value; const p = e.target.selectionStart; render(); const el = $('#mg-q'); el.focus(); el.setSelectionRange(p, p); };
+  $$('[data-ch]', v).forEach(b => b.onclick = () => { MSG.ch = b.dataset.ch; render(); });
+  $$('[data-org]', v).forEach(b => b.onclick = () => { MSG.org = b.dataset.org; render(); });
+  $$('.mg-card', v).forEach(c => { const it = msgState().items.find(x => x.id === c.dataset.id);
+    $$('[data-a]', c).forEach(b => b.onclick = () => ({copy: () => msgCopy(it), edit: () => msgEdit(it), fav: () => { it.fav = !it.fav; save(); render(); }})[b.dataset.a]()); });
+};
+
 /* ================= 예수금: 재원별 금액 확인 + 전표 문안 ================= */
 const YS = {mon: ''};
 const YS_TPL = [
@@ -3290,7 +3528,7 @@ function hoRun(sop) {
 }
 function monthSops() {
   const t = today(), from = new Date(t.getFullYear(), t.getMonth(), 1), to = new Date(t.getFullYear(), t.getMonth() + 1, 0);
-  const due = new Set(occurrences(from, to).map(o => (sopOfRule(o.rule) || {}).id).filter(Boolean));
+  const due = new Set(occurrences(from, to).filter(o => o.rule.who !== 'other').map(o => (sopOfRule(o.rule) || {}).id).filter(Boolean));
   return sops().filter(s => { if (s.freq === 'daily') return false; if (s.freq === 'monthly' || due.has(s.id)) return true;
     const r = hoRun(s); return s.freq === 'adhoc' && r.done > 0 && r.done < r.total; });
 }
@@ -3302,6 +3540,22 @@ function sopCard(s, st) {
     <div class="st" style="width:100%"><div class="row small" style="gap:6px"><span class="faint">${esc(hoPeriod(s))} 진행</span><span class="grow"></span><span class="num">${r.done}/${r.total}</span>${r.total&&r.done===r.total?'<span class="chip ok">완료</span>':''}</div><div class="prog" style="margin-top:4px"><i style="width:${r.total?r.done/r.total*100:0}%"></i></div></div>
   </button>`;
 }
+function hoPlan() {
+  const t = today(), y = t.getFullYear(), mine = r => !r.off && r.who !== 'other';
+  const link = r => { const sp = sopOfRule(r); return sp ? `data-hoopen="${sp.id}"` : `data-edit-plan="${r.id}"`; };
+  const chip = (r, label) => `<a href="#handover" ${link(r)} class="pl-i" style="border-left-color:${CATS[r.cat].color}" title="${esc(r.note || '')}"><span>${esc(r.title)}</span><span class="faint small">${label}${sopOfRule(r) ? ' · 절차' : ''}${r.who === 'shared' ? ' · 공통' : ''}${r.verify ? ' · 날짜확인' : ''}</span></a>`;
+  const dd = r => r.day === 'payday' ? S.settings.payday + '일' : r.day === 'last' ? '말일' : r.day + '일';
+  const monthly = S.rules.filter(r => mine(r) && r.type === 'monthly' && !r.undated).sort((a, b) => (a.day === 'last' ? 99 : a.day === 'payday' ? +S.settings.payday : +a.day) - (b.day === 'last' ? 99 : b.day === 'payday' ? +S.settings.payday : +b.day));
+  const occ = occurrences(new Date(y, 0, 1), new Date(y, 11, 31)).filter(o => mine(o.rule) && o.rule.type !== 'monthly' && o.date.getFullYear() === y);
+  const und = S.rules.filter(r => mine(r) && r.undated);
+  const rows = [...Array(12)].map((_, i) => { const l = occ.filter(o => o.date.getMonth() === i);
+    return `<div class="pl-m ${i === t.getMonth() ? 'now' : ''}"><div class="pl-h num">${i + 1}월</div><div class="pl-b">${l.map(o => chip(o.rule, `${o.date.getDate()}일`)).join('') || '<span class="faint small">—</span>'}</div></div>`; }).join('');
+  return `<div class="note small">내 담당과 공통으로 표시한 일정만 모았어요. 항목을 누르면 연결된 업무 절차(인계서 기준)가 열리고, 절차가 없으면 일정 편집이 열려요. 다른 담당 일정은 <a href="#calendar">캘린더</a>에서 "전체 담당"으로 볼 수 있어요.</div>
+  <section class="panel"><div class="panel-h"><h2>매월 반복 (${monthly.length})</h2><span class="faint small">날짜 순</span></div><div class="panel-b pl-wrap">${monthly.map(r => chip(r, '매월 ' + dd(r))).join('')}</div></section>
+  <section class="panel"><div class="panel-h"><h2>${y}년 월별 일정</h2><span class="faint small">보험·구독 만기, 신고, 교육, 회의 포함</span></div><div class="panel-b pl-grid">${rows}</div></section>
+  ${und.length ? `<section class="panel"><div class="panel-h"><h2>날짜 미정 (${und.length})</h2><span class="faint small">날짜가 정해지면 입력</span></div><div class="panel-b pl-wrap">${und.map(r => chip(r, '미정')).join('')}</div></section>` : ''}`;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-edit-plan]'); if (b) { e.preventDefault(); editRule(b.dataset.editPlan); } });
 function hoMonthPanel() {
   const list = monthSops(); if (!list.length) return '';
   const t = today();
@@ -3397,8 +3651,8 @@ VIEWS.handover = v => {
   <div class="page-head"><div><h1>업무</h1><p>인계 문서·인수인계 확인표를 업무별 절차로 정리했어요. 단계마다 체크하며 실행하고, 모르는 건 질문 메모에 적어 두세요. 절차는 직접 고칠 수 있어요.</p></div>
     <div class="row"><button class="btn" id="ho-q">${icon('copy')}질문 목록 복사 (${qN})</button><button class="btn primary" id="ho-add">${icon('plus')}새 절차</button></div></div>
   ${PH.ready && !PH.count ? `<div class="note small row" style="gap:8px"><span class="grow">단계마다 화면 사진을 붙여 두면 일할 때 바로 확인할 수 있어요. 받은 <b>사진 팩(.json)</b>이 있으면 넣어 주세요.</span><button class="btn sm" id="ho-pack">사진 팩 넣기</button></div>` : ''}
-  <div class="seg" role="group" aria-label="보기">${[['month',`이번 달 할 일 ${mDone}/${ms.length}`],['all',`전체 절차 ${all.length}`]].map(([k,n]) => `<button aria-pressed="${HO.tab===k}" data-tab="${k}">${n}</button>`).join('')}</div>
-  ${HO.tab === 'month' ? `
+  <div class="seg" role="group" aria-label="보기">${[['month',`이번 달 할 일 ${mDone}/${ms.length}`],['plan','내 연간 계획'],['all',`전체 절차 ${all.length}`]].map(([k,n]) => `<button aria-pressed="${HO.tab===k}" data-tab="${k}">${n}</button>`).join('')}</div>
+  ${HO.tab === 'plan' ? hoPlan() : HO.tab === 'month' ? `
   ${daily.length ? `<div class="eyebrow">매일</div><div class="apps" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">${daily.map(s => sopCard(s, st)).join('')}</div>` : ''}
   <div class="eyebrow">${t.getMonth()+1}월에 할 일 · 매월 업무 + 이번 달 마감이 걸린 업무 + 진행 중인 건</div>
   ${ms.length ? `<div class="apps" style="grid-template-columns:repeat(auto-fill,minmax(260px,1fr))">${ms.map(s => sopCard(s, st)).join('')}</div>` : '<div class="empty">이번 달에 걸린 업무가 없어요</div>'}

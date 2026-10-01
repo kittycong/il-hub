@@ -5,6 +5,10 @@ const CATS = {
   ins:{name:'4대보험', color:'var(--cat-ins)'},
   acc:{name:'회계·예결산', color:'var(--cat-acc)'},
   don:{name:'후원', color:'var(--cat-don)'},
+  sub:{name:'보험·구독 만기', color:'var(--cat-sub)'},
+  edu:{name:'의무교육', color:'var(--cat-edu)'},
+  insp:{name:'점검·평가·감사', color:'var(--cat-insp)'},
+  mtg:{name:'회의·임기', color:'var(--cat-mtg)'},
   etc:{name:'기타', color:'var(--cat-etc)'},
 };
 
@@ -22,7 +26,7 @@ const HOLIDAYS_DEFAULT = {
 
 function defaults() {
   return {
-    v: 6,
+    v: 7,
     settings: {
       payday: 25,
       since: ymd(today()),   // 이 날짜 이전 마감은 '지난 마감'으로 치지 않음
@@ -47,14 +51,14 @@ function defaults() {
       {id:'r2', title:'급여 계산·급여대장 결재', cat:'pay', type:'monthly', day:20, shift:'prev', note:'근태·연차 반영 후 진우 급여 메뉴에서 계산', sop:'pay', verify:true},
       {id:'r3', title:'원천세 신고·납부 (지방소득세 포함)', cat:'tax', type:'monthly', day:10, shift:'next', note:'반기납부 승인 기관이면 1·7월만 해당. 홈택스·위택스'},
       {id:'r4', title:'4대보험료 납부', cat:'ins', type:'monthly', day:10, shift:'next', note:'전월분 고지서 확인 (EDI)'},
-      {id:'r5', title:'4대보험 취득·상실 신고 확인', cat:'ins', type:'monthly', day:15, shift:'next', note:'사유 발생 다음 달 15일까지. 입·퇴사자 있을 때만'},
-      {id:'r6', title:'간이지급명세서 제출', cat:'tax', type:'monthly', day:'last', shift:'next', note:'근로소득(상용)·일용·사업소득 해당분. 센터 적용 대상 확인'},
+      {id:'r5', title:'4대보험 취득·상실 신고 확인', cat:'ins', type:'monthly', day:14, shift:'next', note:'업무분장 앱 기준 14일까지 (기존 허브: 15일). 입·퇴사자 있을 때만'},
+      {id:'r6', title:'근로소득 간이지급명세서 제출 (반기)', cat:'tax', type:'yearly', month:[1,7], day:31, shift:'next', note:'업무분장 앱 기준 반기(1/31·7/31) (기존 허브: 매월 말). 일용·기타소득은 매월 말(n4)'},
       {id:'r7', title:'월 회계마감 (진우 전표 정리)', cat:'acc', type:'monthly', day:'last', shift:'prev', note:'수기 엑셀과 대조 후 마감', sop:'monthclose'},
       {id:'r8', title:'CMS 후원금 입금 대사', cat:'don', type:'monthly', day:26, shift:'next', note:'CMS 출금일 기준으로 날짜 조정', sop:'monthclose', verify:true},
       {id:'r9', title:'월초 전월 정리', cat:'acc', type:'monthly', day:3, shift:'next', note:'전월 전표·재원별 요약', sop:'monthclose', verify:true},
       {id:'y1', title:'근로소득 지급명세서 제출 (연말정산)', cat:'tax', type:'yearly', month:3, day:10, shift:'next', note:'', sop:'yearend'},
-      {id:'y2', title:'건강보험 보수총액 신고', cat:'ins', type:'yearly', month:3, day:10, shift:'next', note:''},
-      {id:'y3', title:'고용·산재 보수총액 신고', cat:'ins', type:'yearly', month:3, day:15, shift:'next', note:''},
+      {id:'y2', title:'건강보험 보수총액 신고', cat:'ins', type:'yearly', month:3, day:14, shift:'next', note:'업무분장 앱 기준 3/14까지 (기존 허브: 3/10)'},
+      {id:'y3', title:'고용·산재 보수총액 신고', cat:'ins', type:'yearly', month:3, day:14, shift:'next', note:'업무분장 앱 기준 3/14까지 (기존 허브: 3/15)'},
       {id:'y4', title:'전년도 결산보고서 제출', cat:'acc', type:'yearly', month:3, day:31, shift:'next', note:'관할 구청. 사회복지법인 및 사회복지시설 재무·회계 규칙 기준', sop:'budget'},
       {id:'y5', title:'후원금 수입·사용결과 보고·공개', cat:'don', type:'yearly', month:3, day:31, shift:'next', note:'결산 제출과 함께', sop:'budget'},
       {id:'y6', title:'기부금영수증 발급명세서 제출', cat:'don', type:'yearly', month:6, day:30, shift:'next', note:'센터 해당 여부 확인', verify:true},
@@ -131,7 +135,7 @@ function ruleDay(rule, y, m) { // m: 0-based
 function occurrences(from, to) {
   const out = [];
   for (const r of S.rules) {
-    if (r.off) continue;
+    if (r.off || r.undated) continue;
     if (r.type === 'once') {
       const d = parseYmd(r.date);
       if (d >= from && d <= to) out.push(mk(r, d, d));
