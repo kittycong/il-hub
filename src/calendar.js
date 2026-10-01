@@ -14,7 +14,7 @@ function calGroupPanel() {
     const rows = rules.map(r => { const o = occ.find(x => x.rule.id === r.id); return {r, o}; })
       .sort((a, b) => (a.r.undated ? 1 : 0) - (b.r.undated ? 1 : 0) || ((a.o ? a.o.date : addDays(t, 999)) - (b.o ? b.o.date : addDays(t, 999))));
     return `<div class="cg"><div class="row" style="gap:6px"><span class="dotcat" style="background:${CATS[cat].color}"></span><b>${CATS[cat].name}</b><span class="faint small">${rules.length}건</span></div>
-      <ul class="cg-l">${rows.map(({r, o}) => `<li><button class="cg-i" data-edit-rule="${r.id}"><span class="cg-t">${esc(r.title)}</span><span class="cg-d ${r.undated?'und':''}">${r.undated ? '날짜 미정' : o ? `${o.date.getMonth()+1}/${o.date.getDate()} · D${(() => { const d = Math.round((o.date - t) / 864e5); return d === 0 ? '-day' : d > 0 ? '-' + d : '+' + (-d); })()}` : '—'}</span></button></li>`).join('') || '<li class="faint small">없음</li>'}</ul></div>`;
+      <ul class="cg-l">${rows.map(({r, o}) => `<li class="cg-r"><button class="cg-i" data-edit-rule="${r.id}" title="전체 편집"><span class="cg-t">${esc(r.title)}</span>${r.undated || !o ? '' : `<span class="cg-d">D${(() => { const d = Math.round((o.date - t) / 864e5); return d === 0 ? '-day' : d > 0 ? '-' + d : '+' + (-d); })()}</span>`}</button><input type="date" class="cg-date ${r.undated ? 'und' : ''}" data-cgdate="${r.id}" value="${r.undated || !o ? '' : ymd(o.date)}" aria-label="${esc(r.title)} 날짜"></li>`).join('') || '<li class="faint small">없음</li>'}</ul></div>`;
   }).join('');
   const und = S.rules.filter(r => r.undated && !r.off && vis(r)).length;
   return `<section class="panel"><div class="panel-h"><h2>정기·만기 모아보기</h2><span class="faint small">${und ? `날짜 미정 ${und}건 — 눌러서 날짜를 입력하면 캘린더에 올라가요` : '보험·구독 만기, 교육, 점검·평가·감사, 회의·임기'}</span></div><div class="panel-b cg-grid">${col}</div></section>`;
@@ -79,6 +79,13 @@ VIEWS.calendar = v => {
   const wh = $('#wl-hwpx-month'); if (wh) wh.onclick = () => wlHwpxMonth(y, m);
   const wm = $('#wl-month'); if (wm) wm.onclick = () => { const t = wlogMonthText(y, m); t ? copyText(t, `${m+1}월 업무일지 ${Object.keys(S.wlog || {}).filter(x => x.startsWith(`${y}-${pad(m+1)}`)).length}일치를 복사했어요`) : toast('이 달에 기록한 업무일지가 없어요'); };
   $$('[data-cat]', v).forEach(b => b.onclick = () => { const k = b.dataset.cat; calFilter.has(k) ? calFilter.delete(k) : calFilter.add(k); if (!calFilter.size) calFilter = new Set([...Object.keys(CATS), 'leave', 'bday']); render(); });
+  $$('[data-cgdate]', v).forEach(inp => inp.onchange = () => {
+    const r = S.rules.find(x => x.id === inp.dataset.cgdate), v2 = inp.value; if (!r || !v2) return;
+    const d = parseYmd(v2), cur = occurrences(today(), addDays(today(), 366)).find(x => x.rule.id === r.id);
+    if (r.type === 'once') r.date = v2;
+    else { if (Array.isArray(r.month)) { const old = cur ? cur.orig.getMonth() + 1 : null, ms = r.month.map(Number); r.month = old && !ms.includes(d.getMonth() + 1) ? ms.map(x => x === old ? d.getMonth() + 1 : x).sort((a, b) => a - b) : ms; } else r.month = d.getMonth() + 1; r.day = d.getDate(); }
+    r.shift = 'none'; delete r.undated; delete r.verify; r.verified = true; save(); render(); toast(`${r.title}: ${d.getMonth() + 1}월 ${d.getDate()}일로 바꿨어요`);
+  });
   $$('[data-edit-rule]', v).forEach(b => b.onclick = () => editRule(b.dataset.editRule));
   $$('.cal .cell', v).forEach(c => { const open = () => dayDetail(c.dataset.day, byDay[c.dataset.day] || [], xByDay[c.dataset.day] || []); c.onclick = open; c.onkeydown = e => { if (e.key==='Enter'||e.key===' ') { e.preventDefault(); open(); } }; });
   const ml = $('#mlist', v); if (ml) bindDone(ml, () => render());
