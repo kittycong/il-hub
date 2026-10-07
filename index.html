@@ -394,6 +394,34 @@ tr.entered td.t{text-decoration:line-through}
 .pl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
 .pl-m{border:1px solid var(--line,#ddd);border-radius:10px;padding:8px}.pl-m.now{border-color:var(--accent)}
 .pl-h{font-weight:700;margin-bottom:6px}.pl-b{display:flex;flex-direction:column;gap:6px}
+
+/* 교부·집행 한 화면 */
+.gp-kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(138px,1fr));gap:10px;margin:12px 0}
+.gp-kpi>div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+.gp-kpi span{display:block;font-size:12px;color:var(--ink-3)}
+.gp-kpi b{display:block;font:700 21px var(--f-display);font-variant-numeric:tabular-nums;margin-top:2px;white-space:nowrap}
+.gp-kpi b.neg{color:var(--stamp)}.gp-kpi b.acc{color:var(--accent)}
+.gp-kpi em{font-style:normal;font-size:12px;color:var(--ink-3)}
+.gp-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,470px),1fr));gap:12px;align-items:start;margin-bottom:12px}
+.gp-cols>.panel{margin:0;min-width:0}
+.gp-x{overflow-x:auto}
+.gt{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums}
+.gt th{font-weight:600;font-size:12px;color:var(--ink-2);text-align:right;padding:6px 8px;border-bottom:1.5px solid var(--line-strong);white-space:nowrap}
+.gt td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;vertical-align:middle}
+.gt th:first-child,.gt td:first-child{text-align:left}
+.gt td.nm{white-space:normal;word-break:keep-all;overflow-wrap:anywhere;min-width:112px}
+.gt tr.tot td{font-weight:700;background:var(--sunk)}
+.gt tr.sub td{color:var(--ink-3);font-size:12px}
+.gt tr.gh td{background:var(--sunk);font-weight:600;text-align:left;font-size:12.5px}
+.gt td.neg,.gt .neg{color:var(--stamp);font-weight:600}
+.gt .gi{width:100%;min-width:62px;max-width:104px}
+.gi{height:28px;min-height:0;padding:2px 7px;text-align:right;font:inherit;font-size:13px;font-variant-numeric:tabular-nums;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.gi:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.gs{font-size:11px;color:var(--accent);font-weight:600}.gs0{font-size:11px}
+.gd td.nm{min-width:150px}
+.gl{margin:0;padding-left:18px;font-size:13px;line-height:1.7}.gl li.okx b{color:var(--ok)}.gl li.ngx b{color:var(--stamp)}
+th.rd,td.rd,.gt .gi.rd{color:var(--stamp)!important;font-weight:700}
+@media (max-width:620px){.gp-kpi b{font-size:18px}.gt{font-size:12.5px}}
 </style>
 
 </head>
@@ -869,11 +897,12 @@ HO_SOPS.push(
  systems:['botem','excel'], paths:[['교부 관련','서울시\\교부 관련 (분기 교부신청서, 정산 및 실적보고서)'],['서울시 인건비','서울시\\★2026년 서울시 인건비.xlsx']],
  sections:[
   {h:'분기 신청 패키지 (정산+교부)', steps:['매 분기 종료 후 10일 이내 구청(장애인복지과)에 공문 1건으로 제출 (예: 7월 초중순 = 2분기 정산·실적 + 3분기 교부신청)','공문: 수신 구청 장애인복지과, 문서번호 GR연도-번호, 결재 후 직인 · 붙임 3종','붙임1 분기 사업비 교부신청서 (한글·pdf, 직인)','붙임2 정산 및 실적보고서 (한글)','붙임3 정산 및 실적보고서 (엑셀) — 한글본과 숫자 일치 확인','통장사본·사업계획 변경이 있으면 함께 첨부'], warn:['신청 시기를 놓치면 교부 지연 → 분기 말 1주 전부터 준비']},
-  {h:'분기 교부신청서 (붙임1)', steps:['법인명·대표자·소재지·사업 내용 요약(기본·선택사업)','분기 총사업비 = 보조금(월별 3개월 분할) + 자부담','항목별 인건비·운영비·사업비 금액 (천원 단위)','계좌입금의뢰서: 서울시 보탬이 예치계좌 · 구청장 귀하','직인 날인 후 제출'], warn:['계좌번호 등은 서식에서 가져오고 이 앱에는 저장하지 않음']},
+  {h:'분기 교부신청서 (붙임1)', steps:['법인명·대표자·소재지·사업 내용 요약(기본·선택사업)','분기 총사업비 = 보조금(월별 3개월 분할) + 자부담','항목별 인건비·운영비·사업비 금액 (천원 단위) — 사업비에는 거주시설 연계사업 포함, 신청액 아래에 자부담, 맨 아래 총 보조수입(신청액+자부담)','분기별 구분 표 옆에 연간 보조금 예산(인건비·운영비·사업비·연계)과 직전 분기 결산 비교(계획·결산·증감)를 두고, 원 단위 표로 천원 반올림 차이를 확인','다음 분기 신청액 = 연간 결정액 − 지금까지 교부 누계 (구분별) — 예산 > 교부·집행 격자의 "분기 교부신청액" 표가 계산','계좌입금의뢰서: 서울시 보탬이 예치계좌 · 구청장 귀하','직인 날인 후 제출'], warn:['계좌번호 등은 서식에서 가져오고 이 앱에는 저장하지 않음']},
   {h:'정산·실적보고서 엑셀 (붙임3, 누적)', steps:['1.현황: 직원 현황 (장애/비장애, 장애유형, 성별, 연령대, 상근/비상근, 센터장 상근 여부)','2.정산: 예산액·집행액·잔액 — 인건비/운영비/사업비/(단위사업)거주시설 연계사업 · 노란 셀만 입력','3.실적: 이용장애인 수, 기본사업(권익옹호·동료상담·개인별 자립지원·거주시설 지역사회 자립지원) 연인원·횟수, 선택사업, 기타 선택사업','4-1 외부인사 수당지급 현황 (강의·회의·동료상담가·기타)','4-2 이용장애인 현황 (실 이용자·장애유형/정도·참여사업 횟수)','4-3 거주시설 장애인 이용현황','전 분기 파일을 복사해 누적 갱신 · 사업팀 실적 취합'], warn:['실적 서식 변경 불가 · 연인원과 횟수 필수 기재','이용장애인 개인정보가 들어가므로 앱·공개 저장소에 올리지 말 것']},
   {h:'보탬e 집행마감·정산 순서', steps:['집행마감(94001): 자부담 집행비율, 집행 미처리 내역(원천징수 0원도 이체실행), 자부담계좌 이자·수익금 등록 확인','지자체 집행내역 검토(94002)','실적보고서 제출(94008, 정산보고서 포함) — 정산마감 이후 작성 가능','지자체 실적보고서 확정(94009)','반환정산: 반환등록(94011) → 이체실행(94032, 이체담당자) → 지자체 세입처리'], warn:['정산마감 후 이자 수정 불가 → 지자체 정산마감취소·정산검토반려 필요']},
   {h:'집행기준 점검 (2026 서울시)', steps:['보조금 전용통장·전용카드, 제한업종 사용 금지','집행 증빙 1세트: 품의서→증빙→지출결의서 · 5년 보존 · 회계연도(1/1~12/31) 내 집행','사업계획 변경: 보조비목간·총사업비 10% 이상·세목간 30% 초과는 사전승인, 경미한 변경은 5일 이내 사후보고','인건비: 기본급+3개 수당(명절휴가비·가족수당·정액급식비) 외 자부담','강사·회의수당 등 기타소득은 원천징수(소득금액 40% 기준 20%+지방소득세 10%), 다음 달 10일까지 신고납부','다과비 1인 1일 4,000원(식사 포함 2만원) · 인쇄비 100만원 초과 시 비교견적','이행보증보험·재정보증 비용은 자부담'], warn:['단가·기준은 해마다 바뀜 → 해당 연도 집행기준 원문으로 최종 확인']},
-  {h:'교부액 관리 (예산 메뉴 연동)', steps:['서울시는 분기마다 교부액이 달라 "분기 교부액 × 4"로 계산하지 않음 → 예산 > 교부·집행 격자에 연간 결정액·분기별 교부액 입력','집행은 올린 원장에서 자동 연동 · "확인할 곳"에서 집행>교부, 연간 초과, 재배정액 차이 확인','다음 분기 교부 신청 예정액 = 연간 결정액 − 지금까지 교부액 (교부신청서는 천원 단위)'], warn:['정산 기준 확인 필요: 인건비 대장 합계와 보탬e 집행액이 다를 때 어느 기준으로 보고할지','마지막 분기는 이월 대신 반납인지, 발생 이자도 함께 반납하는지 확인']},
+  {h:'교부액 관리 (예산 메뉴 연동)', steps:['예산 > 교부·집행 격자 아래 "정산내역서 4구분"과 "정산 검증표"로 분기 정산 숫자를 바로 확인 (연계사업 계정은 체크)','서울시는 분기마다 교부액이 달라 "분기 교부액 × 4"로 계산하지 않음 → 예산 > 교부·집행 격자에 연간 결정액·분기별 교부액 입력','집행은 올린 원장에서 자동 연동 · "확인할 곳"에서 집행>교부, 연간 초과, 재배정액 차이 확인','다음 분기 교부 신청 예정액 = 연간 결정액 − 지금까지 교부액 (교부신청서는 천원 단위)'], warn:['정산 기준 확인 필요: 인건비 대장 합계와 보탬e 집행액이 다를 때 어느 기준으로 보고할지','마지막 분기는 이월 대신 반납인지, 발생 이자도 함께 반납하는지 확인']},
+  {h:'분기 정산 작업방법 (3자 대조)', steps:['산출물 3종: ① 정산 및 실적보고서 한글(표1 사업비 총괄·표2 정산 내역·표3 비목별 집행내역+추진실적) ② 서울시 정산내역서(누적) 엑셀 1장 ③ 내부 검산 워크북','자료: 진우 총계정원장(사업 전체 · 마지막 쪽에 (차월이월)·합계 행이 있어야 완결) · 인건비 5계정 원장(급여·제수당·퇴직연금·사회보험·후생경비) · 통장출납부(마지막 누계 잔액) · 보탬e 보조세목별 집행목록 + 집행내역 화면(교부결정액·집행액·계좌잔액) · 전 분기 보고서','순서: 자료수집 → 원장 완결성(분기말 거래 포함) → 계정→비목 매핑 → 3자 대조(진우=통장=보탬e) → 집행계획 산출 → 검증표(모두 일치) → 한글 보고서+정산내역서 → 실적보고서','비목 매핑: 급여·제수당(명절·가족수당)·후생경비(식비)·퇴직연금·사회보험 = 인건비(보탬e 세목 "보수") · 수용비및수수료 = 운영비(사무관리비) · 각 단위사업 계정 = 행사운영비 = 사업비 · 거주시설 자립지원 계정만 (단위사업) 거주시설 연계사업','대조식: 보조금 사용액 = 통장 올해 지출 − 반납금 − 전년도 이월 반납 · 통장 잔액 = 교부 누계 + 이자 − 사용액 · 보탬e 지방비 집행액 = 진우 사용액 · 인건비 5계정 합 = 보탬e "보수"','집행계획(누계) = 직전 분기 계획 + 이번 분기 예상액 · 운영·사업비 예상액 = MAX(0, 분기말 결과 − 직전 분기 계획) · 인건비 배분액 = 분기 교부액 − 운영·사업비 예상액 (최소 = MAX(0, 결과 − 직전 계획), 나머지는 변경예산 잔여 비율로, 반올림 차이는 급여에)','검증: 모든 계획 ≥ 결과 · 계획 ≤ 연간 변경예산 · 다음 분기 소요 = 다음 분기 교부신청액 · 자부담 계획 = 연간 계획 · 한글본·엑셀본 숫자 일치','서울시 정산내역서: 분기 누적 1행만 · 예산액(A) = 연간 보조금 결정액(3개소 합산 금지) · 사업비 = 행사운영비 − 연계사업 · "계" 행 = 센터 행 · 노란 셀만 입력 · 신규 개소는 2분기부터'], warn:['보탬e "보수"는 비목별로 나뉘지 않음 → 반드시 진우 계정별 원장으로 분리','보탬e 행사운영비는 세부사업 구분이 없음 → 집행목적에 적힌 표현을 보고 연계사업 판별','차이 원인: 회계일자 vs 보탬e 등록일(분기말 1~2일), 이월·퇴직연금반환금 수입·반납(합계 0), 마이너스 지출(당해분 퇴직적립금 반환) → 보탬e 등록 후 재대조','실제 금액·계좌·성명은 이 앱에 저장하지 말고, 예산 메뉴(내 브라우저)에서만 입력']},
   {h:'연간 정산·반납', steps:['보조금 정산 1월 10일 이전 제출 (사업팀과 공유)','예수금 정산 반납, 서울시 예금이자 반납, 퇴직반환금 반납 처리','기타 재원 정산은 2월 운영위원회 전까지'], warn:[]},
  ], rules:['q1','q2','y15','y17']},
 
@@ -3029,11 +3058,7 @@ SOP_TOOLS.yesu = {
     const ni = (k, lab) => `<label class="f">${lab}<input class="inp num r" data-nt="${k}" value="${d.notice[k] ? won(d.notice[k]) : ''}" inputmode="numeric"></label>`;
     const cell = (n, k, v) => `<td><input class="inp num r" data-yr="${esc(n)}" data-yk="${k}" value="${v != null && v !== '' && +v ? won(v) : ''}" inputmode="numeric"></td>`;
     return `<section class="panel" id="ys-panel"><div class="panel-h"><div><h2>금액 확인</h2><div class="faint small">재원별로 예수금 통장에 모을 금액과 실제 입금·고지액을 맞춰 봐요</div></div>
-      <div class="row" style="gap:6px"><input class="inp" type="month" id="ys-mon" value="${YS.mon}" style="width:auto"><button class="btn ghost sm" id="ys-prev">지난달 금액 복사</button><button class="btn sm" id="ys-imp" title="문서웹앱(출장·급여) → 급여대장 기안 → 「허브 예수금 파일 받기」로 받은 파일">문서웹앱 파일 올리기</button><input type="file" id="ys-imp-f" accept=".json,application/json" hidden></div></div>
-      <details class="ys-howto" style="margin:0 12px 10px" ${d.src ? '' : 'open'}><summary class="small" style="cursor:pointer"><b>문서웹앱 연동 — 작업 방법</b> <span class="faint">(매달 급여 확정 뒤 · 분홍 = 문서웹앱, 청록 = 허브)</span></summary>
-        <div class="row" style="gap:6px;flex-wrap:wrap;align-items:stretch;margin-top:6px"><div class="ys-step" style="flex:1 1 150px;min-width:140px;border:1px solid var(--line, #ddd);border-radius:10px;padding:6px 10px"><b class="num" style="display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;background:#c8557c;color:#fff;font-size:12px;margin-right:6px">1</b><b class="small">문서웹앱에서 파일 받기</b><div class="faint small" style="margin-top:2px">급여 작업 → 급여대장 기안 → 「허브 예수금 파일 받기」</div></div><span class="faint" aria-hidden="true" style="align-self:center">→</span><div class="ys-step" style="flex:1 1 150px;min-width:140px;border:1px solid var(--line, #ddd);border-radius:10px;padding:6px 10px"><b class="num" style="display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;background:var(--accent, #1F5F6B);color:#fff;font-size:12px;margin-right:6px">2</b><b class="small">여기에 올리기</b><div class="faint small" style="margin-top:2px">위 「문서웹앱 파일 올리기」</div></div><span class="faint" aria-hidden="true" style="align-self:center">→</span><div class="ys-step" style="flex:1 1 150px;min-width:140px;border:1px solid var(--line, #ddd);border-radius:10px;padding:6px 10px"><b class="num" style="display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;background:var(--accent, #1F5F6B);color:#fff;font-size:12px;margin-right:6px">3</b><b class="small">재원 연결 → 반영</b><div class="faint small" style="margin-top:2px">처음 한 번만 확인, 다음 달부터 그대로</div></div><span class="faint" aria-hidden="true" style="align-self:center">→</span><div class="ys-step" style="flex:1 1 150px;min-width:140px;border:1px solid var(--line, #ddd);border-radius:10px;padding:6px 10px"><b class="num" style="display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;background:var(--accent, #1F5F6B);color:#fff;font-size:12px;margin-right:6px">4</b><b class="small">실제 입금액 입력</b><div class="faint small" style="margin-top:2px">통장 확인 후 칸에 → 차이 표시</div></div><span class="faint" aria-hidden="true" style="align-self:center">→</span><div class="ys-step" style="flex:1 1 150px;min-width:140px;border:1px solid var(--line, #ddd);border-radius:10px;padding:6px 10px"><b class="num" style="display:inline-block;width:20px;height:20px;line-height:20px;text-align:center;border-radius:50%;background:var(--accent, #1F5F6B);color:#fff;font-size:12px;margin-right:6px">5</b><b class="small">전표 문안 복사</b><div class="faint small" style="margin-top:2px">아래 적요·금액 → 진우 결의서</div></div></div>
-        <div class="faint small" style="margin-top:4px">파일에는 재원별 합계만 있어요(이름·개인별 금액 없음). 직접 입력도 그대로 쓸 수 있어요.</div></details>
-      ${d.src ? `<div class="note small" style="margin:0 12px 8px">문서웹앱 파일에서 채움 · <b>${esc(d.src.file || '')}</b> · ${esc(d.src.at || '')}${d.src.notice ? ' · 고지액 포함' : ''} — 칸을 직접 고치면 고친 값이 남아요</div>` : ''}
+      <div class="row" style="gap:6px"><input class="inp" type="month" id="ys-mon" value="${YS.mon}" style="width:auto"><button class="btn ghost sm" id="ys-prev">지난달 금액 복사</button></div></div>
       <div class="tbl-wrap" style="border:0;border-radius:0"><table class="tbl ys-tbl"><thead><tr><th>재원</th><th class="r">근로자부담</th><th class="r">사용자부담</th><th class="r">예수금 이체 합계</th><th class="r">실제 입금액</th><th class="r">차이</th><th class="r">퇴직적립금</th></tr></thead><tbody>
       ${c.rows.map(r => `<tr><td>${esc(r.n)}</td>${cell(r.n, 'emp', r.emp)}${cell(r.n, 'er', r.er)}<td class="r"><b>${won(r.sum)}</b></td>${cell(r.n, 'dep', r.dep)}<td class="r">${r.gap == null ? '<span class="faint">-</span>' : r.gap ? `<span class="chip crit">${r.gap > 0 ? '+' : ''}${won(r.gap)}</span>` : '<span class="chip ok">일치</span>'}</td>${cell(r.n, 'ret', r.ret)}</tr>`).join('')}
       </tbody><tfoot><tr class="bg-g"><td><b>합계</b></td><td class="r">${won(c.T.emp)}</td><td class="r">${won(c.T.er)}</td><td class="r"><b>${won(c.T.sum)}</b></td><td class="r">${won(c.T.dep)}</td><td></td><td class="r">${won(c.T.ret)}</td></tr></tfoot></table></div>
@@ -3066,11 +3091,6 @@ SOP_TOOLS.yesu = {
   },
   bind(v, s) {
     const y = ysState(), d = ysMonth();
-    const imp = $('#ys-imp', v), impF = $('#ys-imp-f', v);
-    if (imp && impF) { imp.onclick = () => impF.click(); impF.onchange = async () => { const f = impF.files[0]; impF.value = ''; if (!f) return;
-      let j = null; try { j = JSON.parse(await f.text()); } catch (e) {}
-      if (!j || j.schema !== 'il-payroll-yesu' || !Array.isArray(j.funds) || !j.year || !j.month) { toast('문서웹앱 「허브 예수금 파일」이 아니에요'); return; }
-      ysImportSheet(j, f.name); }; }
     const reval = () => { save(); const p = $('#ys-panel', v); if (!p) return; const sy = window.scrollY; render(); window.scrollTo(0, sy); };
     v.addEventListener('change', e => {
       const t = e.target;
@@ -3093,47 +3113,6 @@ SOP_TOOLS.yesu = {
     $$('.ys-tbl input.num, .ys-notice input', v).forEach(i => i.addEventListener('focus', () => { i.value = i.value.replace(/,/g, ''); }));
   },
 };
-
-/* ---------- 문서웹앱(chulchang-munseo) 「허브 예수금 파일」 가져오기 (il-payroll-yesu v1) ----------
-   문서웹앱 재원(세부) → 허브 예수금 재원 연결은 S.yesu.map에 기억. 개인별 금액·실명은 파일에 없음. */
-function ysGuess(key, title, funds) {
-  const has = re => funds.find(n => re.test(n)) || '';
-  if (key === 'f_il') return has(/서울|IL/i);
-  if (/^f_(ga|da\d)$/.test(key) || /주택/.test(title)) return has(/주택/);
-  if (key === 'pas' || /PAS|활동지원/.test(title)) return has(/PAS|활동지원/i);
-  if (key === 'f_huwon' || /후원/.test(title)) return has(/후원/);
-  if (key === 'f_jayul' || key === 'ops' || /자율|운영/.test(title)) return has(/자율|운영|자부담/);
-  return '';
-}
-function ysImportSheet(j, fileName) {
-  const y = ysState(), funds = y.funds, key = `${j.year}-${pad(j.month)}`, map = y.map = y.map || {};
-  const sel = (fk, title) => { const cur = map[fk] != null && (map[fk] === '' || funds.includes(map[fk])) ? map[fk] : ysGuess(fk, title, funds);
-    return `<select class="inp" data-ymap="${esc(fk)}" style="width:auto;min-width:150px"><option value="">(반영 안 함)</option>${funds.map(n => `<option ${n === cur ? 'selected' : ''}>${esc(n)}</option>`).join('')}</select>`; };
-  const N = j.notice || null, nSum = N ? (+N.np || 0) + (+N.hi || 0) + (+N.ei || 0) + (+N.ia || 0) : 0;
-  sheet({title: `문서웹앱 파일 → ${j.year}년 ${j.month}월 예수금`, wide: true, body: `
-    <div class="note small">급여: ${esc(j.paySrc || '')}<br>사회보험: ${esc(j.insSrc || '')}${j.made ? `<br>만든 날: ${esc(j.made)}` : ''}</div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>문서웹앱 재원</th><th class="r">근로자부담</th><th class="r">사용자부담</th><th class="r">퇴직적립금</th><th>→ 허브 재원</th></tr></thead><tbody>
-      ${j.funds.map(f => `<tr><td>${esc(f.title || f.key)}${f.n ? ` <span class="faint small">${f.n}명</span>` : ''}</td><td class="r">${won(f.emp || 0)}</td><td class="r">${won(f.er || 0)}</td><td class="r">${won(f.ret || 0)}</td><td>${sel(f.key, f.title || '')}</td></tr>`).join('')}
-    </tbody></table></div>
-    <div class="small faint">같은 허브 재원으로 연결한 줄은 더해서 넣어요. 연결은 기억해 두니 다음 달엔 그대로 올리면 돼요. 허브 재원 이름은 예수금 화면 아래 "재원 이름 바꾸기·추가"에서 바꿔요.</div>
-    ${N ? `<label class="row small" style="gap:6px;margin-top:8px"><input type="checkbox" id="ym-notice" ${N.from === '고지내역' ? 'checked' : ''}> 고지액도 채우기 — 국민연금 ${won(N.np || 0)} · 건강 ${won(N.hi || 0)} · 고용 ${won(N.ei || 0)} · 산재 ${won(N.ia || 0)} = <b>${won(nSum)}</b>원 <span class="faint">(${esc(N.from === '고지내역' ? '고지내역 ' + (N.people || 0) + '명 기준, 국민연금은 급여 공제액 기준' : '고지내역 없음 — 계산값')})</span></label>` : ''}
-    <div class="small faint" style="margin-top:6px">실제 입금액 칸은 그대로 둬요. 연결한 허브 재원의 근로자·사용자·퇴직 금액만 바뀌어요.</div>`,
-    foot: `<span class="grow"></span><button class="btn" data-close>취소</button><button class="btn primary" id="ym-ok">${j.month}월에 반영</button>`,
-    onMount: el => {
-      $('#ym-ok', el).onclick = () => {
-        const agg = {};
-        $$('[data-ymap]', el).forEach(s2 => { map[s2.dataset.ymap] = s2.value; });
-        j.funds.forEach(f => { const h = map[f.key]; if (!h) return; const a = agg[h] ||= {emp: 0, er: 0, ret: 0}; a.emp += +f.emp || 0; a.er += +f.er || 0; a.ret += +f.ret || 0; });
-        if (!Object.keys(agg).length) { toast('연결한 허브 재원이 없어요'); return; }
-        YS.mon = key; const d = ysMonth(key);
-        Object.entries(agg).forEach(([h, a]) => { const r = d.rows[h] ||= {}; r.emp = Math.round(a.emp); r.er = Math.round(a.er); r.ret = Math.round(a.ret); });
-        const withN = !!(N && $('#ym-notice', el) && $('#ym-notice', el).checked);
-        if (withN) d.notice = {np: Math.round(+N.np || 0), hi: Math.round(+N.hi || 0), ei: Math.round(+N.ei || 0), ia: Math.round(+N.ia || 0)};
-        d.src = {file: fileName, at: ymd(today()), made: j.made || '', notice: withN};
-        save(); closeSheet(); render(); toast(`${j.month}월 예수금에 ${Object.keys(agg).length}개 재원 금액을 넣었어요`);
-      };
-    }});
-}
 
 /* ================= 예산 · 재원별 잔액 · 계정별 · 사업별 =================
    데이터: S.budget = {year, funds:[{id,name,owner,mine}], lines:[{id,y,fund,type,gwan,hang,mok,proj,owner,kw,base,sup1,sup2}],
@@ -3256,7 +3235,7 @@ const bar = (r, lastMon) => `<div class="bgbar" title="집행률 ${r}%${lastMon 
 /* ---------- 화면 ---------- */
 VIEWS.budget = v => {
   const b = bgState(), y = b.year;
-  const tabs = [['fund', '재원별 잔액'], ['led', '원장 계정별'], ['grant', '교부·집행 격자'], ['acct', '계정별 세부'], ['proj', '사업별 사용액'], ['plan', '예산 입력'], ['unm', '미분류']];
+  const tabs = [['fund', '재원별 잔액'], ['led', '원장 계정별'], ['grant', '교부·집행 격자'], ['settle', '세목별 정산'], ['acct', '계정별 세부'], ['proj', '사업별 사용액'], ['plan', '예산 입력'], ['unm', '미분류']];
   const umTotal = b.funds.reduce((a, f) => a + (linesOf(f.id, y).length ? fundSummary(f.id, y).um : 0), 0);
   v.innerHTML = `
   <div class="page-head"><div><h1>예산 · 잔액</h1><p>연초 예산(본예산·추경)과 진우 <b>총계정별원장</b> 엑셀을 맞춰 재원별·계정별·사업별 집행액과 잔액을 봅니다. 파일은 이 기기 안에서만 읽어요.</p></div>
@@ -3269,7 +3248,7 @@ VIEWS.budget = v => {
   $('#bg-ex', v).onclick = () => exchangeSheet();
   $$('[data-bt]', v).forEach(x => x.onclick = () => { BG.tab = x.dataset.bt; render(); });
   const body = $('#bg-body', v);
-  ({fund: bgFundView, led: bgLedView, grant: bgGrantView, acct: bgAcctView, proj: bgProjView, plan: bgPlanView, unm: bgUnmView})[BG.tab](body, b, y);
+  ({fund: bgFundView, led: bgLedView, grant: bgGrantView, settle: bgSettleView, acct: bgAcctView, proj: bgProjView, plan: bgPlanView, unm: bgUnmView})[BG.tab](body, b, y);
 };
 function fundSelect(b, extra = '') {
   return `<select class="inp" id="bg-f" style="width:auto;min-width:200px">${extra}${b.funds.map(f => `<option value="${f.id}" ${BG.fund === f.id ? 'selected' : ''}>${esc(f.name)}${f.owner ? ' · ' + esc(f.owner) : ''}</option>`).join('')}</select>`;
@@ -3390,19 +3369,34 @@ function assignSheet(p) {
 function bgUnmView(el, b, y) {
   const list = [];
   b.funds.filter(f => linesOf(f.id, y).length).forEach(f => { const c = computeFund(f.id, y); Object.entries(c.unmatched).forEach(([a, u]) => list.push({fund: f.id, acct: a, ...u})); });
+  BG.unSel = BG.unSel || {}; BG.unAmt = BG.unAmt || {}; BG.unType = BG.unType || {};
+  const key = u => `${u.fund}|${u.acct}`, typeOf = u => BG.unType[key(u)] || (u.cr > u.dr || IN_RE.test(u.acct) ? 'in' : 'out');
+  const sel = list.filter(u => BG.unSel[key(u)]), allOn = list.length && sel.length === list.length;
+  const mokName = a => a.replace(/^[\[\(]?\d+[\]\)]?\s*/, '');
+  const optsAll = [...new Map(list.flatMap(u => linesOf(u.fund, y)).map(l => [bnorm(l.mok), l])).values()];
   el.innerHTML = list.length ? `
-    <div class="note small">원장에는 있는데 예산에 같은 이름의 목이 없는 계정이에요. 예산의 어느 목인지 고르면 다음부터 자동으로 맞춰요. (이름이 달라도 연결 가능)</div>
-    <div class="tbl-wrap"><table class="tbl"><thead><tr><th>재원</th><th>원장 계정</th><th class="r">건수</th><th class="r">차변</th><th class="r">대변</th><th>예산 목에 연결</th></tr></thead><tbody>
-    ${list.map((u, i) => { const opts = linesOf(u.fund, y).filter((l, j, a) => a.findIndex(z => bnorm(z.mok) === bnorm(l.mok)) === j);
-      return `<tr><td class="small">${esc(fundName(u.fund))}</td><td class="wrap">${esc(u.acct)}</td><td class="r">${u.n}</td><td class="r">${won(u.dr)}</td><td class="r">${won(u.cr)}</td>
-      <td><div class="row" style="gap:4px"><select class="inp" data-map="${i}" style="width:auto;max-width:220px"><option value="">선택</option>${opts.map(l => `<option value="${esc(bnorm(l.mok))}">${BG_TYPES[l.type]} · ${esc(l.mok)}</option>`).join('')}</select><button class="btn ghost sm" data-addline="${i}">예산에 새 목 추가</button></div></td></tr>`; }).join('')}</tbody></table></div>`
+    <div class="note small">원장에는 있는데 예산에 같은 이름의 목이 없는 계정이에요. <b>체크해서 한 번에</b> 예산 목으로 추가하고 금액까지 반영하거나, 기존 목에 한 번에 연결하세요. 예산액은 본예산으로 들어가요 (비우면 0원 → 예산 입력 탭에서 나중에 채우기).</div>
+    <div class="panel" style="position:sticky;top:0;z-index:3"><div class="panel-b row" style="gap:8px;flex-wrap:wrap">
+      <label class="row small"><input type="checkbox" id="um-all" ${allOn ? 'checked' : ''}> 전체 선택</label><b class="small">${sel.length}개 선택</b><span class="grow"></span>
+      <button class="btn primary sm" id="um-add" ${sel.length ? '' : 'disabled'}>${icon('plus')}선택한 ${sel.length}개를 예산에 추가·반영</button>
+      <select class="inp" id="um-to" style="width:auto;max-width:200px"><option value="">연결할 목 선택</option>${optsAll.map(l => `<option value="${esc(bnorm(l.mok))}">${BG_TYPES[l.type]} · ${esc(l.mok)}</option>`).join('')}</select>
+      <button class="btn sm" id="um-link" ${sel.length ? '' : 'disabled'}>선택 ${sel.length}개를 이 목에 연결</button></div></div>
+    <div class="tbl-wrap"><table class="tbl"><thead><tr><th></th><th>재원</th><th>원장 계정</th><th class="r">건수</th><th class="r">사용(차변−대변)</th><th>구분</th><th class="r">예산액(본예산)</th></tr></thead><tbody>
+    ${list.map((u, i) => `<tr><td><input type="checkbox" data-sel="${i}" ${BG.unSel[key(u)] ? 'checked' : ''} aria-label="선택"></td><td class="small">${esc(fundName(u.fund))}</td><td class="wrap">${esc(u.acct)}</td><td class="r">${u.n}</td><td class="r">${won(u.dr - u.cr)}</td>
+      <td><select class="inp" data-ut="${i}" style="width:auto"><option value="out" ${typeOf(u) === 'out' ? 'selected' : ''}>세출</option><option value="in" ${typeOf(u) === 'in' ? 'selected' : ''}>세입</option></select></td>
+      <td class="r"><input class="inp num r" data-ua="${i}" style="width:120px;height:30px;min-height:0" value="${BG.unAmt[key(u)] ? Number(BG.unAmt[key(u)]).toLocaleString('ko-KR') : ''}" placeholder="0"></td></tr>`).join('')}</tbody></table></div>`
     : `<div class="empty">미분류 계정이 없어요</div>`;
-  el.addEventListener('change', e => { const s = e.target.closest('[data-map]'); if (!s || !s.value) return; const u = list[Number(s.dataset.map)]; b.alias[`${u.fund}|${y}|${bnorm(u.acct)}`] = s.value; save(); render(); toast('연결했어요'); });
-  el.addEventListener('click', e => { const a = e.target.closest('[data-addline]'); if (!a) return; const u = list[Number(a.dataset.addline)];
-    const type = u.cr > u.dr || IN_RE.test(u.acct) ? 'in' : 'out';
-    b.lines.push({id: uid(), y, fund: u.fund, type, gwan: '', hang: '', mok: u.acct.replace(/^[\[\(]?\d+[\]\)]?\s*/, ''), proj: '', owner: '', kw: '', base: 0, sup1: 0, sup2: 0}); save(); render(); toast('예산에 목을 추가했어요 (금액은 예산 입력에서)'); });
+  if (!list.length) return;
+  el.addEventListener('change', e => { const x = e.target;
+    if (x.id === 'um-all') { list.forEach(u => { BG.unSel[key(u)] = x.checked; }); render(); return; }
+    if (x.dataset.sel != null && x.dataset.sel !== '') { BG.unSel[key(list[Number(x.dataset.sel)])] = x.checked; render(); return; }
+    if (x.dataset.ut != null && x.dataset.ut !== '') { BG.unType[key(list[Number(x.dataset.ut)])] = x.value; return; }
+    if (x.dataset.ua != null && x.dataset.ua !== '') { const v = toNum(x.value); BG.unAmt[key(list[Number(x.dataset.ua)])] = v || ''; x.value = v ? won(v) : ''; } });
+  el.addEventListener('click', e => {
+    if (e.target.closest('#um-add')) { sel.forEach(u => b.lines.push({id: uid(), y, fund: u.fund, type: typeOf(u), gwan: '', hang: '', mok: mokName(u.acct), proj: '', owner: '', kw: '', base: Number(BG.unAmt[key(u)]) || 0, sup1: 0, sup2: 0}));
+      sel.forEach(u => { delete BG.unSel[key(u)]; delete BG.unAmt[key(u)]; delete BG.unType[key(u)]; }); save(); render(); toast(`${sel.length}개를 예산 목으로 추가했어요`); return; }
+    if (e.target.closest('#um-link')) { const to = $('#um-to', el).value; if (!to) return toast('연결할 목을 먼저 골라 주세요'); sel.forEach(u => { b.alias[`${u.fund}|${y}|${bnorm(u.acct)}`] = to; delete BG.unSel[key(u)]; }); save(); render(); toast(`${sel.length}개를 연결했어요`); } });
 }
-
 
 /* ---------- 원장 계정별 (예산표 없이도: 원장만 올리면 계정별 사용액·잔액) ----------
    수입 계정(보조금·이월금·이자·반환금) / 인건비·직원경비 / 운영비 / 사업별 / 반납·반환 으로 자동 분류.
@@ -3426,8 +3420,9 @@ function ledAgg(fund, y) {
 function ledBudget(fund, y, acct) {
   const b = bgState(), k = `${fund}|${y}|${bnorm(acct)}`; b.ledBud = b.ledBud || {};
   if (b.ledBud[k] != null && b.ledBud[k] !== '') return {v: Number(b.ledBud[k]) || 0, own: true};
-  const ls = linesOf(fund, y).filter(l => bnorm(l.mok) === bnorm(acct));
-  return {v: ls.reduce((a, l) => a + curBudget(l), 0), own: false};
+  const ls = linesOf(fund, y).filter(l => bnorm(l.mok) === bnorm(acct)), gr = ((b.grant || {})[`${fund}|${y}`] || {})[acct], ga = gr ? Number(gr.annual) || 0 : 0;
+  const lv = ls.reduce((a, l) => a + curBudget(l), 0);
+  return {v: lv || ga, own: false, fromGrant: !lv && !!ga};
 }
 function bgLedView(el, b, y) {
   const g = ledAgg(BG.fund, y), lm = g ? Number(String(g.L.to || '').slice(0, 2)) || 0 : 0;
@@ -3473,54 +3468,323 @@ function ledDetail(a, y) {
 }
 
 
-/* ---------- 교부·집행 격자 (서울시 IL센터 지원사업처럼 분기마다 교부액이 달라지는 보조금) ----------
-   계정과목 × (연간 결정액, 1~4분기 교부액, 자부담 예산·집행, 집행, 미교부, 잔액). 집행은 올린 원장에서 자동으로 가져옴(연동).
-   금액은 직접 입력 → 이 기기 브라우저에만 저장. S.budget.grant['재원|연도'] = {계정:{annual,q:[4],sb,sj}}, grantQ = 분기별 재배정액[4] */
+/* ---------- 교부·집행 (서울시 IL센터 지원사업처럼 분기마다 교부액이 달라지는 보조금) ----------
+   한 화면: ① 분기 교부신청액(인건비·운영비·사업비, 직접 입력 또는 붙여넣기) ② 정산내역서 4구분 ③ 확인할 곳·검증표 ④ 계정별 상세
+   집행은 올린 원장에서 자동 연동. 금액은 이 기기 브라우저에만 저장 (원 단위로 저장, 화면은 천원/원 전환).
+   S.budget.grant['재원|연도'] = {계정:{annual,q[4],sb,sj,lk,end}} · grantG = {hr|ops|biz:{annual,q[4]}, lk:{annual}, sbA} · grantS = 자부담 분기[4] · grantQ = 구청 통보 재배정액[4] · grantI = 이자 · unit = 'k'|'w' */
 function grantState(fund, y) { const b = bgState(); b.grant = b.grant || {}; b.grantQ = b.grantQ || {}; return {rows: b.grant[`${fund}|${y}`] ||= {}, q: b.grantQ[`${fund}|${y}`] ||= ['', '', '', '']}; }
-function bgGrantView(el, b, y) {
-  const g = ledAgg(BG.fund, y), G = grantState(BG.fund, y), t = today(), curQ = y === t.getFullYear() ? Math.floor(t.getMonth() / 3) + 1 : 4;
+function grantG(fund, y) { const b = bgState(); b.grantG = b.grantG || {}; const o = b.grantG[`${fund}|${y}`] ||= {}; ['hr', 'ops', 'biz'].forEach(k => { o[k] ||= {annual: '', q: ['', '', '', '']}; }); o.lk ||= {annual: ''}; return o; }
+const GG = [['hr', '인건비'], ['ops', '운영비'], ['biz', '사업비']];
+const gUnit = () => bgState().unit === 'w' ? 'w' : 'k';
+const gFmt = v => { if (v === '' || v == null || isNaN(Number(v))) return ''; return (gUnit() === 'k' ? Math.round(Number(v) / 1000) : Math.round(Number(v))).toLocaleString('ko-KR'); };
+const gDash = v => (Number(v) ? gFmt(v) : '-');
+const gIn = t => { const n = toNum(t); return gUnit() === 'k' ? n * 1000 : n; };
+function grantCalc(b, y, fund) {
+  const g = ledAgg(fund, y), G = grantState(fund, y), GR = grantG(fund, y), t = today(), curQ = y === t.getFullYear() ? Math.floor(t.getMonth() / 3) + 1 : 4;
+  b.grantS = b.grantS || {}; const sbq = b.grantS[`${fund}|${y}`] ||= ['', '', '', '']; b.grantI = b.grantI || {}; const interest = Number(b.grantI[`${fund}|${y}`]) || 0;
   const accts = new Map(); (g ? g.list.filter(a => ['hr', 'ops', 'biz'].includes(a.grp)) : []).forEach(a => accts.set(a.acct, a));
   Object.keys(G.rows).forEach(k => { if (!accts.has(k)) accts.set(k, {acct: k, used: 0, mon: Array(12).fill(0), n: 0, grp: 'biz'}); });
-  const rows = [...accts.values()].sort((a, c) => ['hr', 'ops', 'biz'].indexOf(a.grp) - ['hr', 'ops', 'biz'].indexOf(c.grp) || c.used - a.used).map(a => {
-    const r = G.rows[a.acct] || {}, q = (r.q || []).map(x => Number(x) || 0), cq = [0, 1, 2, 3].map(i => q[i] || 0), grant = cq.reduce((x, z) => x + z, 0), ann = Number(r.annual) || 0;
+  const ord = ['hr', 'ops', 'biz'];
+  const rows = [...accts.values()].sort((a, c) => ord.indexOf(a.grp) - ord.indexOf(c.grp) || c.used - a.used).map(a => {
+    const r = G.rows[a.acct] || {}, cq = [0, 1, 2, 3].map(i => Number((r.q || [])[i]) || 0), grant = cq.reduce((x, z) => x + z, 0), ann = Number(r.annual) || 0;
     const eq = [0, 1, 2, 3].map(i => a.mon.slice(i * 3, i * 3 + 3).reduce((x, z) => x + z, 0));
-    return {a, r, ann, cq, grant, used: a.used, eq, rest: ann - grant, bal: grant - a.used, sb: Number(r.sb) || 0, sj: Number(r.sj) || 0};
+    return {a, r, ann, cq, grant, used: a.used, eq, rest: ann - grant, bal: grant - a.used, sb: Number(r.sb) || 0, sj: Number(r.sj) || 0, lk: !!r.lk, end: !!r.end};
   });
-  const sum = f => rows.reduce((x, r) => x + f(r), 0), qsum = i => sum(r => r.cq[i]);
+  const sum = f => rows.reduce((x, r) => x + f(r), 0);
+  // 구분별(인건비·운영비·사업비): 계정에 금액을 넣었으면 계정 합, 아니면 구분 칸에 직접 입력한 값
+  const grp = GG.map(([k, n]) => { const rr = rows.filter(r => r.a.grp === k), src = GR[k];
+    const aAnn = rr.reduce((x, r) => x + r.ann, 0), aQ = [0, 1, 2, 3].map(i => rr.reduce((x, r) => x + r.cq[i], 0)), hasAcc = aAnn > 0 || aQ.some(x => x > 0);
+    const ann = Number(src.annual) || aAnn, cq = src.q.some(v => Number(v) > 0) ? [0, 1, 2, 3].map(i => Number(src.q[i]) || 0) : aQ, got = cq.reduce((x, z) => x + z, 0);
+    const used = rr.reduce((x, r) => x + r.used, 0), eq = [0, 1, 2, 3].map(i => rr.reduce((x, r) => x + r.eq[i], 0)), endRest = rr.filter(r => r.end && r.rest > 0).reduce((x, r) => x + r.rest, 0);
+    return {k, n, hasAcc, ann, cq, got, used, eq, rest: ann - got, open: Math.max(0, ann - got - endRest)}; });
+  const tAnn = grp.reduce((x, s) => x + s.ann, 0), tq = [0, 1, 2, 3].map(i => grp.reduce((x, s) => x + s.cq[i], 0)), tGot = tq.reduce((x, z) => x + z, 0), tUsed = grp.reduce((x, s) => x + s.used, 0);
+  const sbSum = sbq.reduce((x, z) => x + (Number(z) || 0), 0), sbAnn = Number(GR.sbA) || sum(r => r.sb), sjSum = sum(r => r.sj);
+  const lastIdx = Math.max(-1, ...tq.map((v, i) => v > 0 ? i : -1)), nq = lastIdx >= 0 ? Math.min(4, lastIdx + 2) : Math.min(4, curQ);
+  const propose = i => i + 1 === nq && !tq[i] && tAnn > tGot;
+  const needTot = grp.reduce((x, s) => x + s.open, 0);
+  return {ord, g, G, GR, curQ, sbq, interest, rows, sum, grp, tAnn, tq, tGot, tUsed, sbSum, sbAnn, sjSum, lastIdx, nq, propose, needTot};
+}
+function bgGrantView(el, b, y) {
+  const U = gUnit(), intKey = `${BG.fund}|${y}`;
+  const {ord, g, G, GR, curQ, sbq, interest, rows, sum, grp, tAnn, tq, tGot, tUsed, sbSum, sbAnn, sjSum, lastIdx, nq, propose, needTot} = grantCalc(b, y, BG.fund);
+  // 정산내역서 4구분
+  const lkRows = rows.filter(r => r.a.grp === 'biz' && r.lk), lkAnn = lkRows.reduce((x, r) => x + r.ann, 0) || Number(GR.lk.annual) || 0, lkUsed = lkRows.reduce((x, r) => x + r.used, 0), biz = grp[2];
+  const sett = [['인건비', grp[0].ann, grp[0].used], ['운영비', grp[1].ann, grp[1].used], ['사업비', Math.max(0, biz.ann - lkAnn), biz.used - lkUsed], ['(단위사업) 거주시설 연계사업', lkAnn, lkUsed]];
+  const sTot = sett.reduce((t2, s) => ({ann: t2.ann + s[1], used: t2.used + s[2]}), {ann: 0, used: 0});
+  const inAcc = g ? g.list.filter(a => a.grp === 'in').reduce((x, a) => x + a.used, 0) : 0, retAcc = g ? g.list.filter(a => a.grp === 'ret').reduce((x, a) => x + a.used, 0) : 0, bankLed = g ? inAcc - tUsed - retAcc : 0;
   // 확인할 곳
   const warn = [], bad = new Set();
+  grp.forEach(s => { if (s.ann && s.got > s.ann) warn.push(`${s.n}: 교부 합이 연간 결정액보다 ${gFmt(s.got - s.ann)} 많아요`); if (s.got && s.used > s.got) warn.push(`${s.n}: 집행이 교부 누계보다 ${gFmt(s.used - s.got)} 많아요`); });
   rows.forEach(r => { const n = r.a.acct;
-    if (r.ann && r.grant > r.ann) { warn.push(`${n}: 교부 합계가 연간 결정액보다 ${won(r.grant - r.ann)}원 많아요`); bad.add(n + '|annual'); }
-    if (r.used > r.grant && (r.grant || r.ann)) { warn.push(`${n}: 집행이 교부액보다 ${won(r.used - r.grant)}원 많아요`); bad.add(n + '|used'); }
-    if (r.sb && r.sj > r.sb) { warn.push(`${n}: 자부담 집행이 자부담 예산보다 ${won(r.sj - r.sb)}원 많아요`); bad.add(n + '|sj'); }
-    if (r.used && !r.ann && !r.grant) warn.push(`${n}: 집행은 있는데 연간 결정액·교부액이 비어 있어요`);
-  });
-  [0, 1, 2, 3].forEach(i => { const rq = Number(G.q[i]) || 0;
-    if (rq && Math.abs(rq - qsum(i)) > 0) { warn.push(`${i + 1}분기: 재배정액 ${won(rq)} ↔ 계정 교부 합 ${won(qsum(i))} (차이 ${won(rq - qsum(i))}원) — 천원 단위 반올림 차이인지 확인`); bad.add('q' + i); }
-    if (i + 1 <= curQ && sum(r => r.ann) && !qsum(i) && qsum(0) + qsum(1) + qsum(2) + qsum(3)) { warn.push(`${i + 1}분기 교부액이 비어 있어요`); bad.add('q' + i); } });
-  const nq = Math.min(4, curQ + 1), need = rows.filter(r => r.rest > 0 && !r.cq[nq - 1]);
-  const needTot = need.reduce((x, r) => x + r.rest, 0);
-  const inp = (a, k, v, cls = '') => `<input class="inp num r ${cls}" style="width:112px;height:28px;padding:2px 6px;min-height:0;${bad.has(a + '|' + k) ? 'border-color:var(--stamp);background:rgba(190,60,50,.10)' : ''}" data-g="${esc(a)}" data-gk="${k}" value="${v ? Number(v).toLocaleString('ko-KR') : ''}">`;
-  const head = '<th>계정과목</th><th class="r">연간 결정액</th>' + [1, 2, 3, 4].map(i => `<th class="r">${i}분기 교부</th>`).join('') + '<th class="r">교부 합</th><th class="r">미교부</th><th class="r">집행(원장)</th><th class="r">교부 잔액</th><th class="r">자부담 예산</th><th class="r">자부담 집행</th>';
+    if (r.ann && r.grant > r.ann) { warn.push(`${n}: 교부 합이 연간 결정액보다 ${gFmt(r.grant - r.ann)} 많아요`); bad.add(n + '|annual'); }
+    if (r.used > r.grant && r.grant) { warn.push(`${n}: 집행이 교부액보다 ${gFmt(r.used - r.grant)} 많아요`); bad.add(n + '|used'); }
+    if (r.sb && r.sj > r.sb) { warn.push(`${n}: 자부담 집행이 예산보다 ${gFmt(r.sj - r.sb)} 많아요`); bad.add(n + '|sj'); }
+    if (r.used && !r.ann && !r.grant && !grp.find(s => s.k === r.a.grp).got) warn.push(`${n}: 집행은 있는데 연간 결정액·교부액이 비어 있어요`); });
+  [0, 1, 2, 3].forEach(i => { const rq = Number(G.q[i]) || 0; if (rq && Math.abs(rq - tq[i]) >= 1000) { warn.push(`${i + 1}분기: 구청 통보액 ${gFmt(rq)} ↔ 신청액 합 ${gFmt(tq[i])} (차이 ${gFmt(rq - tq[i])})`); bad.add('q' + i); } });
+  const chk = [];
+  if (tAnn || tUsed) {
+    chk.push(['4구분 집행 합 = 계정 집행 합', sTot.used === tUsed, `${gFmt(sTot.used)} / ${gFmt(tUsed)}`]);
+    chk.push(['구분별 집행 ≤ 교부 누계', grp.every(s => !s.got || s.used <= s.got), grp.filter(s => s.got && s.used > s.got).map(s => s.n).join(', ')]);
+    chk.push(['교부 누계 ≤ 연간 결정액', grp.every(s => !s.ann || s.got <= s.ann), '']);
+    if (tAnn && nq <= 4 && tq.some(v => v)) chk.push(['교부 누계 + 다음 분기 신청 제안 = 연간 결정액', tGot + needTot === tAnn || tGot >= tAnn, needTot ? `제안 ${gFmt(needTot)}` : '']);
+    if (tGot && g) { const df = bankLed - (tGot + interest - tUsed); chk.push(['통장 잔액 = 교부 누계 + 이자 − 사용액', Math.abs(df) < 1 || (!interest && df > 0 && df < 100000), `계산 ${gFmt(tGot + interest - tUsed)} / 원장 ${gFmt(bankLed)}${interest ? '' : df > 0 && df < 100000 ? ` · 차이 ${won(df)}원은 이자일 수 있어요 (아래에 이자 입력)` : ''}`]); }
+    const hrN = rows.filter(r => r.a.grp === 'hr').length;
+    chk.push([hrN ? '인건비 계정 합 = 보탬e "보수" (직접 대조)' : '인건비 계정이 원장에 보이지 않아요', !!hrN, hrN ? `${hrN}개 계정 ${gFmt(grp[0].used)}` : '급여·제수당·퇴직연금·사회보험·후생경비']);
+  }
+  const bad2 = chk.filter(c => !c[1]).length;
+  // 입력 칸
+  const inp = (attr, v, extra = '', st = '') => `<input class="gi ${extra}" inputmode="numeric" ${attr} value="${v ? gFmt(v) : ''}" style="${st}" aria-label="금액 입력">`;
+  const sg = i => `<div class="gs">제안 ${gFmt(needTot)}</div>`;
+  const gsum = (a, f) => a.reduce((x, r) => x + f(r), 0);
+  const unitBtn = `<div class="seg" role="group" aria-label="단위"><button aria-pressed="${U === 'k'}" data-unit="k">천원</button><button aria-pressed="${U === 'w'}" data-unit="w">원</button></div>`;
+  // ① 신청액 표
+  const t1 = `<table class="gt"><thead><tr><th>구분 <span class="faint">(${U === 'k' ? '천원' : '원'})</span></th>${[1, 2, 3, 4].map(i => `<th>${i}분기</th>`).join('')}<th>합계</th><th>연간 결정액</th><th>미교부</th></tr></thead><tbody>
+    ${grp.map(s => `<tr><td class="nm"><b>${s.n}</b>${s.k === 'biz' ? '<div class="faint gs0">연계사업 포함</div>' : ''}</td>${[0, 1, 2, 3].map(i => `<td>${inp(`data-gg="${s.k}" data-gi="${i}"`, s.cq[i])}${propose(i) && s.open > 0 ? `<div class="gs">제안 ${gFmt(s.open)}</div>` : ''}</td>`).join('')}<td><b>${gDash(s.got)}</b></td><td>${inp(`data-gg="${s.k}" data-gi="a"`, s.ann)}</td><td class="${s.ann && s.rest < 0 ? 'neg' : ''}">${s.ann ? gFmt(s.rest) : ''}</td></tr>`).join('')}
+    <tr class="tot"><td>신청액 합계</td>${[0, 1, 2, 3].map(i => `<td>${gDash(tq[i])}${propose(i) ? `<div class="gs">제안 ${gFmt(needTot)}</div>` : ''}</td>`).join('')}<td>${gDash(tGot)}</td><td>${gDash(tAnn)}</td><td>${tAnn ? gFmt(tAnn - tGot) : ''}</td></tr>
+    <tr><td class="nm">자부담</td>${[0, 1, 2, 3].map(i => `<td>${inp(`data-sbq="${i}"`, Number(sbq[i]) || 0)}</td>`).join('')}<td>${gDash(sbSum)}</td><td>${inp('data-sba="1"', sbAnn)}</td><td></td></tr>
+    <tr class="tot"><td>총 보조수입</td>${[0, 1, 2, 3].map(i => `<td>${gDash(tq[i] + (Number(sbq[i]) || 0))}</td>`).join('')}<td>${gDash(tGot + sbSum)}</td><td>${gDash(tAnn + sbAnn)}</td><td></td></tr>
+    <tr class="sub"><td class="nm">구청 통보 재배정액 <span class="faint">(선택)</span></td>${[0, 1, 2, 3].map(i => `<td>${inp(`data-gq="${i}"`, Number(G.q[i]) || 0, '', bad.has('q' + i) ? 'border-color:var(--stamp)' : '')}</td>`).join('')}<td colspan="3"></td></tr></tbody></table>`;
+  // ② 정산내역서 4구분
+  const t2 = `<table class="gt"><thead><tr><th>구분 <span class="faint">(${U === 'k' ? '천원' : '원'})</span></th><th class="rd">예산액(A)</th><th>집행액(B)</th><th class="rd">집행잔액(A−B)</th><th>집행률</th></tr></thead><tbody>
+    ${sett.map((s, i) => `<tr><td class="nm">${esc(s[0])}</td><td class="rd">${i === 3 && !lkRows.some(r => r.ann) ? inp('data-lka="1"', s[1], 'rd') : gDash(s[1])}</td><td>${gDash(s[2])}</td><td class="rd">${s[1] ? gFmt(s[1] - s[2]) : ''}</td><td>${s[1] ? pct(s[2], s[1]) + '%' : ''}</td></tr>`).join('')}
+    <tr class="tot"><td>계</td><td class="rd">${gDash(sTot.ann)}</td><td>${gDash(sTot.used)}</td><td class="rd">${sTot.ann ? gFmt(sTot.ann - sTot.used) : ''}</td><td>${sTot.ann ? pct(sTot.used, sTot.ann) + '%' : ''}</td></tr></tbody></table>
+    <div class="faint small" style="margin-top:6px">사업비 = 행사운영비 − 연계사업. 아래 계정 상세에서 거주시설 자립지원 계정에 "연계"를 체크하면 따로 나눠요. 예산액(A)은 센터 연간 결정액이에요 (여러 센터 합계 아님).</div>`;
+  // 계정 상세
+  const head = `<th>계정과목</th><th class="rd">연간 결정액</th>${[1, 2, 3, 4].map(i => `<th>${i}분기 교부</th>`).join('')}<th>교부 합</th><th>집행(원장)</th><th>교부 잔액</th><th class="rd">집행 잔액(연간)</th><th>종료</th><th>연계</th>`;
+  const gname = {hr: '인건비·직원경비', ops: '운영비', biz: '사업비 (단위사업)'};
+  let body = '';
+  ord.forEach(k => { const rr = rows.filter(r => r.a.grp === k); if (!rr.length) return; body += `<tr class="gh"><td colspan="12">${gname[k]} <span class="faint">${rr.length}개 계정</span></td></tr>`;
+    rr.forEach(r => { body += `<tr><td class="nm">${esc(r.a.acct)}</td><td>${inp(`data-g="${esc(r.a.acct)}" data-gk="annual"`, r.ann, 'rd', bad.has(r.a.acct + '|annual') ? 'border-color:var(--stamp)' : '')}</td>${[0, 1, 2, 3].map(i => `<td>${inp(`data-g="${esc(r.a.acct)}" data-gk="q${i}"`, r.cq[i])}${r.eq[i] ? `<div class="gs0 faint">집행 ${gFmt(r.eq[i])}</div>` : ''}</td>`).join('')}<td>${gDash(r.grant)}</td><td class="${bad.has(r.a.acct + '|used') ? 'neg' : ''}">${gDash(r.used)}</td><td class="${r.bal < 0 ? 'neg' : ''}">${r.grant ? gFmt(r.bal) : ''}</td><td class="rd">${r.ann ? gFmt(r.ann - r.used) : ''}</td><td>${k === 'biz' ? `<input type="checkbox" data-ge="${esc(r.a.acct)}" ${r.end ? 'checked' : ''} aria-label="사업종료">` : ''}</td><td>${k === 'biz' ? `<input type="checkbox" data-gl="${esc(r.a.acct)}" ${r.lk ? 'checked' : ''} aria-label="연계사업">` : ''}</td></tr>`; }); });
+  const kpi = [['연간 결정액', gDash(tAnn), ''], ['교부 누계', gDash(tGot), tAnn ? pct(tGot, tAnn) + '%' : ''], ['집행 누계', gDash(tUsed), tGot ? '교부 대비 ' + pct(tUsed, tGot) + '%' : ''], ['교부 잔액', tGot ? gFmt(tGot - tUsed) : '-', tGot && tGot - tUsed < 0 ? 'neg' : ''], [`${nq}분기 신청 제안`, needTot && tq.some(v => v) ? gFmt(needTot) : '-', 'acc'], ['통장 잔액(원장)', g ? gFmt(bankLed) : '-', '']];
   el.innerHTML = `
-  <div class="row">${fundSelect(b)}<span class="grow"></span><span class="faint small">${g ? `집행은 원장 ${g.L.to.slice(0, 2)}/${g.L.to.slice(2)}까지 자동 연동` : '원장을 올리면 집행이 자동으로 채워져요'}</span><button class="btn sm" data-up="${BG.fund}">원장 올리기</button></div>
-  <div class="note small">서울시 교부액은 <b>분기마다 달라요</b>. 연간 결정액과 분기별 교부액(교부신청서·알림 공문 기준)을 입력하면 집행(원장 연동)과 비교해 잔액·미교부·확인할 곳을 계산해요. 계정 목록은 올린 원장에서 가져옵니다.</div>
-  ${nq <= 4 && needTot ? `<section class="panel" style="border-left:4px solid var(--accent)"><div class="panel-h"><h2>${nq}분기 교부 신청 예정액</h2><button class="btn sm" id="gr-copy">${icon('copy')}계정별 내역 복사</button></div><div class="panel-b"><div class="num" style="font:700 28px var(--f-display)">${won(needTot)}원</div><div class="faint small">연간 결정액 − 지금까지 교부액 (${nq}분기 교부액을 입력하지 않은 계정만) · 교부신청서에는 천원 단위로 적어요</div>
-    <div class="tbl-wrap" style="margin-top:8px"><table class="tbl"><tbody>${need.map(r => `<tr><td>${esc(r.a.acct)}</td><td class="r">${won(r.rest)}</td></tr>`).join('')}</tbody></table></div></div></section>` : ''}
-  <section class="panel ${warn.length ? '' : 'ok'}"><div class="panel-h"><h2>확인할 곳 ${warn.length ? `<span class="chip warn">${warn.length}</span>` : ''}</h2></div><div class="panel-b">${warn.length ? `<ul style="margin:0;padding-left:18px">${warn.map(w => `<li class="small">${esc(w)}</li>`).join('')}</ul>` : '<span class="faint small">입력한 금액에서 어긋나는 곳이 없어요 (또는 아직 입력 전이에요)</span>'}</div></section>
-  ${rows.length ? `<div class="tbl-wrap"><table class="tbl bg-tbl"><thead><tr>${head}</tr></thead><tbody>
-  ${rows.map(r => `<tr><td class="wrap">${esc(r.a.acct)}</td><td class="r">${inp(r.a.acct, 'annual', r.ann)}</td>${[0, 1, 2, 3].map(i => `<td class="r">${inp(r.a.acct, 'q' + i, r.cq[i])}${r.eq[i] ? `<div class="faint small">집행 ${won(r.eq[i])}</div>` : ''}</td>`).join('')}<td class="r">${won(r.grant)}</td><td class="r">${r.ann ? won(r.rest) : ''}</td><td class="r ${bad.has(r.a.acct + '|used') ? 'neg' : ''}">${won(r.used)}</td><td class="r ${r.bal < 0 ? 'neg' : ''}">${r.grant ? won(r.bal) : ''}</td><td class="r">${inp(r.a.acct, 'sb', r.sb)}</td><td class="r">${inp(r.a.acct, 'sj', r.sj)}</td></tr>`).join('')}</tbody>
-  <tfoot><tr class="bg-g"><td><b>합계</b></td><td class="r">${won(sum(r => r.ann))}</td>${[0, 1, 2, 3].map(i => `<td class="r">${won(qsum(i))}</td>`).join('')}<td class="r">${won(sum(r => r.grant))}</td><td class="r">${won(sum(r => r.ann ? r.rest : 0))}</td><td class="r">${won(sum(r => r.used))}</td><td class="r">${won(sum(r => r.grant ? r.bal : 0))}</td><td class="r">${won(sum(r => r.sb))}</td><td class="r">${won(sum(r => r.sj))}</td></tr>
-  <tr><td class="small">분기별 재배정액 (교부신청서 합계)</td><td></td>${[0, 1, 2, 3].map(i => `<td class="r"><input class="inp num r" style="width:112px;height:28px;padding:2px 6px;min-height:0;${bad.has('q' + i) ? 'border-color:var(--stamp)' : ''}" data-gq="${i}" value="${Number(G.q[i]) ? Number(G.q[i]).toLocaleString('ko-KR') : ''}"></td>`).join('')}<td colspan="6" class="small faint">교부신청서는 천원 단위 반올림이라 계정 합과 몇백 원 어긋날 수 있어요</td></tr></tfoot></table></div>`
-  : `<div class="empty">원장을 올리면 계정 목록이 자동으로 나와요.</div>`}`;
+  <div class="row" style="flex-wrap:wrap;gap:8px">${fundSelect(b)}${unitBtn}<span class="grow"></span><span class="faint small">${g ? `집행: 원장 ${g.L.to.slice(0, 2)}/${g.L.to.slice(2)}까지 자동 연동` : '원장을 올리면 집행이 채워져요'}</span><button class="btn sm" id="gr-paste">${icon('copy')}표 붙여넣기</button><button class="btn sm" id="gx-down">${icon('down')}엑셀 내려받기</button><button class="btn sm" id="gx-up">${icon('plus')}엑셀 올리기</button><button class="btn sm" data-up="${BG.fund}">원장 올리기</button></div>
+  <div class="gp-kpi">${kpi.map(([n, v, c]) => `<div><span>${n}</span><b class="${c === 'neg' ? 'neg' : c === 'acc' ? 'acc' : ''}">${v}</b>${c && c !== 'neg' && c !== 'acc' ? `<em>${c}</em>` : ''}</div>`).join('')}</div>
+  <div class="gp-cols" style="grid-template-columns:1fr">
+    <section class="panel"><div class="panel-h"><h2>① 분기 교부신청액</h2><button class="btn sm" id="ap-copy">${icon('copy')}표 복사</button></div><div class="panel-b gp-x">${t1}<div class="faint small" style="margin-top:6px">칸을 눌러 직접 쓰거나 "표 붙여넣기"로 한 번에 넣어요. 다음 분기 신청액 = 연간 결정액 − 교부 누계 (끝난 사업 제외). 저장은 원 단위로 정확히 해요 (${U === 'k' ? '화면은 천원 단위 반올림' : '원 단위 표시'}).</div></div></section>
+  </div>
+  <div class="gp-cols">
+    <section class="panel"><div class="panel-h"><h2>② 서울시 정산내역서 (누적)</h2><button class="btn sm" id="st-copy">${icon('copy')}복사</button></div><div class="panel-b gp-x">${t2}</div></section>
+    <div style="display:grid;gap:12px;min-width:0">
+    <section class="panel ${warn.length ? '' : 'ok'}"><div class="panel-h"><h2>③ 확인할 곳 ${warn.length ? `<span class="chip warn">${warn.length}</span>` : ''}</h2></div><div class="panel-b">${warn.length ? `<ul class="gl">${warn.map(w => `<li>${esc(w)}</li>`).join('')}</ul>` : '<span class="faint small">어긋나는 곳이 없어요 (또는 아직 입력 전이에요)</span>'}</div></section>
+    <section class="panel ${chk.length && !bad2 ? 'ok' : ''}"><div class="panel-h"><h2>정산 검증표 ${bad2 ? `<span class="chip warn">${bad2}</span>` : ''}</h2></div><div class="panel-b">${chk.length ? `<ul class="gl">${chk.map(c => `<li class="${c[1] ? 'okx' : 'ngx'}"><b>${c[1] ? '✓' : '✗'}</b> ${esc(c[0])}${c[2] ? ` <span class="faint">${esc(c[2])}</span>` : ''}</li>`).join('')}</ul>` : '<span class="faint small">금액을 입력하면 검증해요</span>'}
+      <label class="f" style="max-width:240px;margin-top:8px">누적 이자 <span class="faint">(${U === 'k' ? '천원' : '원'}, 자부담 이자 제외)</span><input class="gi" style="max-width:none" inputmode="numeric" id="gr-int" value="${interest ? gFmt(interest) : ''}"></label>
+      <div class="faint small" style="margin-top:6px">3자 대조: 진우 원장 = 통장 = 보탬e. 차이는 ① 회계일자 vs 보탬e 등록일 ② 이월·반납·퇴직연금반환 ③ 마이너스 지출부터 보세요.</div></div></section>
+    </div>
+  </div>
+  <section class="panel"><div class="panel-h"><h2>④ 계정별 상세 <span class="faint small">(${U === 'k' ? '천원' : '원'})</span></h2></div><div class="panel-b gp-x">${rows.length ? `<table class="gt gd"><thead><tr>${head}</tr></thead><tbody>${body}</tbody>
+    <tfoot><tr class="tot"><td>합계</td><td>${gDash(gsum(rows, r => r.ann))}</td>${[0, 1, 2, 3].map(i => `<td>${gDash(gsum(rows, r => r.cq[i]))}</td>`).join('')}<td>${gDash(gsum(rows, r => r.grant))}</td><td>${gDash(tUsed)}</td><td>${gDash(gsum(rows, r => r.grant ? r.bal : 0))}</td><td>${gDash(gsum(rows, r => r.ann ? r.ann - r.used : 0))}</td><td></td><td></td></tr></tfoot></table>` : '<div class="empty">원장을 올리면 계정 목록이 자동으로 나와요. 계정별 입력은 선택이고, ①의 구분별 입력만으로도 신청액 표가 만들어져요.</div>'}</div></section>`;
+  GM = {fund: BG.fund, g, grp, rows, tq, tGot, tAnn, tUsed, sbq, sbSum, sbAnn, sett, sTot, interest, bankLed, G, needTot};
   bindFundSelect(el);
-  el.addEventListener('change', e => {
-    const i = e.target.closest('[data-g]'), q = e.target.closest('[data-gq]');
-    if (q) { G.q[Number(q.dataset.gq)] = toNum(q.value) || ''; save(); render(); return; }
-    if (!i) return; const r = G.rows[i.dataset.g] ||= {annual: '', q: ['', '', '', ''], sb: '', sj: ''}, k = i.dataset.gk, v = toNum(i.value) || '';
-    if (k[0] === 'q') { r.q = r.q || ['', '', '', '']; r.q[Number(k[1])] = v; } else r[k] = v; save(); render(); });
+  const gr = a => G.rows[a] ||= {annual: '', q: ['', '', '', ''], sb: '', sj: ''};
+  el.addEventListener('change', e => { const x = e.target;
+    if (x.dataset.gg) { const s = GR[x.dataset.gg], v = gIn(x.value) || ''; if (x.dataset.gi === 'a') s.annual = v; else s.q[Number(x.dataset.gi)] = v; save(); render(); return; }
+    if (x.dataset.sbq != null && x.dataset.sbq !== '') { sbq[Number(x.dataset.sbq)] = gIn(x.value) || ''; save(); render(); return; }
+    if (x.dataset.sba) { GR.sbA = gIn(x.value) || ''; save(); render(); return; }
+    if (x.dataset.lka) { GR.lk.annual = gIn(x.value) || ''; save(); render(); return; }
+    if (x.dataset.gq != null && x.dataset.gq !== '') { G.q[Number(x.dataset.gq)] = gIn(x.value) || ''; save(); render(); return; }
+    if (x.id === 'gr-int') { b.grantI[intKey] = gIn(x.value) || ''; save(); render(); return; }
+    if (x.dataset.ge) { gr(x.dataset.ge).end = x.checked; save(); render(); return; }
+    if (x.dataset.gl) { gr(x.dataset.gl).lk = x.checked; save(); render(); return; }
+    if (x.dataset.g) { const r = gr(x.dataset.g), k = x.dataset.gk, v = gIn(x.value) || ''; if (k[0] === 'q') r.q[Number(k[1])] = v; else r[k] = v; save(); render(); } });
   el.addEventListener('click', e => { const u = e.target.closest('[data-up]'); if (u) return uploadLedger(u.dataset.up);
-    if (e.target.closest('#gr-copy')) copyText(`${y}년 ${nq}분기 교부 신청 예정액 ${won(needTot)}원\n` + need.map(r => `- ${r.a.acct}: ${won(r.rest)}원`).join('\n'), '복사했어요'); });
+    const un = e.target.closest('[data-unit]'); if (un) { b.unit = un.dataset.unit; save(); render(); return; }
+    if (e.target.closest('#gr-paste')) return grantPasteSheet(y);
+    if (e.target.closest('#gx-down')) return grantXlsx(y);
+    if (e.target.closest('#gx-up')) return grantXlsxSheet(y);
+    const K = v => Math.round(v / 1000);
+    if (e.target.closest('#ap-copy')) return copyText(`${y}년 분기 교부신청액 (천원)\n구분\t1분기\t2분기\t3분기\t4분기\t합계\t연간\n` + grp.map(s => s.n + '\t' + s.cq.map(K).join('\t') + '\t' + K(s.got) + '\t' + K(s.ann)).join('\n') + `\n신청액\t${tq.map(K).join('\t')}\t${K(tGot)}\t${K(tAnn)}\n자부담\t${sbq.map(v => K(Number(v) || 0)).join('\t')}\t${K(sbSum)}\t${K(sbAnn)}\n총보조수입\t${tq.map((v, i) => K(v + (Number(sbq[i]) || 0))).join('\t')}\t${K(tGot + sbSum)}\t${K(tAnn + sbAnn)}`, '복사했어요');
+    if (e.target.closest('#st-copy')) return copyText(`${y}년 정산내역서(누적)\n구분\t예산액(A)\t집행액(B)\t잔액\n` + sett.map(s => `${s[0]}\t${s[1]}\t${s[2]}\t${s[1] - s[2]}`).join('\n') + `\n계\t${sTot.ann}\t${sTot.used}\t${sTot.ann - sTot.used}`, '복사했어요 (원 단위)'); });
+}
+/* 표 붙여넣기: 엑셀에서 신청액 표를 복사해 붙이면 구분(인건비·운영비·사업비·자부담)·계정 줄을 알아봐요.
+   머리글에 연간/1분기~4분기가 있으면 그 순서대로, 없으면 구분 줄은 [1~4분기], 계정 줄은 [연간, 1~4분기] */
+function parseGrantPaste(text, unit, accts) {
+  const lines = text.split(/\r?\n/).map(l => l.split('\t').map(c => c.trim())).filter(l => l.some(c => c)); let map = null; const out = {grp: {}, acct: {}, sb: null, lk: null, n: 0};
+  const num = c => { const s = String(c || '').replace(/[,\s원]/g, ''); if (!s || s === '-' || !/\d/.test(s)) return ''; return toNum(s); };
+  const ar = accts.map(a => [bnorm(a), a]);
+  lines.forEach(cells => {
+    const lab = cells[0], rest = cells.slice(1);
+    if (/1\s*분기/.test(cells.join(' ')) && !rest.some(c => /^[\d,.\-]+$/.test(c) && c !== '-' && /\d/.test(c))) { map = cells.map((c, i) => /연간|결정|예산/.test(c) ? 'a' : (c.match(/([1-4])\s*분기/) || [])[1] ? 'q' + (Number(c.match(/([1-4])\s*분기/)[1]) - 1) : ''); return; }
+    let key = /연계|^사업비\s*거주/.test(lab) ? 'lk' : /^(인건비|운영비|사업비)/.test(lab) ? ({인건비: 'hr', 운영비: 'ops', 사업비: 'biz'})[lab.match(/^(인건비|운영비|사업비)/)[0]] : /자부담/.test(lab) ? 'sb' : '';
+    const vals = rest.map(num); if (!vals.some(v => v !== '')) return;
+    const f = v => v === '' ? '' : v * (unit === 'k' ? 1000 : 1);
+    let rec = {};
+    if (map && vals.filter(v => v !== '').length > 1) cells.forEach((c, i) => { if (i > 0 && map[i]) rec[map[i]] = f(num(c)); });
+    else if (key && key !== 'lk' && vals.filter(v => v !== '').length === 1 && rest.length === 1) rec = {a: f(vals[0])};
+    else if (key === 'lk') rec = {a: f(vals.find(v => v !== '') ?? '')};
+    else if (key) [0, 1, 2, 3].forEach(i => { rec['q' + i] = f(vals[i] ?? ''); });
+    else { rec = {a: f(vals[0])}; [0, 1, 2, 3].forEach(i => { if (vals[i + 1] !== undefined) rec['q' + i] = f(vals[i + 1]); }); }
+    if (key === 'sb') { out.sb = Object.assign(out.sb || {}, rec); out.n++; return; }
+    if (key === 'lk') { out.lk = Object.assign(out.lk || {}, rec); out.n++; return; }
+    if (key) { out.grp[key] = Object.assign(out.grp[key] || {}, rec); out.n++; return; }
+    const hit = ar.find(([n]) => n === bnorm(lab)); if (hit) { out.acct[hit[1]] = Object.assign(out.acct[hit[1]] || {}, rec); out.n++; }
+  });
+  return out;
+}
+function grantPasteSheet(y) {
+  const b = bgState(), fund = BG.fund, g = ledAgg(fund, y), names = g ? g.list.filter(a => ['hr', 'ops', 'biz'].includes(a.grp)).map(a => a.acct) : [];
+  sheet({title: '교부신청액 표 붙여넣기', wide: true, body: `
+    <div class="note small">엑셀에서 <b>신청액 표를 복사해 붙여 넣으세요</b>. 첫 칸이 <b>인건비·운영비·사업비·자부담</b>인 줄은 1~4분기 값으로, 한 칸 값만 있으면 연간 결정액으로 넣어요. 머리글에 "연간·1분기~4분기"가 있으면 그 순서를 따르고, 올린 원장의 계정 이름과 같은 줄은 계정별로 넣어요.</div>
+    <div class="row small" style="gap:14px"><label class="row"><input type="radio" name="gp-u" value="auto" checked> 단위 자동 판단</label><label class="row"><input type="radio" name="gp-u" value="k"> 천원</label><label class="row"><input type="radio" name="gp-u" value="w"> 원</label></div>
+    <textarea class="inp mono" id="gp-x" rows="9" placeholder="구분&#9;1분기&#9;2분기&#9;3분기&#9;4분기&#10;인건비&#9;100&#9;100&#9;100&#9;&#10;운영비&#9;10&#9;10&#9;10&#9;&#10;사업비&#9;20&#9;20&#9;20&#9;&#10;인건비&#9;1,000"></textarea>
+    <div id="gp-prev" class="small" style="margin-top:8px"></div>`,
+    foot: `<button class="btn" data-close>닫기</button><button class="btn primary" id="gp-go" disabled>넣기</button>`,
+    onMount: el => {
+      let cur = null; const upd = () => { const t = $('#gp-x', el).value, m = el.querySelector('[name="gp-u"]:checked').value, all = t.match(/[\d,]{4,}/g) || [], mx = Math.max(0, ...all.map(s => toNum(s))), unit = m === 'auto' ? (mx && mx < 3e6 ? 'k' : 'w') : m;
+        cur = parseGrantPaste(t, unit, names); const gn = Object.keys(cur.grp).map(k => ({hr: '인건비', ops: '운영비', biz: '사업비'})[k]);
+        $('#gp-prev', el).innerHTML = cur.n ? `알아본 줄 ${cur.n}개 · 단위 ${unit === 'k' ? '천원' : '원'} 기준 — ${[...gn, ...(cur.sb ? ['자부담'] : []), ...(cur.lk ? ['연계사업'] : []), ...Object.keys(cur.acct)].map(esc).join(', ')}` : '<span class="faint">알아볼 수 있는 줄이 아직 없어요</span>'; $('#gp-go', el).disabled = !cur.n; };
+      $('#gp-x', el).oninput = upd; el.querySelectorAll('[name="gp-u"]').forEach(r => r.onchange = upd);
+      $('#gp-go', el).onclick = () => { if (!cur) return; const GR = grantG(fund, y), G = grantState(fund, y), sbq = (b.grantS = b.grantS || {})[`${fund}|${y}`] ||= ['', '', '', ''];
+        const apply = (dst, rec) => { if (rec.a !== undefined && rec.a !== '') dst.annual = rec.a; [0, 1, 2, 3].forEach(i => { if (rec['q' + i] !== undefined) dst.q[i] = rec['q' + i]; }); };
+        Object.entries(cur.grp).forEach(([k, rec]) => apply(GR[k], rec)); Object.entries(cur.acct).forEach(([a, rec]) => apply(G.rows[a] ||= {annual: '', q: ['', '', '', ''], sb: '', sj: ''}, rec));
+        if (cur.sb) { [0, 1, 2, 3].forEach(i => { if (cur.sb['q' + i] !== undefined) sbq[i] = cur.sb['q' + i]; }); if (cur.sb.a) GR.sbA = cur.sb.a; }
+        if (cur.lk && cur.lk.a) GR.lk.annual = cur.lk.a;
+        save(); closeSheet(); render(); toast(`${cur.n}개 줄을 넣었어요`); };
+    }});
+}
+
+
+/* ---------- 교부·집행 엑셀 내려받기 / 올리기 (수식 포함) ----------
+   원칙: 합계·미교부·잔액·집행률·검증은 모두 엑셀 수식. 입력 칸은 숫자(원 단위)만 — 화면 표시만 천원(#,##0,). 올릴 때는 입력 칸만 읽고 수식 칸은 무시해서 계산이 어긋나지 않게 함. */
+let GM = null;
+const GX_Z = '#,##0,;-#,##0,;"-"', GX_W = '#,##0;-#,##0;"-"';
+function grantXlsx(y) {
+  if (!GM || typeof XLSX === 'undefined') return toast('엑셀 도구를 불러오지 못했어요');
+  const m = GM, N = v => Number(v) || 0, fn = fundName(m.fund);
+  const wb = XLSX.utils.book_new(), put = (ws, a, o) => { ws[a] = o; };
+  const num = (v, z = GX_Z) => ({t: 'n', v: N(v), z}), fx = (f, v, z = GX_Z) => ({t: 'n', f, v: N(v), z}), str = v => ({t: 's', v: String(v)}), fs = (f, v) => ({t: 's', f, v: String(v)});
+  const mk = (cells, ref, cols) => { const ws = {}; Object.entries(cells).forEach(([a, c]) => ws[a] = c); ws['!ref'] = ref; ws['!cols'] = cols.map(w => ({wch: w})); return ws; };
+  const L = (c, r) => 'ABCDEFGHIJKLMNOP'[c] + r;
+  // ── 시트1 교부신청
+  const c1 = {A1: str(`${y}년 분기 교부신청액 — ${fn}`), A2: str('● 표시가 있는 칸만 입력하세요 (원 단위 숫자, 화면은 천원으로 보여요). 합계·미교부·총 보조수입은 수식이라 고치지 마세요.')};
+  ['구분', '1분기', '2분기', '3분기', '4분기', '합계', '연간 결정액', '미교부', '입력'].forEach((h, i) => c1[L(i, 4)] = str(h));
+  m.grp.forEach((s, i) => { const r = 5 + i; c1['A' + r] = str(s.n + (s.k === 'biz' ? ' (연계사업 포함)' : '')); [0, 1, 2, 3].forEach(q => c1[L(1 + q, r)] = num(s.cq[q])); c1['F' + r] = fx(`SUM(B${r}:E${r})`, s.got); c1['G' + r] = num(s.ann); c1['H' + r] = fx(`G${r}-F${r}`, s.ann - s.got); c1['I' + r] = str('● B~E, G'); });
+  c1.A8 = str('신청액 합계'); ['B', 'C', 'D', 'E', 'F', 'G'].forEach((c, i) => { const v = i < 4 ? m.tq[i] : i === 4 ? m.tGot : m.tAnn; c1[c + 8] = fx(`SUM(${c}5:${c}7)`, v); }); c1.H8 = fx('G8-F8', m.tAnn - m.tGot);
+  c1.A9 = str('자부담'); [0, 1, 2, 3].forEach(q => c1[L(1 + q, 9)] = num(m.sbq[q])); c1.F9 = fx('SUM(B9:E9)', m.sbSum); c1.G9 = num(m.sbAnn); c1.I9 = str('● B~E, G');
+  c1.A10 = str('총 보조수입'); ['B', 'C', 'D', 'E', 'F', 'G'].forEach((c, i) => { const v = (i < 4 ? m.tq[i] + N(m.sbq[i]) : i === 4 ? m.tGot + m.sbSum : m.tAnn + m.sbAnn); c1[c + 10] = fx(`${c}8+${c}9`, v); });
+  c1.A11 = str('구청 통보 재배정액 (선택)'); [0, 1, 2, 3].forEach(q => c1[L(1 + q, 11)] = num(m.G.q[q])); c1.I11 = str('● B~E');
+  c1.A13 = str('누적 이자 (자부담 이자 제외)'); c1.B13 = num(m.interest, GX_W); c1.I13 = str('●');
+  c1.A14 = str('통장 잔액 (원장)'); c1.B14 = num(m.g ? m.bankLed : 0, GX_W); c1.C14 = str('원장 올린 값 — 통장출납부 마지막 잔액으로 고쳐도 돼요');
+  XLSX.utils.book_append_sheet(wb, mk(c1, 'A1:I14', [26, 14, 14, 14, 14, 15, 15, 14, 12]), '교부신청');
+  // ── 시트2 정산내역서
+  const c2 = {A1: str(`${y}년 서울시 정산내역서 (누적) — 단위 원`), A2: str('예산액은 교부신청 시트의 연간 결정액에서 자동. 사업비 = 사업비 − 연계사업. 집행액은 원장에서 가져온 값 (원장을 바꾸면 허브에서 다시 내려받으세요).')};
+  ['구분', '예산액(A)', '집행액(B)', '잔액(A−B)', '집행률'].forEach((h, i) => c2[L(i, 4)] = str(h));
+  const st = m.sett; // [이름, 예산, 집행]
+  c2.A5 = str('인건비'); c2.B5 = fx('교부신청!G5', st[0][1], GX_W); c2.A6 = str('운영비'); c2.B6 = fx('교부신청!G6', st[1][1], GX_W);
+  c2.A7 = str('사업비'); c2.B7 = fx('MAX(0,교부신청!G7-B8)', st[2][1], GX_W); c2.A8 = str('(단위사업) 거주시설 연계사업'); c2.B8 = num(st[3][1], GX_W); c2.F8 = str('● B8 연계 예산 입력');
+  st.forEach((s, i) => { const r = 5 + i; c2['C' + r] = num(s[2], GX_W); c2['D' + r] = fx(`B${r}-C${r}`, s[1] - s[2], GX_W); c2['E' + r] = fs(`IF(B${r}=0,"",C${r}/B${r})`, ''); c2['E' + r].z = '0.0%'; });
+  c2.A9 = str('계'); ['B', 'C', 'D'].forEach(c => c2[c + 9] = fx(`SUM(${c}5:${c}8)`, c === 'B' ? m.sTot.ann : c === 'C' ? m.sTot.used : m.sTot.ann - m.sTot.used, GX_W)); c2.E9 = fs('IF(B9=0,"",C9/B9)', ''); c2.E9.z = '0.0%';
+  XLSX.utils.book_append_sheet(wb, mk(c2, 'A1:F9', [34, 16, 16, 16, 10, 24]), '정산내역서');
+  // ── 시트3 계정상세
+  const c3 = {A1: str(`${y}년 계정별 상세 — 연계·종료는 Y로 표시`), A2: str('입력: 연계, 종료, 연간 결정액, 1~4분기 교부. 집행(원장)은 허브에서 가져온 값, 나머지는 수식.')};
+  ['계정과목', '구분', '연계(Y)', '종료(Y)', '연간 결정액', '1분기 교부', '2분기 교부', '3분기 교부', '4분기 교부', '교부 합', '집행(원장)', '교부 잔액', '연간 잔액'].forEach((h, i) => c3[L(i, 4)] = str(h));
+  const gn = {hr: '인건비', ops: '운영비', biz: '사업비'};
+  m.rows.forEach((r, i) => { const x = 5 + i; c3['A' + x] = str(r.a.acct); c3['B' + x] = str(gn[r.a.grp]); c3['C' + x] = str(r.lk ? 'Y' : ''); c3['D' + x] = str(r.end ? 'Y' : ''); c3['E' + x] = num(r.ann);
+    [0, 1, 2, 3].forEach(q => c3[L(5 + q, x)] = num(r.cq[q])); c3['J' + x] = fx(`SUM(F${x}:I${x})`, r.grant); c3['K' + x] = num(r.used); c3['L' + x] = fx(`J${x}-K${x}`, r.grant - r.used); c3['M' + x] = fx(`E${x}-K${x}`, r.ann - r.used); });
+  const t3 = 5 + m.rows.length, last = Math.max(5, t3 - 1);
+  c3['A' + t3] = str('합계'); 'EFGHIJKLM'.split('').forEach(c => { const v = m.rows.reduce((a, r) => a + ({E: r.ann, F: r.cq[0], G: r.cq[1], H: r.cq[2], I: r.cq[3], J: r.grant, K: r.used, L: r.grant - r.used, M: r.ann - r.used}[c]), 0); c3[c + t3] = fx(m.rows.length ? `SUM(${c}5:${c}${last})` : '0', v); });
+  XLSX.utils.book_append_sheet(wb, mk(c3, `A1:M${t3}`, [30, 8, 9, 9, 15, 13, 13, 13, 13, 14, 14, 14, 14]), '계정상세');
+  // ── 시트4 검증 (수식)
+  const bank = m.g ? '교부신청!B14' : '""', ok = '"일치"';
+  const c4 = {A1: str('정산 검증 — 모두 "일치"여야 해요'), A4: str('항목'), B4: str('결과'), C4: str('설명')};
+  const V = [
+    ['4구분 집행 합 = 계정 집행 합', `IF(ROUND(정산내역서!C9-계정상세!K${t3},0)=0,"일치","불일치")`, '정산내역서 계 = 계정상세 집행 합'],
+    ['구분별 집행 ≤ 교부 누계', 'IF(AND(OR(교부신청!F5=0,정산내역서!C5<=교부신청!F5),OR(교부신청!F6=0,정산내역서!C6<=교부신청!F6),OR(교부신청!F7=0,정산내역서!C7+정산내역서!C8<=교부신청!F7)),"일치","확인")', '교부액보다 많이 쓴 구분이 있으면 확인'],
+    ['교부 누계 ≤ 연간 결정액', 'IF(AND(OR(교부신청!G5=0,교부신청!F5<=교부신청!G5),OR(교부신청!G6=0,교부신청!F6<=교부신청!G6),OR(교부신청!G7=0,교부신청!F7<=교부신청!G7)),"일치","확인")', ''],
+    ['통장 잔액 = 교부 누계 + 이자 − 사용액', `IF(교부신청!F8=0,"입력 전",IF(ABS(교부신청!B14-(교부신청!F8+교부신청!B13-정산내역서!C9))<1,"일치","차이 "&TEXT(교부신청!B14-(교부신청!F8+교부신청!B13-정산내역서!C9),"#,##0")))`, '이자를 B13에 입력하면 맞아요 (작은 차이는 이자)'],
+    ['다음 분기 신청 제안 합 (인건비+운영비+사업비)', 'MAX(0,교부신청!G5-교부신청!F5)+MAX(0,교부신청!G6-교부신청!F6)+MAX(0,교부신청!G7-교부신청!F7)', '연간 결정액 − 교부 누계']];
+  V.forEach((v, i) => { const r = 5 + i; c4['A' + r] = str(v[0]); c4['B' + r] = i === 4 ? fx(v[1], m.needTot) : fs(v[1], ''); if (i === 4) c4['B' + r].z = GX_Z; c4['C' + r] = str(v[2]); });
+  XLSX.utils.book_append_sheet(wb, mk(c4, 'A1:C9', [44, 18, 52]), '검증');
+  const buf = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
+  download(`${ymdShort()}_교부집행_${fn.replace(/[\\/:*?"<>|\s]/g, '')}_${y}.xlsx`, new Blob([buf])); toast('엑셀을 저장했어요 — 수식이 들어 있어요');
+}
+const ymdShort = () => { const d = today(); return String(d.getFullYear()).slice(2) + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0'); };
+function parseGrantXlsx(wb) {
+  const rowsOf = n => { const ws = wb.Sheets[n]; return ws ? XLSX.utils.sheet_to_json(ws, {header: 1, raw: true, defval: ''}) : null; }, N = v => typeof v === 'number' ? v : toNum(v);
+  const out = {grp: {}, sb: null, lk: null, q: null, interest: null, acct: {}, n: 0}, r1 = rowsOf('교부신청'); if (!r1) return null;
+  const val = c => (c === '' || c == null) ? '' : N(c);
+  r1.forEach(r => { const a = String(r[0] || '').trim(); const q = [1, 2, 3, 4].map(i => val(r[i]));
+    const g = /^인건비/.test(a) ? 'hr' : /^운영비/.test(a) ? 'ops' : /^사업비/.test(a) ? 'biz' : '';
+    if (g) { out.grp[g] = {annual: val(r[6]), q}; out.n++; }
+    else if (/^자부담/.test(a)) { out.sb = {q, annual: val(r[6])}; out.n++; }
+    else if (/^구청/.test(a)) { out.q = q; out.n++; }
+    else if (/^누적 이자/.test(a)) { out.interest = val(r[1]); out.n++; } });
+  const r2 = rowsOf('정산내역서'); if (r2) r2.forEach(r => { if (/연계사업/.test(String(r[0] || '')) && typeof r[1] === 'number') { out.lk = r[1]; out.n++; } });
+  const r3 = rowsOf('계정상세'); if (r3) r3.forEach((r, i) => { const a = String(r[0] || '').trim(); if (i < 4 || !a || a === '합계') return; out.acct[a] = {annual: val(r[4]), q: [5, 6, 7, 8].map(k => val(r[k])), lk: /^y/i.test(String(r[2])), end: /^y/i.test(String(r[3]))}; out.n++; });
+  // 단위 보호: 연간 결정액이 100만 미만이면 천원으로 입력한 것으로 보고 ×1000
+  const big = [...Object.values(out.grp).map(s => s.annual), ...Object.values(out.acct).map(s => s.annual)].filter(v => v !== ''); out.scaled = big.length && Math.max(...big) < 1e6;
+  if (out.scaled) { const f = v => v === '' ? '' : v * 1000; Object.values(out.grp).forEach(s => { s.annual = f(s.annual); s.q = s.q.map(f); }); if (out.sb) { out.sb.q = out.sb.q.map(f); out.sb.annual = f(out.sb.annual); } if (out.q) out.q = out.q.map(f); if (out.lk != null) out.lk *= 1000; if (out.interest !== null) out.interest = f(out.interest); Object.values(out.acct).forEach(s => { s.annual = f(s.annual); s.q = s.q.map(f); }); }
+  return out;
+}
+function grantXlsxSheet(y) {
+  const fund = BG.fund; let cur = null;
+  sheet({title: '교부·집행 엑셀 올리기', wide: true, body: `
+    <div class="note small">허브에서 <b>내려받은 엑셀</b>(교부신청·정산내역서·계정상세 시트)에 값을 고쳐서 올려요. <b>입력 칸의 숫자만</b> 읽고 합계·잔액 같은 수식 칸은 무시하니 계산이 어긋나지 않아요. 시트·칸 위치(줄 순서)는 바꾸지 마세요.</div>
+    <label class="f">엑셀 파일 (.xlsx)<input type="file" id="gx-file" accept=".xlsx"></label><div id="gx-info" class="small" style="margin-top:8px"></div>`,
+    foot: `<button class="btn" data-close>닫기</button><button class="btn primary" id="gx-ok" disabled>이 값으로 바꾸기</button>`,
+    onMount: el => {
+      $('#gx-file', el).onchange = async e => { const f = e.target.files[0]; if (!f) return; try { const wb = XLSX.read(await f.arrayBuffer(), {type: 'array'}); cur = parseGrantXlsx(wb);
+        $('#gx-info', el).innerHTML = cur && cur.n ? `읽은 항목 ${cur.n}개 — 구분 ${Object.keys(cur.grp).length}개 · 계정 ${Object.keys(cur.acct).length}개${cur.sb ? ' · 자부담' : ''}${cur.lk != null ? ' · 연계 예산' : ''}${cur.scaled ? '<br><b>금액이 작아서 천원 단위로 보고 ×1000 했어요.</b>' : ''}<br><span class="faint">${esc(fundName(fund))} ${y}년의 교부·연간 금액이 이 값으로 바뀌어요 (집행은 원장 그대로).</span>` : '<span class="neg">교부신청 시트를 못 찾았어요. 허브에서 내려받은 엑셀인지 확인해 주세요.</span>'; $('#gx-ok', el).disabled = !(cur && cur.n); } catch (err) { cur = null; $('#gx-info', el).textContent = '엑셀을 읽지 못했어요'; } };
+      $('#gx-ok', el).onclick = () => { if (!cur) return; const b = bgState(), GR = grantG(fund, y), G = grantState(fund, y), sbq = (b.grantS = b.grantS || {})[`${fund}|${y}`] ||= ['', '', '', ''];
+        Object.entries(cur.grp).forEach(([k, s]) => { GR[k].annual = s.annual; GR[k].q = s.q.slice(0, 4); });
+        if (cur.sb) { cur.sb.q.forEach((v, i) => sbq[i] = v); GR.sbA = cur.sb.annual; } if (cur.q) cur.q.forEach((v, i) => G.q[i] = v); if (cur.lk != null) GR.lk.annual = cur.lk || '';
+        if (cur.interest !== null) (b.grantI = b.grantI || {})[`${fund}|${y}`] = cur.interest;
+        Object.entries(cur.acct).forEach(([a, s]) => { const r = G.rows[a] ||= {annual: '', q: ['', '', '', ''], sb: '', sj: ''}; r.annual = s.annual; r.q = s.q; r.lk = s.lk; r.end = s.end; });
+        save(); closeSheet(); render(); toast('엑셀 값으로 바꿨어요'); };
+    }});
+}
+
+/* ---------- 세목별 정산 (교부액에 맞춰 세목별 사용액 → 남은 잔액 → 신청할지·쓸지) ----------
+   구분(인건비·운영비·사업비)마다: 교부 누계 − 세목별 집행 = 지금 쓸 수 있는 잔액 / 연간 결정액 − 교부 누계 = 아직 신청 안 한 돈 */
+function bgSettleView(el, b, y) {
+  const U = gUnit(), C = grantCalc(b, y, BG.fund), {g, G, rows, grp, tq, tGot, tAnn, tUsed, nq, needTot, curQ} = C, lm = g ? Number(String(g.L.to || '').slice(0, 2)) || 0 : 0;
+  const qn = (i) => `${i + 1}분기`, sumOf = (rr, f) => rr.reduce((x, r) => x + f(r), 0);
+  const unitBtn = `<div class="seg" role="group" aria-label="단위"><button aria-pressed="${U === 'k'}" data-unit="k">천원</button><button aria-pressed="${U === 'w'}" data-unit="w">원</button></div>`;
+  const spare = tGot - tUsed, endLeft = sumOf(rows.filter(r => r.end && r.ann > r.used), r => r.ann - r.used);
+  const inp = (a, v) => `<input class="gi rd" inputmode="numeric" data-sa="${esc(a)}" value="${v ? gFmt(v) : ''}" aria-label="연간 예산">`;
+  const block = s => { const rr = rows.filter(r => r.a.grp === s.k), eq = [0, 1, 2, 3].map(i => sumOf(rr, r => r.eq[i])), accAnn = sumOf(rr, r => r.ann);
+    const bal = s.got - s.used, openLeft = s.ann - s.got;
+    const pace = r => r.ann ? (r.end ? '<span class="chip">종료</span>' : paceNote(pct(r.used, r.ann), lm)) : '';
+    return `<section class="panel"><div class="panel-h"><h2>${s.n}</h2><span class="faint small">${rr.length}개 세목</span>${s.k === 'biz' ? `<button class="btn sm" id="se-paste">${icon('copy')}연 예산 표 붙여넣기</button>` : ''}</div><div class="panel-b gp-x">
+    <table class="gt"><thead><tr><th>세목 <span class="faint">(${U === 'k' ? '천원' : '원'})</span></th><th class="rd">연간 예산</th>${[0, 1, 2, 3].map(i => `<th>${qn(i)} 집행</th>`).join('')}<th>집행 합</th><th class="rd">집행 잔액</th><th>집행률</th><th>종료</th></tr></thead><tbody>
+    ${rr.map(r => `<tr><td class="nm">${esc(r.a.acct)}${r.lk ? ' <span class="chip">연계</span>' : ''}</td><td>${inp(r.a.acct, r.ann)}</td>${[0, 1, 2, 3].map(i => `<td>${gDash(r.eq[i])}</td>`).join('')}<td><b>${gDash(r.used)}</b></td><td class="rd">${r.ann ? gFmt(r.ann - r.used) : ''}</td><td>${r.ann ? pct(r.used, r.ann) + '% ' + pace(r) : ''}</td><td>${s.k === 'biz' ? `<input type="checkbox" data-se="${esc(r.a.acct)}" ${r.end ? 'checked' : ''} aria-label="사업종료">` : ''}</td></tr>`).join('') || `<tr><td colspan="9" class="faint" style="text-align:left">원장을 올리면 세목이 나와요</td></tr>`}
+    <tr class="tot"><td>${s.n} 집행 합계</td><td class="rd">${gDash(accAnn || s.ann)}</td>${eq.map(v => `<td>${gDash(v)}</td>`).join('')}<td>${gDash(s.used)}</td><td class="rd">${s.ann ? gFmt(s.ann - s.used) : ''}</td><td>${s.ann ? pct(s.used, s.ann) + '%' : ''}</td><td></td></tr></tbody></table>
+    <div class="gp-kpi" style="margin:10px 0 0;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+      <div><span>교부 누계</span><b>${gDash(s.got)}</b><em>${s.cq.map((v, i) => v ? qn(i) + ' ' + gFmt(v) : '').filter(Boolean).join(' · ')}</em></div>
+      <div><span>지금 쓸 수 있는 잔액 (교부−집행)</span><b class="${s.got && bal < 0 ? 'neg' : 'acc'}">${s.got ? gFmt(bal) : '-'}</b></div>
+      <div><span>아직 신청 안 한 돈 (연간−교부)</span><b>${s.ann ? gFmt(openLeft) : '-'}</b></div>
+      <div><span>${nq}분기 신청 제안${s.open < openLeft ? ' (종료 사업 제외)' : ''}</span><b class="acc">${s.open && tq.some(v => v) ? gFmt(s.open) : '-'}</b></div></div></div></section>`; };
+  el.innerHTML = `
+  <div class="row" style="flex-wrap:wrap;gap:8px">${fundSelect(b)}${unitBtn}<span class="grow"></span><span class="faint small">${g ? `집행: 원장 ${g.L.to.slice(0, 2)}/${g.L.to.slice(2)}까지` : '원장을 올리면 집행이 채워져요'}</span><button class="btn sm" data-up="${BG.fund}">원장 올리기</button></div>
+  <div class="note small">교부액은 <b>구분(인건비·운영비·사업비)별</b>로 나오고, 사용액은 <b>세목(계정)별</b>로 쌓여요. 구분마다 "교부 누계 − 집행 합 = 지금 쓸 수 있는 잔액"을 보고, 남았으면 쓰고 부족하면 다음 분기에 신청하세요. 연간 예산(세목별)은 칸에 입력, 교부액 입력은 "교부·집행 격자" 탭에서 해요.</div>
+  <div class="gp-kpi"><div><span>교부 누계</span><b>${gDash(tGot)}</b></div><div><span>집행 누계</span><b>${gDash(tUsed)}</b></div><div><span>지금 쓸 수 있는 잔액</span><b class="${tGot && spare < 0 ? 'neg' : 'acc'}">${tGot ? gFmt(spare) : '-'}</b></div><div><span>아직 신청 안 한 돈</span><b>${tAnn ? gFmt(tAnn - tGot) : '-'}</b></div><div><span>${nq}분기 신청 제안</span><b class="acc">${needTot && tq.some(v => v) ? gFmt(needTot) : '-'}</b></div>${endLeft ? `<div><span>종료 사업 남은 예산</span><b>${gFmt(endLeft)}</b><em>신청 제외 · 정리할 돈</em></div>` : ''}</div>
+  <div style="display:grid;gap:12px;margin-top:4px">${grp.map(block).join('')}</div>`;
+  bindFundSelect(el);
+  el.addEventListener('change', e => { const x = e.target, gr = a => G.rows[a] ||= {annual: '', q: ['', '', '', ''], sb: '', sj: ''};
+    if (x.dataset.sa) { gr(x.dataset.sa).annual = gIn(x.value) || ''; save(); render(); return; }
+    if (x.dataset.se) { gr(x.dataset.se).end = x.checked; save(); render(); } });
+  el.addEventListener('click', e => { const u = e.target.closest('[data-up]'); if (u) return uploadLedger(u.dataset.up); if (e.target.closest('#se-paste')) return budgetPasteSheet(y, rows.filter(r => r.a.grp === 'biz').map(r => r.a.acct)); const un = e.target.closest('[data-unit]'); if (un) { b.unit = un.dataset.unit; save(); render(); } });
+}
+/* 사업비 연 예산 표 붙여넣기: 세부사업명(예: 권익옹호/쉬운정보만들기)과 연 예산이 있는 줄을 원장 계정과 이름으로 맞춰요. '사업종료'가 적힌 줄은 종료 표시. */
+const bpKey = t => String(t).replace(/[\s·:()\-]/g, '').replace(/인/g, '');
+function parseBudgetPaste(text, accts) {
+  const out = []; const ak = accts.map(a => [bpKey(a), a]);
+  text.split(/\r?\n/).forEach(line => { const nums = line.match(/\d[\d,]{3,}/g); if (!nums) return; const label = line.replace(/\d[\d,]*/g, ' '); const segs = label.split(/[\/\t]/).map(bpKey).filter(x => x.length >= 3);
+    let hit = null; for (const sg of segs.slice().reverse()) { hit = ak.find(([k]) => k === sg) || ak.find(([k]) => k.length >= 4 && sg.length >= 4 && (k.includes(sg) || sg.includes(k))); if (hit) break; }
+    out.push({acct: hit ? hit[1] : '', line: label.replace(/\s+/g, ' ').trim().slice(0, 40), annual: toNum(nums[0]), end: /사업\s*종료/.test(line)}); });
+  return out;
+}
+function budgetPasteSheet(y, accts) {
+  const b = bgState(), fund = BG.fund;
+  sheet({title: '사업비 연 예산 표 붙여넣기', wide: true, body: `
+    <div class="note small">엑셀에서 <b>세부사업명과 연 예산이 있는 표</b>를 복사해 붙여 넣으세요. 줄마다 첫 금액을 연 예산으로 읽고, 사업 이름이 원장 계정과 비슷하면 자동으로 맞춰요 ("사업종료"가 적힌 줄은 종료로 표시).</div>
+    <textarea class="inp mono" id="bp-x" rows="9" placeholder="장애인복지사업&#9;사업명/세부사업&#9;1,000,000&#9;800,000&#9;200,000"></textarea><div id="bp-prev" class="small" style="margin-top:8px"></div>`,
+    foot: `<button class="btn" data-close>닫기</button><button class="btn primary" id="bp-go" disabled>연간 예산에 반영</button>`,
+    onMount: el => { let cur = [];
+      $('#bp-x', el).oninput = () => { cur = parseBudgetPaste($('#bp-x', el).value, accts); const ok = cur.filter(c => c.acct), no = cur.filter(c => !c.acct);
+        $('#bp-prev', el).innerHTML = (ok.length ? `<table class="tbl"><tbody>${ok.map(c => `<tr><td>${esc(c.acct)}</td><td class="r">${won(c.annual)}원</td><td>${c.end ? '종료' : ''}</td></tr>`).join('')}</tbody></table>` : '') + (no.length ? `<div class="neg" style="margin-top:6px">맞는 계정을 못 찾은 줄: ${no.map(c => esc(c.line)).join(' / ')}</div>` : ''); $('#bp-go', el).disabled = !ok.length; };
+      $('#bp-go', el).onclick = () => { const G = grantState(fund, y), ok = cur.filter(c => c.acct), f = ok.every(c => c.annual < 100000) ? 1000 : 1;
+        ok.forEach(c => { const r = G.rows[c.acct] ||= {annual: '', q: ['', '', '', ''], sb: '', sj: ''}; r.annual = c.annual * f; if (c.end) r.end = true; }); save(); closeSheet(); render(); toast(`${ok.length}개 세목의 연간 예산을 반영했어요`); };
+    }});
 }
 
 
@@ -3529,17 +3793,19 @@ function bgGrantView(el, b, y) {
    - 내보내기: 예산 줄·교부 격자·계정별 집행 요약만 담음 (원장 적요/실명 내역은 담지 않음)
    - 가져오기: 재원은 이름으로 맞춤(없으면 새로 만듦). 관/항/목·본예산 같은 한글·영문 열 이름도 알아봄 */
 function bgExchange(y = bgState().year) {
-  const b = bgState(), nm = id => fundName(id), out = {schema: 'il-budget-exchange', v: 1, year: y, exported: ymd(today()), from: 'il-hub', funds: b.funds.map(f => ({name: f.name, owner: f.owner || ''})), lines: [], grant: {}, grantQ: {}, ledBud: {}, usage: []};
+  const b = bgState(), nm = id => fundName(id), out = {schema: 'il-budget-exchange', v: 1, year: y, exported: ymd(today()), from: 'il-hub', funds: b.funds.map(f => ({name: f.name, owner: f.owner || ''})), lines: [], grant: {}, grantQ: {}, grantG: {}, grantS: {}, ledBud: {}, usage: []};
   b.lines.filter(l => Number(l.y) === Number(y)).forEach(l => out.lines.push({fund: nm(l.fund), year: l.y, type: l.type, gwan: l.gwan, hang: l.hang, mok: l.mok, proj: l.proj, owner: l.owner, kw: l.kw, base: Number(l.base) || 0, sup1: Number(l.sup1) || 0, sup2: Number(l.sup2) || 0}));
   const keyOf = k => { const [f, yy, ...r] = k.split('|'); return {f, yy, r: r.join('|')}; };
   Object.entries(b.grant || {}).forEach(([k, v]) => { const [f, yy] = k.split('|'); if (Number(yy) === Number(y)) out.grant[nm(f) + '|' + yy] = v; });
   Object.entries(b.grantQ || {}).forEach(([k, v]) => { const [f, yy] = k.split('|'); if (Number(yy) === Number(y)) out.grantQ[nm(f) + '|' + yy] = v; });
+  [['grantG', b.grantG], ['grantS', b.grantS]].forEach(([n2, src]) => Object.entries(src || {}).forEach(([k, v]) => { const [f, yy] = k.split('|'); if (Number(yy) === Number(y)) out[n2][nm(f) + '|' + yy] = v; }));
   Object.entries(b.ledBud || {}).forEach(([k, v]) => { const { f, yy, r } = keyOf(k); if (Number(yy) === Number(y)) out.ledBud[nm(f) + '|' + yy + '|' + r] = v; });
   b.funds.forEach(f => { const g = ledAgg(f.id, y); if (g) g.list.forEach(a => out.usage.push({fund: f.name, acct: a.acct, group: a.grp, n: a.n, used: a.used, mon: a.mon})); });
   return out;
 }
 const XK = {gwan: ['gwan', '관'], hang: ['hang', '항'], mok: ['mok', '목', '세목', '계정', '계정과목', '과목'], proj: ['proj', '사업', '사업명'], base: ['base', '본예산', '예산액', '예산'], sup1: ['sup1', '1차추경', '1차 추경'], sup2: ['sup2', '2차추경', '2차 추경'], fund: ['fund', '재원', '재원명'], type: ['type', '구분']};
 function xpick(o, k) { for (const n of XK[k]) if (o[n] != null && o[n] !== '') return o[n]; return ''; }
+function fillEmpty(d, v) { Object.keys(v).forEach(k => { const x = v[k]; if (x && typeof x === 'object') { if (d[k] == null || typeof d[k] !== 'object') d[k] = Array.isArray(x) ? [] : {}; fillEmpty(d[k], x); } else if (d[k] === '' || d[k] == null || d[k] === 0 || (x === true && d[k] === false)) d[k] = x; }); }
 function bgApplyExchange(data, mode = 'merge', y = null) {
   const b = bgState(); const arr = Array.isArray(data) ? data : (data.lines || []); const yy = Number(y || data.year || b.year);
   const fid = name => { name = String(name || '').trim() || b.funds[0].name; let f = b.funds.find(x => x.name === name || bnorm(x.name) === bnorm(name)); if (!f) { f = {id: 'f' + uid(), name, owner: '', mine: false}; b.funds.push(f); } return f.id; };
@@ -3548,7 +3814,7 @@ function bgApplyExchange(data, mode = 'merge', y = null) {
   if (mode === 'replace') { const keys = new Set(lines.map(l => l.fund + '|' + l.y)); const before = b.lines.length; b.lines = b.lines.filter(l => !keys.has(l.fund + '|' + l.y)); rep = before - b.lines.length; }
   lines.forEach(l => { if (mode === 'merge' && b.lines.some(x => x.fund === l.fund && Number(x.y) === l.y && bnorm(x.mok) === bnorm(l.mok) && bnorm(x.proj) === bnorm(l.proj))) return; b.lines.push(l); add++; });
   const idOf = name => b.funds.find(f => f.name === name || bnorm(f.name) === bnorm(name));
-  [['grant', 'grant'], ['grantQ', 'grantQ']].forEach(([src, dst]) => Object.entries(data[src] || {}).forEach(([k, v]) => { const [fn, y2] = k.split('|'), f = idOf(fn); if (!f) return; b[dst] = b[dst] || {}; const kk = `${f.id}|${y2}`; if (mode === 'replace' || !b[dst][kk]) b[dst][kk] = v; else if (src === 'grant') Object.entries(v).forEach(([a, r]) => { b[dst][kk][a] = b[dst][kk][a] || r; }); }));
+  [['grant', 'grant'], ['grantQ', 'grantQ'], ['grantG', 'grantG'], ['grantS', 'grantS']].forEach(([src, dst]) => Object.entries(data[src] || {}).forEach(([k, v]) => { const [fn, y2] = k.split('|'), f = idOf(fn); if (!f) return; b[dst] = b[dst] || {}; const kk = `${f.id}|${y2}`; if (mode === 'replace' || !b[dst][kk]) b[dst][kk] = v; else if (src === 'grant') Object.entries(v).forEach(([a, r]) => { if (b[dst][kk][a]) fillEmpty(b[dst][kk][a], r); else b[dst][kk][a] = r; }); else fillEmpty(b[dst][kk], v); }));
   Object.entries(data.ledBud || {}).forEach(([k, v]) => { const [fn, y2, ...r] = k.split('|'), f = idOf(fn); if (!f) return; b.ledBud = b.ledBud || {}; const kk = `${f.id}|${y2}|${r.join('|')}`; if (mode === 'replace' || b.ledBud[kk] == null || b.ledBud[kk] === '') b.ledBud[kk] = v; });
   save(); return {add, rep, total: lines.length};
 }
@@ -3684,16 +3950,35 @@ function uploadLedger(fund) {
 /* ---------- 엑셀 내보내기 ---------- */
 function exportBudgetXlsx(y) {
   if (!window.XLSX) { toast('엑셀 모듈을 불러오지 못했어요'); return; }
-  const b = bgState(), wb = XLSX.utils.book_new();
-  const sum = [['재원', '담당', '세출 본예산', '세출 현재예산', '집행', '잔액', '집행률(%)', '세입 예산', '세입 실적', '원장 기간']];
-  b.funds.forEach(f => { const s = fundSummary(f.id, y), L = b.ledgers[`${f.id}|${y}`]; sum.push([f.name, f.owner || '', s.sum.out.base, s.sum.out.cur, s.sum.out.used, s.sum.out.cur - s.sum.out.used, pct(s.sum.out.used, s.sum.out.cur), s.sum.in.cur, s.sum.in.used, L ? `${L.from}~${L.to}` : '']); });
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sum), '재원별');
-  const det = [['재원', '구분', '관', '항', '목', '사업명', '본예산', '현재예산', '집행', '잔액', '집행률(%)', ...Array.from({length: 12}, (_, i) => `${i + 1}월`)]];
-  b.funds.forEach(f => { const c = computeFund(f.id, y); linesOf(f.id, y).forEach(l => { const x = c.byLine[l.id] || {amt: 0, mon: Array(12).fill(0)};
-    det.push([f.name, BG_TYPES[l.type], l.gwan, l.hang, l.mok, l.proj, Number(l.base) || 0, curBudget(l), x.amt, curBudget(l) - x.amt, pct(x.amt, curBudget(l)), ...x.mon]); }); });
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(det), '계정별');
+  const b = bgState(), wb = XLSX.utils.book_new(), Z = '#,##0;-#,##0;"-"', n0 = v => Number(v) || 0;
+  const cn = (v, z = Z) => ({t: 'n', v: n0(v), z}), cf = (f, v, z = Z) => ({t: 'n', f, v: n0(v), z}), cs = v => ({t: 's', v: String(v ?? '')});
+  const COL = i => (i < 26 ? String.fromCharCode(65 + i) : 'A' + String.fromCharCode(65 + i - 26));
+  // 계정별: 본예산·1차·2차 입력 → 현재예산·잔액·집행률은 수식, 집행은 월별 합 수식
+  const H = ['재원', '구분', '관', '항', '목', '사업명', '본예산', '1차 추경', '2차 추경', '현재예산', '집행', '잔액', '집행률(%)', ...Array.from({length: 12}, (_, i) => `${i + 1}월`)];
+  const det = {}; H.forEach((h, i) => det[COL(i) + '1'] = cs(h)); let r = 2; const first = 2;
+  b.funds.forEach(f => { const c = computeFund(f.id, y); linesOf(f.id, y).forEach(l => { const x = c.byLine[l.id] || {amt: 0, mon: Array(12).fill(0)}, cur = curBudget(l), mon = x.mon.reduce((a, z) => a + z, 0), same = Math.abs(mon - x.amt) < 1;
+    [f.name, BG_TYPES[l.type], l.gwan, l.hang, l.mok, l.proj].forEach((v, i) => det[COL(i) + r] = cs(v));
+    det['G' + r] = cn(l.base); det['H' + r] = cn(l.sup1); det['I' + r] = cn(l.sup2);
+    det['J' + r] = cf(`IF(I${r}>0,I${r},IF(H${r}>0,H${r},G${r}))`, cur);
+    det['K' + r] = same ? cf(`SUM(N${r}:Y${r})`, x.amt) : cn(x.amt);
+    det['L' + r] = cf(`J${r}-K${r}`, cur - x.amt); det['M' + r] = cf(`IF(J${r}=0,0,ROUND(K${r}/J${r}*100,0))`, pct(x.amt, cur), '0');
+    x.mon.forEach((v, i) => det[COL(13 + i) + r] = cn(v)); r++; }); });
+  const lastD = Math.max(first, r - 1); det['!ref'] = `A1:Y${lastD}`; det['!cols'] = [18, 6, 14, 14, 18, 16, 14, 14, 14, 14, 14, 14, 9, ...Array(12).fill(11)].map(w => ({wch: w}));
+  // 재원별: 계정별 시트의 합계를 SUMIFS 수식으로
+  const S = {}; ['재원', '담당', '세출 본예산', '세출 현재예산', '집행', '잔액', '집행률(%)', '세입 예산', '세입 실적', '원장 기간'].forEach((h, i) => S[COL(i) + '1'] = cs(h));
+  const rng = c => `계정별!$${c}$${first}:$${c}$${lastD}`; let q = 2;
+  b.funds.forEach(f => { const s = fundSummary(f.id, y), L = b.ledgers[`${f.id}|${y}`];
+    S['A' + q] = cs(f.name); S['B' + q] = cs(f.owner || '');
+    const sf = (col, t) => `SUMIFS(${rng(col)},${rng('A')},$A${q},${rng('B')},"${t}")`;
+    S['C' + q] = cf(sf('G', '세출'), s.sum.out.base); S['D' + q] = cf(sf('J', '세출'), s.sum.out.cur); S['E' + q] = cf(sf('K', '세출'), s.sum.out.used);
+    S['F' + q] = cf(`D${q}-E${q}`, s.sum.out.cur - s.sum.out.used); S['G' + q] = cf(`IF(D${q}=0,0,ROUND(E${q}/D${q}*100,0))`, pct(s.sum.out.used, s.sum.out.cur), '0');
+    S['H' + q] = cf(sf('J', '세입'), s.sum.in.cur); S['I' + q] = cf(sf('K', '세입'), s.sum.in.used ?? 0); S['J' + q] = cs(L ? `${L.from}~${L.to}` : ''); q++; });
+  S['A' + q] = cs('합계'); 'CDEFHI'.split('').forEach(c => { S[c + q] = cf(`SUM(${c}2:${c}${q - 1})`, 0); }); S['G' + q] = cf(`IF(D${q}=0,0,ROUND(E${q}/D${q}*100,0))`, 0, '0');
+  S['!ref'] = `A1:J${q}`; S['!cols'] = [22, 10, 15, 15, 15, 15, 9, 15, 15, 12].map(w => ({wch: w}));
+  XLSX.utils.book_append_sheet(wb, S, '재원별'); XLSX.utils.book_append_sheet(wb, det, '계정별');
   const out = XLSX.write(wb, {bookType: 'xlsx', type: 'array'});
-  download(`예산집행_${y}_${ymd(today())}.xlsx`, new Blob([out], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  download(`${ymdShort()}_예산집행_${y}.xlsx`, new Blob([out], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}));
+  toast('엑셀을 저장했어요 — 현재예산·잔액·합계는 수식이에요');
 }
 
 /* ---------- 예시 데이터 (둘러보기용) ---------- */
